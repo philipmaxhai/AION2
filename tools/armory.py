@@ -166,9 +166,12 @@ def fetch_character(cid, sid):
         except ArmoryError as e:
             return {"error": str(e), "boardId": b.get("id")}
 
+    def item_id(it):
+        return it.get("itemId") or it.get("id")
+
     def item_detail(it):
         lvl = int(it.get("enchantLevel") or 0) + int(it.get("exceedLevel") or 0)
-        params = {"id": it.get("itemId"), "enchantLevel": lvl, "characterId": urllib.parse.unquote(cid),
+        params = {"id": item_id(it), "enchantLevel": lvl, "characterId": urllib.parse.unquote(cid),
                   "serverId": sid, "slotPos": it.get("slotPos"), "lang": LANG}
         reg = region_of(sid)
         if reg:
@@ -180,9 +183,10 @@ def fetch_character(cid, sid):
 
     with ThreadPoolExecutor(max_workers=3) as pool:
         board_details = list(pool.map(board_detail, [b for b in boards if b.get("id") is not None]))
-        details = list(pool.map(item_detail, [it for it in items if it.get("itemId")]))
+        with_id = [it for it in items if item_id(it)]
+        details = list(pool.map(item_detail, with_id))
     detail_by_slot = {}
-    for it, d in zip([it for it in items if it.get("itemId")], details):
+    for it, d in zip(with_id, details):
         detail_by_slot[str(it.get("slotPos"))] = d
     return {"info": info, "equipment": equip, "daevanion": board_details, "itemDetails": detail_by_slot}
 
@@ -199,8 +203,16 @@ def first(d, *keys, default=None):
 def stat_line(s):
     name = first(s, "name", "statName", "type", default="?")
     val = first(s, "value", "statValue", "minValue", default="")
-    extra = first(s, "maxValue")
-    return f"{name} {val}" + (f"–{extra}" if extra not in (None, "") else "")
+    low = s.get("minValue")
+    if low not in (None, "") and str(low) != str(val) and s.get("extra") is not None:
+        val = f"{low}–{val}"  # Waffenangriff als Spanne
+    text = f"{name} {val}"
+    extra = s.get("extra")
+    if extra not in (None, "", "0", 0):
+        text += f" (+{extra} Verst.)"
+    if s.get("grade") and s.get("slotPos") is not None:
+        text += f" [{s['grade']}]"  # Manastein-Qualität
+    return text
 
 
 def stats_text(lst):
@@ -224,7 +236,7 @@ def summary(ch, servers):
     cls = first(prof, "className", default=CLASS_BY_PCID.get(int(first(prof, "pcId", default=ch.get("pcId") or 0)), "?"))
     item_level = next((s.get("value") for s in stats if s.get("type") == "ItemLevel"), "?")
     out.append(f"# {first(prof, 'characterName', 'name', default=ch['name'])}")
-    out.append(f"{cls} · Level {first(prof, 'level', default=ch.get('level'))} · "
+    out.append(f"{cls} · Level {first(prof, 'characterLevel', 'level', default=ch.get('level'))} · "
                f"{servers.get(sid, sid)} ({REGIONS.get(reg, reg)}, {'Elyos' if sid < 2000 else 'Asmodier'})")
     out.append(f"Kampfkraft (CP): {first(prof, 'combatPower', default='?')} · Item-Level/Gearscore: {item_level}")
     legion = first(prof, "legionName", "guildName")
@@ -266,7 +278,8 @@ def summary(ch, servers):
             if d.get("mainStats"):
                 out.append(f"  Haupt: {stats_text(d['mainStats'])}")
             if d.get("subStats"):
-                out.append(f"  Zusatz ({len(d['subStats'])}/{d.get('subStatCount', '?')}): {stats_text(d['subStats'])}")
+                cap = d.get("subStatCount") or 0
+                out.append(f"  Zusatz" + (f" ({len(d['subStats'])}/{cap})" if cap else "") + f": {stats_text(d['subStats'])}")
             if d.get("subSkills"):
                 out.append(f"  Skills: {stats_text(d['subSkills'])}")
             stones = d.get("magicStoneStat") or []
@@ -297,6 +310,14 @@ def summary(ch, servers):
         out.append("\n## Daevanion")
         for b in boards:
             out.append(f"- {first(b, 'name', default=b.get('id'))}: {b.get('openNodeCount', '?')}/{b.get('totalNodeCount', '?')} Knoten offen")
+        effects = {}
+        for d in ch.get("daevanion") or []:
+            for e in (d.get("openStatEffectList") or []) + (d.get("openSkillEffectList") or []):
+                label = first(e, "desc", "name", "description", default=None) if isinstance(e, dict) else str(e)
+                if label:
+                    effects[clean(label)] = effects.get(clean(label), 0) + 1
+        if effects:
+            out.append("  Aktive Effekte: " + "; ".join(f"{k}" + (f" ×{v}" if v > 1 else "") for k, v in effects.items()))
 
     return "\n".join(out)
 
@@ -328,24 +349,33 @@ def main():
 
     try:
         servers = load_servers()
-        by_name = {v.casefold(): k for k, v in servers.items()}
         known = load_known()
         server = a.server or known.get(a.name.casefold())
-        sid = None
+        sids = []
         if server:
-            sid = int(server) if str(server).isdigit() else by_name.get(str(server).casefold())
-            if not sid:
+            wanted = str(server).strip()
+            # Servernamen gibt es in mehreren Regionen (z. B. Baba in Europa und Asien)
+            sids = [int(wanted)] if wanted.isdigit() else [k for k, v in servers.items() if v.casefold() == wanted.casefold()]
+            if a.region:
+                sids = [k for k in sids if region_of(k) == a.region]
+            if not sids:
                 print(f"Server „{server}“ unbekannt. EU-Server z. B.: "
                       + ", ".join(v for k, v in sorted(servers.items()) if region_of(k) == "eu"), file=sys.stderr)
                 return 1
-        regions = [a.region] if a.region else ([region_of(sid)] if sid else list(REGIONS))
-        hits = search(a.name, regions, sid)
+            hits = []
+            for sid in sids:
+                hits.extend(search(a.name, [region_of(sid)], sid))
+        else:
+            hits = search(a.name, [a.region] if a.region else list(REGIONS))
     except ArmoryError as e:
         print(f"Abruf fehlgeschlagen: {e}", file=sys.stderr)
         return 1
 
     if not hits:
-        where = f"auf {servers.get(sid, sid)}" if sid else (f"in {REGIONS[a.region]}" if a.region else "auf den Global-Servern")
+        if sids:
+            where = "auf " + ", ".join(f"{servers.get(k, k)} ({REGIONS.get(region_of(k), '?')})" for k in sids)
+        else:
+            where = f"in {REGIONS[a.region]}" if a.region else "auf den Global-Servern"
         print(f"Kein Charakter „{a.name}“ {where} gefunden.")
         return 3
 
@@ -388,7 +418,7 @@ def main():
                "abgerufen": time.strftime("%Y-%m-%d %H:%M:%S %Z")})
 
     if a.merken:
-        known[a.name.casefold()] = servers.get(sid, str(sid))
+        known[a.name.casefold()] = sid
         save_known(known)
 
     folder = os.path.join(a.out, re.sub(r"[^\w.-]+", "_", f"{ch['name']}-{ch['server']}"))

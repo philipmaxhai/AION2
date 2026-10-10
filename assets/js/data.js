@@ -194,7 +194,7 @@ window.DK_DATA = {
       cadence: "Mit Odyle",
       where: "Dungeon-Menü (1–5 Spieler)",
       marker: null,
-      detail: "Enraged Kromede Jewel gehört zu den meistgetragenen Schmuckstücken.",
+      detail: "Für Spiritmaster ist das Enraged Kromede Jewel der Orb (IL 86), kein Schmuckstück. Es gehört zu den meistgetragenen Waffen.",
       confidence: "community"
     },
     {
@@ -399,9 +399,10 @@ window.DK_DATA = {
       stats: ["Genauigkeit bis zum Boss-Cap (frühe Marke ca. 1500)", "Angriff und Schadensbonus", "Kritischer Schaden", "Abklingzeit-Reduktion (ca. 20 %) und Kampfgeschwindigkeit"],
       gsFocus: ["Orb zuerst verstärken", "Dann Guard und Quest-Armband", "Helm mit Doppelchance / Spirit Strike"],
       gearPath: [
-        { slot: "Waffe", path: "Aulamus-Orb (Urugugu, IL 70) › Enraged-Kromede-Orb (Fire Temple, IL 86) › Ludra's Abyssal Jade (Raid, IL 102)" },
+        { slot: "Waffe", path: "Aulamus-Orb (Urugugu, IL 70) oder herstellbarer Dragon-Lord-Orb (Alchemie, IL 78) › Enraged Kromede Jewel (Orb, Fire Temple, IL 86) › Ludra's Abyssal Jade (Raid, IL 102)" },
+        { slot: "Guard", path: "Herstellbarer Dragon-Lord-Guard (Schmiedekunst, IL 78) › Nuakum Guard (Ferocious Horn Den, IL 86)" },
         { slot: "Rüstung", path: "Vakron-Rüstung (IL 70) › Nuakum (Ferocious Horn Den), Nuakum-Helm besonders beliebt" },
-        { slot: "Schmuck", path: "Aulamus-Schmuck (Urugugu) › Enraged Kromede Jewel (Fire Temple)" },
+        { slot: "Schmuck", path: "Aulamus-Kette, -Ohrringe, -Ringe (Urugugu, IL 70)" },
         { slot: "Verstärkung", path: "Auf Global üblich +10 bis +15 auf den Kernteilen" }
       ],
       extra: {
