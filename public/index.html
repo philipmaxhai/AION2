@@ -7,7 +7,8 @@
 <meta name="description" content="Charakter-Check für AION 2 Global: Name eingeben und Upgrade-Plan bekommen. Dazu Gearscore-Fahrplan, interaktive Karte und Spielzeiten in deutscher Zeit – alle Klassen.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Marcellus+SC&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap">
+<meta name="theme-color" content="#0b0c16">
 <link rel="stylesheet" href="assets/css/style.css">
 <script>
   try { var t = JSON.parse(localStorage.getItem("dk.v1") || "{}").theme; if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
@@ -30,6 +31,9 @@
   <div class="topbar-in">
     <a class="brand" href="#uebersicht" aria-label="Daeva-Kompass, Startseite">
       <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+        <defs>
+          <linearGradient id="bm-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="bm-a"/><stop offset="1" class="bm-b"/></linearGradient>
+        </defs>
         <path class="wing-l" d="M19 30 C12 24 6 22 2 12 C8 15 12 15 15 13 C11 18 14 22 19 24 Z"/>
         <path class="wing-r" d="M21 30 C28 24 34 22 38 12 C32 15 28 15 25 13 C29 18 26 22 21 24 Z"/>
         <path class="core" d="M20 6 L23 17 L20 33 L17 17 Z"/>
@@ -63,6 +67,50 @@
   <!-- ===================== Übersicht ===================== -->
   <section class="view" id="v-uebersicht" aria-labelledby="h-ov">
     <div class="hero">
+      <div class="hero-art" aria-hidden="true">
+        <canvas class="aether" data-aether></canvas>
+        <svg class="tower" viewBox="0 0 400 600" focusable="false">
+          <defs>
+            <radialGradient id="tw-halo" cx="50%" cy="50%" r="50%">
+              <stop offset="0" class="tw-halo-a"/><stop offset=".55" class="tw-halo-b"/><stop offset="1" class="tw-halo-c"/>
+            </radialGradient>
+            <linearGradient id="tw-body" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" class="tw-body-a"/><stop offset=".5" class="tw-body-b"/><stop offset="1" class="tw-body-a"/>
+            </linearGradient>
+            <linearGradient id="tw-rim" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" class="tw-rim-a"/><stop offset=".5" class="tw-rim-b"/><stop offset="1" class="tw-rim-a"/>
+            </linearGradient>
+            <radialGradient id="tw-core" cx="50%" cy="50%" r="50%">
+              <stop offset="0" class="tw-core-a"/><stop offset=".35" class="tw-core-b"/><stop offset="1" class="tw-core-c"/>
+            </radialGradient>
+          </defs>
+          <circle cx="200" cy="300" r="198" fill="url(#tw-halo)"/>
+          <ellipse class="tw-orbit tw-orbit--back" cx="200" cy="300" rx="170" ry="38"/>
+          <g class="tw-top">
+            <path class="tw-body" d="M212 262 C214 230 218 200 219 170 C236 150 268 132 304 96 C276 112 246 124 224 132 C226 120 227 108 226 98 C244 84 262 66 274 38 C256 58 238 72 222 80 C219 66 214 46 208 30 L200 8 L192 30 C186 46 181 66 178 80 C162 72 144 58 126 38 C138 66 156 84 174 98 C173 108 174 120 176 132 C154 124 124 112 96 96 C132 132 164 150 181 170 C182 200 186 230 188 262 L193 272 L198 259 L204 274 L209 263 Z"/>
+            <path class="tw-vein" d="M219 168 C242 148 272 126 298 101 M226 97 C242 84 258 64 270 44 M181 168 C158 148 128 126 102 101 M174 97 C158 84 142 64 130 44"/>
+            <path class="tw-rim" d="M200 16 L200 258"/>
+          </g>
+          <g class="tw-low">
+            <path class="tw-body tw-body--low" d="M212 338 C214 370 218 400 219 430 C236 450 268 468 304 504 C276 488 246 476 224 468 C226 480 227 492 226 502 C244 516 262 534 274 562 C256 542 238 528 222 520 C219 534 214 554 208 570 L200 592 L192 570 C186 554 181 534 178 520 C162 528 144 542 126 562 C138 534 156 516 174 502 C173 492 174 480 176 468 C154 476 124 488 96 504 C132 468 164 450 181 430 C182 400 186 370 188 338 L193 328 L198 341 L204 326 L209 337 Z"/>
+            <path class="tw-vein" d="M219 432 C242 452 272 474 298 499 M226 503 C242 516 258 536 270 556 M181 432 C158 452 128 474 102 499 M174 503 C158 516 142 536 130 556"/>
+            <path class="tw-rim" d="M200 342 L200 584"/>
+          </g>
+          <g class="tw-shards">
+            <path class="tw-shard s1" d="M176 278 L187 272 L191 285 L180 291 Z"/>
+            <path class="tw-shard s2" d="M214 296 L226 289 L230 304 L218 311 Z"/>
+            <path class="tw-shard s3" d="M195 318 L204 311 L210 322 L201 329 Z"/>
+            <path class="tw-shard s4" d="M158 304 L166 299 L169 308 L161 312 Z"/>
+            <path class="tw-shard s5" d="M234 272 L241 268 L244 276 L237 280 Z"/>
+          </g>
+          <circle class="tw-glow" cx="200" cy="300" r="42" fill="url(#tw-core)"/>
+          <circle class="tw-core" cx="200" cy="300" r="7"/>
+          <ellipse class="tw-orbit tw-orbit--front" cx="200" cy="300" rx="126" ry="25" transform="rotate(-9 200 300)"/>
+          <path class="tw-star" d="M92 60 l3 9 l9 3 l-9 3 l-3 9 l-3 -9 l-9 -3 l9 -3 Z"/>
+          <path class="tw-star tw-star--b" d="M318 168 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2 Z"/>
+          <path class="tw-star tw-star--c" d="M300 452 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2 Z"/>
+        </svg>
+      </div>
       <div class="hero-head">
         <p class="eyebrow">AION 2 Global · alle Klassen · deutsche Zeit</p>
         <h1 id="h-ov">Dein Weg über 1400 Gearscore</h1>
@@ -76,7 +124,11 @@
         <button type="submit" class="btn">Charakter prüfen</button>
       </form>
       <p class="notice ch-offline" id="ov-ch-offline" hidden></p>
-      <p class="small muted">Oder ohne Abruf: Gearscore, Klasse und Fraktion selbst einstellen.</p>
+      <div class="hero-crests" data-part="class-row"></div>
+    </div>
+
+    <section class="panel self-panel" aria-labelledby="h-self">
+      <header class="panel-head"><h2 id="h-self">Ohne Abruf: selbst einstellen</h2><span class="small muted">Gearscore, Klasse und Fraktion</span></header>
       <form class="status" id="status-form" autocomplete="off">
         <label class="field">
           <span>Dein Gearscore</span>
@@ -95,7 +147,7 @@
         </fieldset>
       </form>
       <div data-part="track"></div>
-    </div>
+    </section>
 
     <div class="grid-ov">
       <section class="panel" aria-labelledby="h-nx">
@@ -121,6 +173,7 @@
   <!-- ===================== Charakter-Check ===================== -->
   <section class="view" id="v-charakter" aria-labelledby="h-ch" hidden>
     <header class="view-head">
+      <p class="eyebrow">Armory-Analyse · alle Klassen · alle Global-Server</p>
       <h1 id="h-ch">Charakter-Check</h1>
       <p class="lede">Name eingeben, fertig: Die Seite liest Ausrüstung, Manasteine, Stigmen und Daevanion aus der NCSOFT-Armory und erstellt deinen Upgrade-Plan. Für alle Klassen und alle Global-Server.</p>
     </header>
@@ -307,10 +360,12 @@
 
 <script src="assets/js/config.js"></script>
 <script src="assets/js/data.js"></script>
+<script src="assets/js/data-items.js"></script>
 <script src="assets/js/zeit.js"></script>
 <script src="assets/js/karte.js"></script>
 <script src="assets/js/audit.js"></script>
 <script src="assets/js/app.js"></script>
 <script src="assets/js/charakter.js"></script>
+<script src="assets/js/deko.js"></script>
 </body>
 </html>

@@ -158,8 +158,8 @@ export async function searchCharacters(name, { serverId, region } = {}, fetchImp
     }));
 }
 
-function charParams(cid, sid, extra = {}) {
-  return qs({ lang: LANG, characterId: cid, serverId: sid, ...extra, region: regionOf(sid) || undefined });
+function charParams(cid, sid, extra = {}, lang = LANG) {
+  return qs({ lang, characterId: cid, serverId: sid, ...extra, region: regionOf(sid) || undefined });
 }
 
 function unwrap(d) {
@@ -168,6 +168,22 @@ function unwrap(d) {
 }
 
 const pickStat = (s) => ({ name: s.name, value: s.value, minValue: s.minValue, extra: s.extra, grade: s.grade });
+
+/* Bildadressen nur von den NCSOFT-Hosts durchreichen */
+function imageUrl(u) {
+  if (!u) return null;
+  const abs = String(u).startsWith("/") ? `https://profileimg.plaync.com${u}` : String(u);
+  return /^https:\/\/([a-z0-9-]+\.)*(playnccdn\.com|plaync\.com)\//i.test(abs) ? abs : null;
+}
+
+const petwing = (x, de) => (x && x.name ? { name: x.name, de: (de && de.name) || null, grade: x.grade || null, icon: imageUrl(x.icon) } : null);
+
+/* Das Standard-Manastein-Bild fehlt auf dem CDN (404); vorhandene Varianten nehmen */
+function stoneIcon(st) {
+  const u = imageUrl(st.icon);
+  if (!u || !/MagicStone_A_c_001\.png$/.test(u)) return u;
+  return u.replace("_A_c_001.png", st.grade && st.grade !== "Common" ? "_A_c_003.png" : "_A_c_002.png");
+}
 
 function trimItem(d) {
   if (!d || typeof d !== "object") return null;
@@ -180,7 +196,7 @@ function trimItem(d) {
     mainStats: (d.mainStats || []).map(pickStat),
     subStats: (d.subStats || []).map(pickStat),
     subSkills: (d.subSkills || []).map(pickStat),
-    stones: (d.magicStoneStat || []).map(pickStat),
+    stones: (d.magicStoneStat || []).map((st) => ({ ...pickStat(st), icon: stoneIcon(st) })),
     stoneSlots: d.magicStoneSlotCount || 0,
     godStones: (d.godStoneStat || []).map(pickStat),
     godStoneSlots: d.godStoneSlotCount || 0,
@@ -191,10 +207,20 @@ function trimItem(d) {
 
 /* Grunddaten: Profil, Werte, Titel, Ausrüstung (ohne Item-Details), Skills, Daevanion-Übersicht */
 export async function loadCharacter(cid, sid, fetchImpl = fetch) {
-  const [info, equip] = await Promise.all([
+  // Englisch für die Auswertung, Deutsch für die Anzeige (Namen wie im deutschen Client)
+  const [info, equip, infoDe, equipDe] = await Promise.all([
     getJson(`${API}/api/character/info?${charParams(cid, sid)}`, fetchImpl),
     getJson(`${API}/api/character/equipment?${charParams(cid, sid)}`, fetchImpl),
+    getJson(`${API}/api/character/info?${charParams(cid, sid, {}, "de-DE")}`, fetchImpl).catch(() => null),
+    getJson(`${API}/api/character/equipment?${charParams(cid, sid, {}, "de-DE")}`, fetchImpl).catch(() => null),
   ]);
+  const deStats = new Map((((infoDe || {}).stat || {}).statList || []).map((x) => [x.type, x]));
+  const deTitles = new Map((((infoDe || {}).title || {}).titleList || []).map((x) => [x.id, x]));
+  const deItems = new Map((((equipDe || {}).equipment || {}).equipmentList || []).map((x) => [String(x.slotPos), x.name]));
+  const deSkills = new Map((((equipDe || {}).skill || {}).skillList || []).map((x) => [x.id, x.name]));
+  const deBoards = new Map((((infoDe || {}).daevanion || {}).boardList || []).map((x) => [x.id, x.name]));
+  const secondary = (s) => (s && s.statSecondList || []).map((x) => (typeof x === "string" ? x : x.desc || x.name)).filter(Boolean)
+    .map((x) => String(x).replace(/\+\s+\+/, "+"));
   const boards = ((info.daevanion || {}).boardList || []).filter((b) => b.id !== undefined && b.id !== null);
   const items = ((equip.equipment || {}).equipmentList || []).filter((it) => it.itemId || it.id);
   const profile = info.profile || {};
@@ -204,6 +230,7 @@ export async function loadCharacter(cid, sid, fetchImpl = fetch) {
       characterId: cid,
       serverId: Number(sid),
       serverName: profile.serverName,
+      profileImage: imageUrl(profile.profileImage),
       region: regionOf(sid),
       faction: factionOf(sid),
       fetchedAt: new Date().toISOString(),
@@ -218,30 +245,35 @@ export async function loadCharacter(cid, sid, fetchImpl = fetch) {
       title: profile.titleName,
     },
     stats: ((info.stat || {}).statList || []).map((s) => ({
-      type: s.type, name: s.name, value: s.value,
-      secondary: (s.statSecondList || []).map((x) => (typeof x === "string" ? x : x.desc || x.name)).filter(Boolean),
+      type: s.type, name: s.name, value: s.value, secondary: secondary(s),
+      de: deStats.has(s.type) ? deStats.get(s.type).name : null,
+      secondaryDe: deStats.has(s.type) ? secondary(deStats.get(s.type)) : null,
     })),
     titles: ((info.title || {}).titleList || []).map((t) => ({
       category: t.equipCategory, name: t.name, grade: t.grade,
       effects: (t.equipStatList || []).map((e) => e.desc),
+      de: deTitles.has(t.id) ? deTitles.get(t.id).name : null,
+      effectsDe: deTitles.has(t.id) ? (deTitles.get(t.id).equipStatList || []).map((e) => e.desc) : null,
     })),
-    boards: boards.map((b) => ({ id: b.id, name: b.name, open: b.openNodeCount, total: b.totalNodeCount, nodes: [], openStats: [], openSkills: [] })),
+    boards: boards.map((b) => ({ id: b.id, name: b.name, de: deBoards.get(b.id) || null, open: b.openNodeCount, total: b.totalNodeCount, nodes: [], openStats: [], openSkills: [] })),
     equipment: items.map((it) => ({
       slot: Number(it.slotPos),
       slotName: it.slotPosName,
       itemId: Number(it.itemId || it.id),
       name: it.name,
+      de: deItems.get(String(it.slotPos)) || null,
       grade: it.grade,
       enchant: Number(it.enchantLevel || 0),
       exceed: Number(it.exceedLevel || 0),
-      icon: it.icon,
+      icon: imageUrl(it.icon),
       detail: null,
     })),
     skills: ((equip.skill || {}).skillList || []).map((s) => ({
-      name: s.name, category: s.category, equipped: !!s.equip, acquired: !!s.acquired, level: s.skillLevel,
+      id: s.id, name: s.name, de: deSkills.get(s.id) || null, category: s.category,
+      equipped: !!s.equip, acquired: !!s.acquired, level: s.skillLevel, icon: imageUrl(s.icon),
     })),
-    pet: (((equip.petwing || {}).pet) || {}).name || null,
-    wing: (((equip.petwing || {}).wing) || {}).name || null,
+    pet: petwing((equip.petwing || {}).pet, ((equipDe || {}).petwing || {}).pet),
+    wing: petwing((equip.petwing || {}).wing, ((equipDe || {}).petwing || {}).wing),
   };
 }
 

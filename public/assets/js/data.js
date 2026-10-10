@@ -28,7 +28,7 @@ window.DK_DATA = {
 
   steps: [
     {
-      id: "gurt-amulett", stage: "basis", minGS: 0, prio: 1,
+      id: "gurt-amulett", icon: "https://assets.playnccdn.com/static-aion2-gamedata/resources/Icon_Acc_Belt_C_022.png", stage: "basis", minGS: 0, prio: 1,
       title: "Gürtel & Amulett auf +10, dann auf Unique heben",
       gain: "Einer der größten frühen Sprünge",
       cadence: "Wöchentlich (Odyle-Handwerk)",
@@ -38,7 +38,7 @@ window.DK_DATA = {
       confidence: "community"
     },
     {
-      id: "daevanion", stage: "basis", minGS: 0, prio: 2,
+      id: "daevanion", icon: "https://assets.playnccdn.com/static-aion2/characters/img/daevanion/board_icon_unique_open.png", stage: "basis", minGS: 0, prio: 2,
       title: "Alle Daevanion-Kristalle verteilen",
       gain: "Weiß ca. +1, Blau ca. +3, Gelb ca. +4 je Knoten",
       cadence: "Sofort, danach bei jedem neuen Kristall",
@@ -48,7 +48,7 @@ window.DK_DATA = {
       confidence: "offen"
     },
     {
-      id: "runen", stage: "basis", minGS: 0, prio: 3,
+      id: "runen", icon: "https://assets.playnccdn.com/static-aion2-gamedata/resources/Icon_Acc_Rune_R_002.png", stage: "basis", minGS: 0, prio: 3,
       title: "Beide Konfliktrunen (Clash Runes) tragen, je +1, dann aufhören",
       gain: "Ca. +40 bis +60 pro Rune (Quellen uneinig)",
       cadence: "Einmalig",
@@ -58,7 +58,7 @@ window.DK_DATA = {
       confidence: "community"
     },
     {
-      id: "verstaerken", stage: "basis", minGS: 0, prio: 4,
+      id: "verstaerken", icon: "https://assets.playnccdn.com/static-aion2-gamedata/resources/Icon_Acc_Bracelet_R_027.png", stage: "basis", minGS: 0, prio: 4,
       title: "Waffe, Guard und Quest-Armband auf +10, Rest auf +3",
       gain: "Viel GS pro Verstärkungsstein",
       cadence: "Laufend",
@@ -88,7 +88,7 @@ window.DK_DATA = {
       confidence: "community"
     },
     {
-      id: "vakron", stage: "s1400", minGS: 1400, prio: 7,
+      id: "vakron", icon: "https://assets.playnccdn.com/static-aion2-gamedata/resources/Icon_Equip_AR_L_0028_T05_Torso.png", stage: "s1400", minGS: 1400, prio: 7,
       title: "Vakron Sky Island – Eroberung farmen",
       gain: "Rüstung IL 70",
       cadence: "Solange Odyle da ist",
@@ -98,7 +98,7 @@ window.DK_DATA = {
       confidence: "community"
     },
     {
-      id: "urugugu", stage: "s1400", minGS: 1400, prio: 8,
+      id: "urugugu", icon: "https://assets.playnccdn.com/static-aion2-gamedata/resources/Icon_ACC_Ring_0072.png", iconKey: "aulamus", stage: "s1400", minGS: 1400, prio: 8,
       title: "Urugugu Canyon – Eroberung für Waffe & Schmuck",
       gain: "Aulamus-Waffen und -Accessoires IL 70",
       cadence: "Solange Odyle da ist",
@@ -188,7 +188,7 @@ window.DK_DATA = {
       confidence: "community"
     },
     {
-      id: "feuertempel", stage: "s2100", minGS: 2100, prio: 17,
+      id: "feuertempel", icon: "https://assets.playnccdn.com/static-aion2-gamedata/resources/Icon_ACC_Ring_0053.png", iconKey: "kromede", stage: "s2100", minGS: 2100, prio: 17,
       title: "Fire Temple – Eroberung",
       gain: "Enraged-Kromede-Waffen & -Schmuck IL 86",
       cadence: "Mit Odyle",
@@ -198,7 +198,7 @@ window.DK_DATA = {
       confidence: "community"
     },
     {
-      id: "horn", stage: "s2100", minGS: 2100, prio: 18,
+      id: "horn", icon: "https://assets.playnccdn.com/static-aion2-gamedata/resources/Icon_Equip_AR_L_Idris_01_Torso.png", stage: "s2100", minGS: 2100, prio: 18,
       title: "Ferocious Horn Den – Eroberung",
       gain: "Nuakum-Rüstung und Guard",
       cadence: "Mit Odyle",
@@ -397,51 +397,51 @@ window.DK_DATA = {
       summary: "Kämpft mit Elementargeistern. Stark in Kontrolle und Dauer-Schaden, braucht saubere Geist-Steuerung.",
       tier: "In Tier-Listen uneinig (B bis C). Die Earth-Tank-plus-Summon-Variante gilt bei manchen als stärkster PvE-Build.",
       stats: ["Genauigkeit bis zum Boss-Cap (frühe Marke ca. 1500)", "Angriff und Schadensbonus", "Kritischer Schaden", "Abklingzeit-Reduktion (ca. 20 %) und Kampfgeschwindigkeit"],
-      gsFocus: ["Orb zuerst verstärken", "Dann Guard und Quest-Armband", "Helm mit Doppelchance / Spirit Strike"],
+      gsFocus: ["Orb zuerst verstärken", "Dann Guard und Quest-Armband", "Helm mit Doppelchance / Geisterschlag"],
       gearPath: [
-        { slot: "Waffe", path: "Aulamus-Orb (Urugugu, IL 70) oder herstellbarer Dragon-Lord-Orb (Alchemie, IL 78) › Enraged Kromede Jewel (Orb, Fire Temple, IL 86) › Ludra's Abyssal Jade (Raid, IL 102)" },
-        { slot: "Guard", path: "Herstellbarer Dragon-Lord-Guard (Schmiedekunst, IL 78) › Nuakum Guard (Ferocious Horn Den, IL 86)" },
-        { slot: "Rüstung", path: "Vakron-Rüstung (IL 70) › Nuakum (Ferocious Horn Den), Nuakum-Helm besonders beliebt" },
-        { slot: "Schmuck", path: "Aulamus-Kette, -Ohrringe, -Ringe (Urugugu, IL 70)" },
+        { slot: "Waffe", path: "Aulamus' Orb (Urugugu, IL 70) oder Orb des Schwarzen bzw. Weißen Drachenkönigs (Alchemie, IL 78) › Juwel der Wütenden Kromede (Fire Temple, IL 86) › Ludra's Abyssal Jade (Raid, IL 102)" },
+        { slot: "Guard", path: "Schützer des Schwarzen bzw. Weißen Drachenkönigs (Schmieden, IL 78) › Nuakums Schützer (Ferocious Horn Den, IL 86)" },
+        { slot: "Rüstung", path: "Vakrons Rüstung (IL 70) › Nuakums Rüstung (Ferocious Horn Den, IL 86), Nuakums Helm besonders beliebt" },
+        { slot: "Schmuck", path: "Aulamus' Halskette, Ohrringe und Ring (Urugugu, IL 70)" },
         { slot: "Verstärkung", path: "Auf Global üblich +10 bis +15 auf den Kernteilen" }
       ],
       extra: {
         spirits: [
-          { name: "Feuergeist", text: "Standard für PvE-Schaden. Summon: Fire Spirit auf Rang 20 oder höher." },
-          { name: "Erdgeist", text: "Tank-Geist. In Nutzungsstatistiken selten, in der Earth-Tank-Variante aber Kern des Builds." },
+          { name: "Feuergeist", text: "Standard für PvE-Schaden. Beschwörung: Feuergeist (Summon: Fire Spirit) auf Rang 20 oder höher." },
+          { name: "Erdgeist", text: "Tank-Geist. In Nutzungsstatistiken selten, in der Erdgeist-Tank-Variante aber Kern des Builds." },
           { name: "Wassergeist", text: "MP-Unterstützung, niedrige Priorität." },
-          { name: "Uralter Geist", text: "Stigma Summon: Ancient Spirit. Wichtigstes Stigma, siehe Stigmen." }
+          { name: "Uralter Naturgeist", text: "Stigma Beschwörung: Uralter Naturgeist (Summon: Ancient Spirit). Wichtigstes Stigma, siehe Stigmen." }
         ],
         stigmas: [
-          { name: "Summon: Ancient Spirit", text: "Zuerst und so schnell wie möglich auf Rang 15. Dann braucht Elemental Fusion nur noch 5 statt 7 Auto-Angriffe." },
-          { name: "Jointstrike: Corrode", text: "Fester Bestandteil fast aller PvE-Builds." },
-          { name: "Flame Blessing oder Cursed Cloud", text: "Dritter Slot, Guides sind sich uneinig." },
-          { name: "Enhance: Spirit's Benediction", text: "Vierter Slot." }
+          { name: "Beschwörung: Uralter Naturgeist (Summon: Ancient Spirit)", text: "Zuerst und so schnell wie möglich auf Rang 15. Dann braucht Elementarfusion nur noch 5 statt 7 Auto-Angriffe." },
+          { name: "Koordinationsangriff: Korrosion (Jointstrike: Corrode)", text: "Fester Bestandteil fast aller PvE-Builds." },
+          { name: "Flammensegen (Flame Blessing) oder Fluchwolke (Cursed Cloud)", text: "Dritter Slot, Guides sind sich uneinig." },
+          { name: "Verstärkung: Gnade des Naturgeists (Enhance: Spirit's Benediction)", text: "Vierter Slot." }
         ],
         skills: [
-          { name: "Elemental Fusion", rank: "20+" },
-          { name: "Combustion", rank: "20+" },
-          { name: "Summon: Fire Spirit", rank: "20+" },
-          { name: "Cold Shock", rank: "12" },
-          { name: "Jointstrike: Curse", rank: "12" },
-          { name: "Dimensional Control", rank: "12" }
+          { name: "Elementarfusion (Elemental Fusion)", rank: "20+" },
+          { name: "Einäscherung (Combustion)", rank: "20+" },
+          { name: "Beschwörung: Feuergeist (Summon: Fire Spirit)", rank: "20+" },
+          { name: "Kälteschock (Cold Shock)", rank: "12" },
+          { name: "Koordinationsangriff: Fluch (Jointstrike: Curse)", rank: "12" },
+          { name: "Raumbeherrschung (Dimensional Control)", rank: "12" }
         ],
         daevanion: [
-          "Nezekan: zuerst das Spirit-Strike-Paar (bufft dich und den Geist)",
-          "Zikel: Consecutive Countercurrent und Element Unification",
+          "Nezekan: zuerst das Geisterschlag-Paar (Spirit Strike, bufft dich und den Geist)",
+          "Zikel: Kontinuierlicher Rückfluss (Consecutive Countercurrent) und Elementarvereinigung (Element Unification)",
           "Bei wenig Punkten: von jeder Aktiv-Fähigkeit zuerst den billigsten Knoten"
         ],
         gearStats: [
           { slot: "Orb / Guard", stats: "Kampfgeschwindigkeit, Schadensbonus, Macht, Präzision, Waffenschadensbonus" },
-          { slot: "Helm", stats: "Doppelchance, Angriffssteigerung, Angriff, Mental Focus, Spirit Strike" },
-          { slot: "Passive auf Gear", stats: "Spirit Strike, Mental Focus, Element Unification" }
+          { slot: "Helm", stats: "Doppelchance, Angriffssteigerung, Angriff, Mentale Konzentration, Geisterschlag" },
+          { slot: "Passive auf Gear", stats: "Geisterschlag, Mentale Konzentration, Elementarvereinigung" }
         ],
         rotation: [
-          "Feuergeist und Uralten Geist vor dem Pull beschwören",
-          "Jointstrike: Curse / Corrode auf das Ziel",
-          "Auto-Angriffe laufen lassen, bis Elemental Fusion bereit ist (5 mit Ancient Spirit Rang 15)",
-          "Combustion und Elemental Fusion in Burst-Fenstern bündeln",
-          "Cold Shock und Dimensional Control für Kontrolle und Adds"
+          "Feuergeist und Uralten Naturgeist vor dem Pull beschwören",
+          "Koordinationsangriff: Fluch / Korrosion auf das Ziel",
+          "Auto-Angriffe laufen lassen, bis Elementarfusion bereit ist (5 Angriffe mit Uraltem Naturgeist auf Rang 15)",
+          "Einäscherung und Elementarfusion in Burst-Fenstern bündeln",
+          "Kälteschock und Raumbeherrschung für Kontrolle und Adds"
         ]
       }
     },
@@ -603,9 +603,9 @@ window.DK_DATA = {
       chanter: { type: "Stab", aulamus: "Aulamus Staff", craft: "Dragon Lord Staff", prof: "Handwerk (Handicrafting)", kromede: "Enraged Kromede Rod" }
     },
     craftPrefix: { asmo: "Dark", elyos: "White" },
-    craftTable: { asmo: "Safe Haven (Altgard)", elyos: "Dawn Legion Base (Verteron)" },
-    craftBottleneck: "je 3× Wrathful Mind, 15× Wrathful Will und 5× Artisan's Ultimate Refining Stone – alle handelbar",
-    monoliths: { asmo: "Safe Haven und Nornir Assembly (Altgard)", elyos: "Dawn Legion Base und Zumion Village (Verteron)" },
+    craftTable: { asmo: "Exulantendorf (Safe Haven), Altgard", elyos: "Basis der Legion der Morgenröte (Dawn Legion Base), Verteron" },
+    craftBottleneck: "je 3× Zorniger Gedanke, 15× Zorniger Wille und 5× Vollendeter Veredelungsstein des Meisters – alle handelbar",
+    monoliths: { asmo: "Exulantendorf (Safe Haven) und Nornirkonvent (Nornir Assembly) in Altgard", elyos: "Basis der Legion der Morgenröte (Dawn Legion Base) und Zumion Village in Verteron" },
     slotNames: {
       1: "Waffe", 2: "Guard", 3: "Helm", 4: "Schultern", 5: "Brust", 6: "Hose", 7: "Handschuhe", 8: "Stiefel", 19: "Umhang",
       10: "Kette", 11: "Ohrring 1", 12: "Ohrring 2", 13: "Ring 1", 14: "Ring 2", 15: "Armband 1", 16: "Armband 2",
@@ -628,7 +628,7 @@ window.DK_DATA = {
       chanter: ["Undefeated Mantra", "Sprint Mantra", "Power of the Storm", "Marchutan's Wrath"]
     },
     stigmaBreakpoints: {
-      "Summon: Ancient Spirit": { level: 15, text: "Ab Rang 15 löst der Uralte Geist Elemental Fusion alle 5 statt alle 7 Angriffe aus (drei Guides bestätigen das)." }
+      "Summon: Ancient Spirit": { level: 15, text: "Ab Rang 15 löst der Uralte Naturgeist Elementarfusion alle 5 statt alle 7 Angriffe aus (drei Guides bestätigen das)." }
     },
     keySkills: {
       spiritmaster: { names: ["Elemental Fusion", "Combustion", "Summon: Fire Spirit"], target: 20 }

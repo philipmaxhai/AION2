@@ -52,6 +52,17 @@
   const cls = () => D.classes.find((c) => c.id === S.cls) || D.classes[0];
   const icon = (type) => '<svg class="ico ico--' + type + '" viewBox="0 0 16 16" aria-hidden="true"><use href="#s-' + type + '" width="16" height="16"/></svg>';
 
+  /* Bilder vom NCSOFT-CDN: Klassenwappen und Item-Icons für die Schritte */
+  const IMG = "https://assets.playnccdn.com/static-aion2/characters/img/";
+  const clsIcon = (id) => IMG + "class/class_icon_" + (id === "spiritmaster" ? "elementalist" : id) + ".png";
+  const emblem = (id, cls) => '<img class="' + cls + '" src="' + clsIcon(id) + '" alt="" loading="lazy" decoding="async">';
+  const T = (D.audit && D.audit.targets) || {};
+  function stepIcon(s) {
+    const w = T.weapons && T.weapons[S.cls];
+    if (s.iconKey && w && w[s.iconKey] && w[s.iconKey].icon) return w[s.iconKey].icon;
+    return s.icon || null;
+  }
+
   function cd(ts, left) {
     return '<span class="cd" data-cd="' + ts + '"' + (left ? ' data-left="1"' : "") + "></span>";
   }
@@ -146,8 +157,10 @@
     const done = !!S.steps[s.id];
     const locked = s.minGS > S.gs;
     const mapBtn = s.marker ? '<button type="button" class="link-btn" data-action="map-step" data-marker="' + s.marker + '">Auf der Karte</button>' : "";
+    const ic = stepIcon(s);
     return '<li class="step' + (done ? " is-done" : "") + (locked ? " is-locked" : "") + '" id="st-' + s.id + '">' +
       '<label class="step-check"><input type="checkbox" id="step-' + s.id + '" data-step="' + s.id + '"' + (done ? " checked" : "") + '><span class="sr">Erledigt</span></label>' +
+      '<span class="step-ico">' + (ic ? '<img src="' + esc(ic) + '" alt="" loading="lazy" decoding="async">' : '<span class="step-glyph" aria-hidden="true"></span>') + "</span>" +
       '<div class="step-body">' +
       '<p class="step-title">' + esc(s.title) + (locked ? ' <span class="lock">ab ' + s.minGS + "</span>" : "") + "</p>" +
       '<p class="step-meta"><span class="gain">' + esc(s.gain) + '</span><span class="sep">·</span><span>' + esc(s.cadence) + "</span></p>" +
@@ -211,7 +224,7 @@
 
   parts["class-mini"] = function () {
     const c = cls();
-    return '<p class="cm-name">' + esc(c.name) + ' <span class="muted">(' + esc(c.de) + ")</span></p>" +
+    return '<div class="cm-head">' + emblem(c.id, "cm-emblem") + '<p class="cm-name">' + esc(c.name) + ' <span class="muted">(' + esc(c.de) + ")</span></p></div>" +
       '<p class="muted">' + esc(c.role) + " · " + esc(c.weapon) + "</p>" +
       '<p class="lbl-line">Werte-Priorität</p><ol class="prio">' + c.stats.map((s) => "<li>" + esc(s) + "</li>").join("") + "</ol>" +
       '<p class="lbl-line">Waffen-Weg</p><p class="small">' + esc(c.gearPath[0].path) + "</p>" +
@@ -374,15 +387,22 @@
 
   /* ---------- Klassen ---------- */
   parts["class-tabs"] = function () {
-    return '<div class="seg seg--wrap" role="tablist" aria-label="Klasse wählen">' + D.classes.map((c) =>
-      '<button type="button" role="tab" id="ct-' + c.id + '" class="seg-btn' + (c.id === viewCls ? " is-on" : "") + '" aria-selected="' + (c.id === viewCls) + '" data-action="view-class" data-id="' + c.id + '">' +
-      esc(c.name) + (c.id === S.cls ? ' <span class="mine">deine</span>' : "") + "</button>").join("") + "</div>";
+    return '<div class="cls-tabs" role="tablist" aria-label="Klasse wählen">' + D.classes.map((c) =>
+      '<button type="button" role="tab" id="ct-' + c.id + '" class="cls-tab' + (c.id === viewCls ? " is-on" : "") + '" aria-selected="' + (c.id === viewCls) + '" data-action="view-class" data-id="' + c.id + '">' +
+      emblem(c.id, "cls-tab-ico") + '<span class="cls-tab-name">' + esc(c.de) + "</span>" + (c.id === S.cls ? '<span class="mine">deine</span>' : "") + "</button>").join("") + "</div>";
+  };
+
+  /* Wappen-Reihe im Hero der Übersicht */
+  parts["class-row"] = function () {
+    return '<ul class="crest-row">' + D.classes.map((c) =>
+      '<li><button type="button" class="crest' + (c.id === S.cls ? " is-mine" : "") + '" data-action="open-class" data-id="' + c.id + '" title="' + esc(c.name) + " (" + esc(c.de) + ')">' +
+      emblem(c.id, "crest-ico") + '<span class="crest-name">' + esc(c.de) + "</span></button></li>").join("") + "</ul>";
   };
 
   parts["class-detail"] = function () {
     const c = D.classes.find((x) => x.id === viewCls) || D.classes[0];
     let html = '<article class="cls cls--' + c.id + '">';
-    html += '<header class="cls-head"><div><p class="eyebrow">' + esc(c.role) + "</p><h2>" + esc(c.name) + ' <span class="muted">' + esc(c.de) + "</span></h2>" +
+    html += '<header class="cls-head">' + emblem(c.id, "cls-emblem") + '<div class="cls-title"><p class="eyebrow">' + esc(c.role) + "</p><h2>" + esc(c.name) + ' <span class="muted">' + esc(c.de) + "</span></h2>" +
       '<p class="cls-tags"><span>' + esc(c.weapon) + "</span><span>" + esc(c.range) + "</span></p></div>" +
       (c.id !== S.cls ? '<button type="button" class="btn" data-action="set-class" data-id="' + c.id + '">Das ist meine Klasse</button>' : '<span class="chip chip--ok">Deine Klasse</span>') + "</header>";
     html += '<p class="lede">' + esc(c.summary) + '</p><p class="muted small">Tier-Einschätzung: ' + esc(c.tier) + "</p>";
@@ -403,7 +423,7 @@
         '<section><h3>Werte auf dem Gear</h3><dl class="defs">' + x.gearStats.map((s) => "<dt>" + esc(s.slot) + "</dt><dd>" + esc(s.stats) + "</dd>").join("") + "</dl></section>" +
         '<section><h3>Kern-Ablauf</h3><ol class="prio">' + x.rotation.map((s) => "<li>" + esc(s) + "</li>").join("") + '</ol><p class="fine">Testen an den Trainingspuppen.</p>' +
         '<button type="button" class="link-btn" data-action="map-marker" data-id="' + (S.faction === "asmo" ? "dummy-asmo" : "dummy-elyos") + '">Trainingspuppen auf der Karte</button></section></div>';
-      html += '<p class="fine">Skill- und Itemnamen stammen aus dem englischen Client. Im deutschen Client können sie anders heißen.</p>';
+      html += '<p class="fine">Skill- und Itemnamen wie im deutschen Client. Der englische Name steht in Klammern – so findest du ihn in englischen Guides.</p>';
     }
     html += "</article>";
     return html;
@@ -688,10 +708,11 @@
       }
       case "boss-clear": delete S.kills[id]; save(); refresh(["boss-timers", "map-panel"]); liveMap(t); break;
       case "view-class": viewCls = id; refresh(["class-tabs", "class-detail"]); break;
+      case "open-class": viewCls = id; refresh(["class-tabs", "class-detail"]); go("klassen"); break;
       case "set-class":
         S.cls = id; viewCls = id; save();
         $("#f-class").value = id;
-        refresh(["class-tabs", "class-detail", "class-mini", "class-gear"]);
+        refresh(["class-tabs", "class-detail", "class-mini", "class-gear", "class-row", "plan", "steps-short"]);
         break;
       case "shift-reset": S.shifts = {}; save(); refresh(TIME_PARTS.concat(["settings"])); break;
       case "notify-perm":
@@ -726,7 +747,7 @@
     } else if (n.matches("[data-respawn]")) {
       S.respawn[n.getAttribute("data-respawn")] = Math.max(1, +n.value || 60); save(); refresh(["boss-timers"]);
     } else if (n.id === "f-class") {
-      S.cls = n.value; viewCls = n.value; save(); refresh(["class-mini", "class-gear", "class-tabs", "class-detail"]);
+      S.cls = n.value; viewCls = n.value; save(); refresh(["class-mini", "class-gear", "class-tabs", "class-detail", "class-row", "plan", "steps-short"]);
     } else if (n.id === "f-member") {
       S.odyle.member = n.checked; save(); refresh(["odyle", "today-mini"]);
     } else if (n.name === "faction") {

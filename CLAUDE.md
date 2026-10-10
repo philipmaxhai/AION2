@@ -22,8 +22,10 @@ Die Armory-Endpunkte (`api-search.plaync.com`, `aion2.plaync.com`) sind undokume
 
 ## Charakter-Check auf der Website
 
-- Ablauf: `public/assets/js/charakter.js` fragt `/api/charakter` (Suche oder `cid`+`sid`), danach parallel `/api/daevanion` und `/api/items` (12er-Pakete) und setzt alles zu einem Charakter-Objekt zusammen. `public/assets/js/audit.js` (`DK_AUDIT.analyse`) erzeugt daraus Sofort-Urteil, Quick-Wins, Tagesziel, Gear-Tabelle, Stigmen, Daevanion, Farm- und Anti-Waste-Liste.
-- Regeln und Zahlen (Upgrade-Stufen je Klasse und Fraktion, Drop-Chancen, Pity, Kern-Stigmen, Verstärkungskosten) stehen in `DK_DATA.audit` in `public/assets/js/data.js`. Neue Erkenntnisse dort eintragen, nicht im Code.
+- Ablauf: `public/assets/js/charakter.js` fragt `/api/charakter` (Suche oder `cid`+`sid`), danach parallel `/api/daevanion`, `/api/items` (12er-Pakete, aktuelle Stufe) und `/api/items` mit Stufe 10 (Vorschau, was +10 bringt) und setzt alles zu einem Charakter-Objekt zusammen. `public/assets/js/audit.js` (`DK_AUDIT.analyse`) erzeugt daraus Sofort-Urteil, Fahrplan in Phasen (Heute, Woche, 2–3 Wochen, ab 2100), einen Plan pro Slot (ersetzen mit Ziel-Item und Werte-Vergleich, Material, verstärken mit Kosten und Gewinn, Manasteine, Zusatzwerte), Stigmen, Daevanion, Farm- und Anti-Waste-Liste.
+- Darstellung: Charakterfenster mit Item-Kacheln (Rahmen in den Seltenheitsfarben der Armory), Porträt, Skill-, Stigma-, Werte- und Daevanion-Symbole. Bilder kommen vom NCSOFT-CDN (`assets.playnccdn.com`, Porträts von `profileimg.plaync.com`); der Proxy reicht nur Adressen dieser Hosts durch. Fehlt ein Bild, zeigt die Seite ein Zeichen statt eines kaputten Bildes.
+- Regeln und Zahlen (Upgrade-Stufen je Klasse und Fraktion, Drop-Chancen, Pity, Kern-Stigmen) stehen in `DK_DATA.audit` in `public/assets/js/data.js`. Ziel-Items mit Bild, Werten, Bonus bei +10, Rezept und Verstärkungskosten je IL-Stufe stehen in `public/assets/js/data-items.js` (aus den Spieldaten erzeugt, nicht von Hand pflegen). Neue Erkenntnisse dort eintragen, nicht im Code.
+- Namen wie im deutschen Client: Der Proxy lädt Grunddaten zusätzlich mit `lang=de-DE` und liefert `de` neben `name`. Die Logik vergleicht die englischen Namen, angezeigt wird `de`.
 - Live: https://aion2.philipmax-hain.workers.dev – Cloudflare Worker (Workers Builds), baut jeden Push auf den verbundenen Branch. `wrangler.jsonc` liefert nur `public/` aus und schickt `/api/*` an `proxy/worker.mjs`; der `name` muss `aion2` bleiben.
 - Proxy: `proxy/armory-core.mjs` (Web-Standard `fetch`/`Response`), eingebunden von `proxy/worker.mjs` (Worker), `functions/api/[[route]].js` (Alternative Cloudflare Pages) und `tools/dev-server.mjs` (lokal). Jede Route muss im kostenlosen Cloudflare-Tarif bleiben: unter 10 ms CPU und 50 Unteranfragen pro Anfrage.
 - Lokal testen: `NODE_USE_ENV_PROXY=1 node tools/dev-server.mjs` (die Variable nur hinter dem Sandbox-Proxy nötig), dann im Browser http://localhost:8787 öffnen. Keine fremden Charaktere zum Testen abrufen; die Engine mit abgewandelten Daten des Nutzer-Charakters prüfen.
@@ -31,6 +33,7 @@ Die Armory-Endpunkte (`api-search.plaync.com`, `aion2.plaync.com`) sind undokume
 
 ## Website
 
-- Alles Öffentliche liegt in `public/`: `index.html`, `assets/css/style.css`, `assets/js/{config,data,zeit,karte,audit,app,charakter}.js`
+- Alles Öffentliche liegt in `public/`: `index.html`, `assets/css/style.css`, `assets/js/{config,data,data-items,zeit,karte,audit,app,charakter,deko}.js` (Reihenfolge der Script-Tags: `data-items.js` nach `data.js` und vor `audit.js`).
+- Design: Fantasy-Stil, dunkel (Abyss-Nacht mit Gold) und hell (Pergament). Farben nur über die CSS-Variablen in `style.css`, beide Varianten pflegen. Schriften: Cinzel (Überschriften), Alegreya Sans (Text), Cormorant Garamond (kursive Einleitungen). `deko.js` zeichnet die Aether-Funken im Hero und respektiert „Bewegung reduzieren“.
 - Spieldaten, Zeiten, Karte und Klassen: `public/assets/js/data.js`
 - Zeiten werden in `Europe/Berlin` angezeigt; Quellzeiten stehen mit ihrer Zeitzone (`UTC` oder `Europe/Berlin`) in `events`.
