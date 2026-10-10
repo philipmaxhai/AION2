@@ -1,9 +1,7 @@
 /*
  * Wo der Charakter-Check seine Daten holt.
- * Leer lassen, wenn die Seite auf Cloudflare Pages läuft (dort beantwortet functions/api/* die Anfragen)
- * oder lokal über `node tools/dev-server.mjs`.
- * Liegt die Seite auf GitHub Pages, hier die Adresse des Workers eintragen,
- * z. B. "https://daeva-kompass-api.<dein-name>.workers.dev".
+ * Leer lassen: Auf dem Cloudflare Worker (wrangler.jsonc) und lokal über `node tools/dev-server.mjs`
+ * beantwortet dieselbe Adresse /api/*. Nur wenn der Proxy woanders läuft, hier dessen Adresse eintragen.
  */
 window.DK_CONFIG = {
   apiBase: "",
@@ -12,5 +10,5 @@ window.DK_CONFIG = {
    * Öffnet jemand eine Kopie ohne Server-Teil (lokale Datei, GitHub Pages ohne Worker),
    * schickt der Charakter-Check die Suche dorthin, statt nach einem Proxy zu fragen.
    */
-  liveUrl: ""
+  liveUrl: "https://aion2.philipmax-hain.workers.dev"
 };

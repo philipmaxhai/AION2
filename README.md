@@ -19,21 +19,22 @@ Alles, was du einstellst, speichert nur dein Browser (localStorage).
 
 Name eingeben, fertig: Die Seite lädt Ausrüstung, Manasteine, Stigmen und Daevanion aus der NCSOFT-Armory und erstellt einen Upgrade-Plan – Sofort-Urteil, Quick-Wins, Tagesziel mit deutschen Zeiten, Gear-Tabelle mit nächstem Teil je Slot, Farm- und Anti-Waste-Liste, Ressourcen-Rechner. Für alle 8 Klassen und alle Global-Server.
 
-NCSOFT blockt Abrufe, die direkt von fremden Websites kommen. Deshalb läuft ein kleiner Proxy mit, der kostenlos auf **Cloudflare Pages** läuft – auf derselben Adresse wie die Website.
+NCSOFT blockt Abrufe, die direkt von fremden Websites kommen. Deshalb läuft ein kleiner Proxy mit, kostenlos als **Cloudflare Worker** auf derselben Adresse wie die Website.
 
-### Online stellen (einmalig, ca. 5 Minuten)
+Live: **https://aion2.philipmax-hain.workers.dev**
+
+### Online stellen (einmalig)
 
 1. Kostenloses Konto bei [Cloudflare](https://dash.cloudflare.com/sign-up) anlegen.
-2. **Workers & Pages › Erstellen › Pages › Mit Git verbinden** und dieses Repository wählen.
-3. Einstellungen: Branch `main` (oder diesen Feature-Branch), Framework **Keins**, Build-Befehl **leer**, Ausgabeverzeichnis **leer bzw. `/`**.
-4. **Speichern und bereitstellen.** Nach rund einer Minute läuft alles unter `https://<projektname>.pages.dev`.
-5. Diese Adresse in `assets/js/config.js` als `liveUrl` eintragen. Wer dann eine Kopie ohne Server-Teil öffnet (lokale Datei, GitHub Pages), wird beim Charakter-Check automatisch auf die Online-Version geschickt.
+2. **Workers & Pages › Erstellen › Repository importieren** und dieses Repository wählen.
+3. Projektname `aion2` (muss zu `name` in `wrangler.jsonc` passen), Build-Befehl leer, Deploy-Befehl `npx wrangler deploy`.
+4. **Bereitstellen.** `wrangler.jsonc` sorgt dafür, dass `/api/*` an den Proxy geht und nur der Ordner `public/` öffentlich ausgeliefert wird.
 
-Wichtig: über **„Mit Git verbinden“** einrichten, nicht per Drag-and-drop-Upload. Beim Upload fehlt der Server-Teil (`functions/`), und der Charakter-Check meldet dann, dass er nur auf der veröffentlichten Seite läuft.
+Jeder Push auf den verbundenen Branch aktualisiert die Seite automatisch. Der Proxy beantwortet nur feste NCSOFT-Abfragen mit geprüften Parametern und cacht Antworten 10 Minuten. Grunddaten, Daevanion und Items sind getrennte Anfragen, damit jede im kostenlosen Tarif bleibt (unter 10 ms CPU, unter 50 Unteranfragen).
 
-Jeder Push aktualisiert die Seite automatisch. Der Proxy (`functions/api/`) beantwortet nur feste NCSOFT-Abfragen mit geprüften Parametern und cacht Antworten 10 Minuten. Grunddaten, Daevanion und Items sind getrennte Anfragen, damit jede im kostenlosen Tarif bleibt.
+Die Live-Adresse steht in `public/assets/js/config.js` als `liveUrl`: Wer eine Kopie ohne Server-Teil öffnet (z. B. die lokale Datei), wird beim Charakter-Check automatisch dorthin geschickt.
 
-**Website schon auf GitHub Pages?** Dann nur den Proxy als Worker starten (`cd proxy && npx wrangler deploy`) und die Worker-Adresse in `assets/js/config.js` als `apiBase` eintragen.
+**Alternative Cloudflare Pages:** Mit Git verbinden, Build-Befehl leer, Ausgabeverzeichnis `public`. Den Proxy liefert dort `functions/api/`.
 
 **Lokal testen:** `node tools/dev-server.mjs` startet Website und Proxy auf http://localhost:8787 (Node 18+).
 
@@ -49,13 +50,11 @@ Zeigt Klasse, Level, Kampfkraft, Gearscore, Werte, Ausrüstung mit Verstärkung 
 
 ## Öffnen
 
-Kein Build nötig. Einfach `index.html` im Browser öffnen.
-
-Online stellen über GitHub Pages: Repository › Settings › Pages › Branch auswählen, Ordner `/ (root)`.
+Kein Build nötig. `public/index.html` lässt sich direkt im Browser öffnen; der Charakter-Check leitet dann auf die Live-Seite weiter.
 
 ## Daten anpassen
 
-Alle Spieldaten stehen in [`assets/js/data.js`](assets/js/data.js):
+Alle Spieldaten stehen in [`public/assets/js/data.js`](public/assets/js/data.js):
 
 - `events`: Spielzeiten. `tz` ist die Zeitzone, in der die Quelle die Zeit angibt (`UTC` oder `Europe/Berlin`); die Seite rechnet in deutsche Zeit um.
 - `steps` und `gates`: Gearscore-Fahrplan und Schwellen.
@@ -71,20 +70,22 @@ Stand 09.10.2026, vier Tage nach dem Global-Launch am 05.10.2026. NCSOFT hat fü
 ## Aufbau
 
 ```
-index.html            Seite
-assets/css/style.css  Design (dunkel und hell)
-assets/js/data.js     Spieldaten
-assets/js/zeit.js     Zeitzonen-Rechnung
-assets/js/karte.js    Karte (SVG, Zoom, Pins)
-assets/js/app.js      Oberfläche
-assets/js/audit.js    Analyse-Regeln des Charakter-Checks
-assets/js/charakter.js  Charakter-Check (Suche, Darstellung)
-assets/js/config.js   Adresse des Proxys (leer = gleiche Website)
-proxy/armory-core.mjs Proxy-Logik (NCSOFT-Abfragen, Cache, Prüfungen)
-functions/api/        Cloudflare Pages Function (nutzt armory-core)
-proxy/worker.mjs      Alternative: eigenständiger Cloudflare Worker
-tools/dev-server.mjs  Lokaler Server für Website und Proxy
-tools/armory.py       Charakter-Abruf im Terminal
+public/                         Website (nur dieser Ordner ist öffentlich)
+public/index.html               Seite
+public/assets/css/style.css     Design (dunkel und hell)
+public/assets/js/data.js        Spieldaten und Regeln des Charakter-Checks
+public/assets/js/zeit.js        Zeitzonen-Rechnung
+public/assets/js/karte.js       Karte (SVG, Zoom, Pins)
+public/assets/js/app.js         Oberfläche
+public/assets/js/audit.js       Analyse-Regeln des Charakter-Checks
+public/assets/js/charakter.js   Charakter-Check (Suche, Darstellung)
+public/assets/js/config.js      Proxy- und Live-Adresse
+wrangler.jsonc                  Cloudflare Worker: public/ ausliefern, /api/* an den Proxy
+proxy/worker.mjs                Worker-Einstieg
+proxy/armory-core.mjs           Proxy-Logik (NCSOFT-Abfragen, Cache, Prüfungen)
+functions/api/                  Alternative für Cloudflare Pages
+tools/dev-server.mjs            Lokaler Server für Website und Proxy
+tools/armory.py                 Charakter-Abruf im Terminal
 ```
 
 Fanprojekt, nicht mit NCSOFT verbunden. AION ist eine Marke von NCSOFT.
