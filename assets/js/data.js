@@ -150,7 +150,7 @@ window.DK_DATA = {
     {
       id: "tagesdungeon", stage: "s1400", minGS: 0, prio: 13,
       title: "Täglicher Dungeon und Pflichtmissionen",
-      gain: "Material und Kina",
+      gain: "Material und Kinah",
       cadence: "14 Einträge pro Woche, 5 Missionen pro Tag",
       where: "Dungeon-Menü / Missionsfenster",
       marker: null,

@@ -15,6 +15,16 @@ Die Seite geht davon aus, dass die Main-Story durch ist, du Level 45 bist und mi
 
 Alles, was du einstellst, speichert nur dein Browser (localStorage).
 
+## Charakter-Abruf (Global)
+
+```
+python3 tools/armory.py <Name>                 # sucht auf allen Global-Servern
+python3 tools/armory.py <Name> --server Siel    # bei Namensgleichheit Server angeben
+python3 tools/armory.py <Name> --merken         # Server merken, danach reicht der Name
+```
+
+Zeigt Klasse, Level, Kampfkraft, Gearscore, Werte, Ausrüstung mit Verstärkung und Manasteinen, Skills und Daevanion. Nutzt die öffentliche NCSOFT-Armory (dieselben Endpunkte wie Shugo.gg). Diese Endpunkte sind nicht dokumentiert und können sich ändern.
+
 ## Öffnen
 
 Kein Build nötig. Einfach `index.html` im Browser öffnen.
@@ -45,6 +55,7 @@ assets/js/data.js     Spieldaten
 assets/js/zeit.js     Zeitzonen-Rechnung
 assets/js/karte.js    Karte (SVG, Zoom, Pins)
 assets/js/app.js      Oberfläche
+tools/armory.py       Charakter-Abruf aus der NCSOFT-Armory
 ```
 
 Fanprojekt, nicht mit NCSOFT verbunden. AION ist eine Marke von NCSOFT.
