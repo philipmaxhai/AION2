@@ -101,13 +101,16 @@ async function pool(items, size, fn) {
 /* ---------- NCSOFT-Abfragen ---------- */
 
 export async function listServers(fetchImpl = fetch) {
+  let lastError = null;
   const lists = await Promise.all(
     REGIONS.map((region) =>
       getJson(`${GAMEINFO}/api/gameinfo/servers?${qs({ lang: LANG, region })}`, fetchImpl)
         .then((d) => d.serverList || [])
-        .catch(() => [])
+        .catch((err) => { lastError = err; return []; })
     )
   );
+  // Keine einzige Region erreichbar: Fehler melden statt eine leere Liste einen Tag lang zu cachen
+  if (!lists.some((l) => l.length)) throw lastError || new UpstreamError("Serverliste leer", 502);
   return lists.flat().map((s) => ({
     id: Number(s.serverId),
     name: s.serverName,

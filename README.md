@@ -27,6 +27,9 @@ NCSOFT blockt Abrufe, die direkt von fremden Websites kommen. Deshalb läuft ein
 2. **Workers & Pages › Erstellen › Pages › Mit Git verbinden** und dieses Repository wählen.
 3. Einstellungen: Branch `main` (oder diesen Feature-Branch), Framework **Keins**, Build-Befehl **leer**, Ausgabeverzeichnis **leer bzw. `/`**.
 4. **Speichern und bereitstellen.** Nach rund einer Minute läuft alles unter `https://<projektname>.pages.dev`.
+5. Diese Adresse in `assets/js/config.js` als `liveUrl` eintragen. Wer dann eine Kopie ohne Server-Teil öffnet (lokale Datei, GitHub Pages), wird beim Charakter-Check automatisch auf die Online-Version geschickt.
+
+Wichtig: über **„Mit Git verbinden“** einrichten, nicht per Drag-and-drop-Upload. Beim Upload fehlt der Server-Teil (`functions/`), und der Charakter-Check meldet dann, dass er nur auf der veröffentlichten Seite läuft.
 
 Jeder Push aktualisiert die Seite automatisch. Der Proxy (`functions/api/`) beantwortet nur feste NCSOFT-Abfragen mit geprüften Parametern und cacht Antworten 10 Minuten. Grunddaten, Daevanion und Items sind getrennte Anfragen, damit jede im kostenlosen Tarif bleibt.
 

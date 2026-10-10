@@ -25,9 +25,36 @@
   let lastQuery = null;
   let pendingSid = null;
 
+  const CFG = window.DK_CONFIG || {};
+  let apiState = "unbekannt"; // "ok" | "fehlt"
+
   function apiBase() {
-    const custom = store.get("dk.api", "");
-    return String(custom || (window.DK_CONFIG && window.DK_CONFIG.apiBase) || "").replace(/\/+$/, "");
+    return String(CFG.apiBase || "").replace(/\/+$/, "");
+  }
+
+  function liveUrl() {
+    const u = String(CFG.liveUrl || "").replace(/\/+$/, "");
+    return u && !location.href.startsWith(u) ? u : "";
+  }
+
+  function liveLink(name, sid) {
+    return `${liveUrl()}/?${name ? "name=" + encodeURIComponent(name) + (sid ? "&server=" + sid : "") : ""}#charakter`;
+  }
+
+  /* Hinweis, wenn diese Kopie der Seite keinen Server-Teil hat – ohne Spieler nach Technik zu fragen */
+  function offlineText() {
+    if (liveUrl()) {
+      return `Diese Kopie der Seite hat keinen Server-Teil. Der Charakter-Check läuft auf der <a href="${esc(liveLink())}">Online-Version</a>; deine Suche wird automatisch dorthin geschickt.`;
+    }
+    return "Der Charakter-Check läuft nur auf der veröffentlichten Seite: NCSOFT erlaubt keine Abrufe direkt aus dem Browser, deshalb braucht es den Server-Teil der Seite. Wer die Seite betreibt, findet die Anleitung im README unter „Online stellen“.";
+  }
+
+  function markOffline() {
+    apiState = "fehlt";
+    ["#ch-offline", "#ov-ch-offline"].forEach((id) => {
+      const n = $(id);
+      if (n) { n.innerHTML = offlineText(); n.hidden = false; }
+    });
   }
 
   async function api(path) {
@@ -45,7 +72,8 @@
 
   function problemText(err) {
     if (err.message === "kein-proxy" || err.message === "offline") {
-      return "Auf dieser Adresse läuft kein Daten-Proxy. Der Charakter-Check funktioniert auf der veröffentlichten Seite (Cloudflare Pages) oder lokal mit <code>node tools/dev-server.mjs</code>. Unter „Erweitert“ kannst du eine Proxy-Adresse eintragen.";
+      markOffline();
+      return offlineText();
     }
     return esc(err.message || "Unbekannter Fehler");
   }
@@ -83,6 +111,10 @@
 
   /* ---------- Abfrage ---------- */
   async function lookup(q) {
+    if (apiState === "fehlt" && liveUrl()) {
+      location.href = liveLink(q.name, q.sid);
+      return;
+    }
     lastQuery = q;
     $("#ch-result").innerHTML = "";
     setStatus("loading", `<span class="spinner" aria-hidden="true"></span> Lade ${q.name ? "„" + esc(q.name) + "“" : "Charakter"} aus der NCSOFT-Armory … das dauert etwa 5 bis 10 Sekunden.`);
@@ -307,13 +339,6 @@
       render();
       const notes = $(".res-notes");
       if (notes) notes.scrollIntoView({ block: "nearest" });
-    } else if (form.id === "ch-api-form") {
-      e.preventDefault();
-      const v = $("#ch-api").value.trim();
-      store.set("dk.api", v);
-      store.set("dk.servers", null);
-      initServers();
-      setStatus("info", v ? `Proxy-Adresse gespeichert: ${esc(v)}` : "Proxy-Adresse zurückgesetzt.");
     }
   }
 
@@ -345,21 +370,21 @@
     }
   }
 
+  /* Prüft beim Laden, ob der Server-Teil antwortet, und füllt dabei die Serverliste */
   async function initServers() {
-    if (location.protocol === "file:" && !apiBase()) return; // ohne Proxy keine Serverliste
+    if (location.protocol === "file:" && !apiBase()) { markOffline(); return; }
     try {
       fillServerSelect(await loadServers());
+      apiState = "ok";
     } catch (err) {
-      const sel = $("#ch-server");
-      if (sel) sel.innerHTML = '<option value="">Alle Global-Server</option>';
+      if (err.message === "kein-proxy" || err.message === "offline") markOffline();
     }
   }
 
   function init() {
     document.addEventListener("submit", onSubmit);
     document.addEventListener("click", onClick);
-    const api = $("#ch-api");
-    if (api) api.value = store.get("dk.api", "");
+    try { localStorage.removeItem("dk.api"); } catch (e) { /* frühere Proxy-Eingabe verwerfen */ }
     renderRecent();
     initServers();
     const params = new URLSearchParams(location.search);

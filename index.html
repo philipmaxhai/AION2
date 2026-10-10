@@ -75,6 +75,7 @@
         </label>
         <button type="submit" class="btn">Charakter prüfen</button>
       </form>
+      <p class="notice ch-offline" id="ov-ch-offline" hidden></p>
       <p class="small muted">Oder ohne Abruf: Gearscore, Klasse und Fraktion selbst einstellen.</p>
       <form class="status" id="status-form" autocomplete="off">
         <label class="field">
@@ -134,20 +135,10 @@
       </label>
       <button type="submit" class="btn">Analysieren</button>
     </form>
+    <div class="notice ch-offline" id="ch-offline" hidden></div>
     <div class="ch-recent" id="ch-recent"></div>
     <div class="ch-status" id="ch-status" aria-live="polite" hidden></div>
     <div id="ch-result"></div>
-    <details class="ch-adv">
-      <summary>Erweitert: Proxy-Adresse</summary>
-      <form class="ch-form" id="ch-api-form" autocomplete="off">
-        <label class="field ch-name-field">
-          <span>Adresse des Daten-Proxys</span>
-          <input type="url" id="ch-api" placeholder="leer = diese Website">
-        </label>
-        <button type="submit" class="btn btn--ghost">Speichern</button>
-      </form>
-      <p class="fine">Nur nötig, wenn die Seite auf GitHub Pages liegt und der Proxy als eigener Cloudflare Worker läuft.</p>
-    </details>
   </section>
 
   <!-- ===================== Gearscore ===================== -->

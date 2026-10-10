@@ -576,8 +576,7 @@ fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .ch-matches { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .ch-matches .btn { text-align: left; }
-.ch-adv summary { cursor: pointer; color: var(--muted); font-size: var(--fs-sm); }
-.ch-adv[open] { display: flex; flex-direction: column; gap: 10px; }
+.ch-offline { font-size: var(--fs-sm); color: var(--muted); }
 
 .ch { display: flex; flex-direction: column; gap: 18px; }
 .ch h3 { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-lg); color: var(--gold); }
