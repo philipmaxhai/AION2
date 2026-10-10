@@ -15,7 +15,26 @@ Die Seite geht davon aus, dass die Main-Story durch ist, du Level 45 bist und mi
 
 Alles, was du einstellst, speichert nur dein Browser (localStorage).
 
-## Charakter-Abruf (Global)
+## Charakter-Check für alle Spieler
+
+Name eingeben, fertig: Die Seite lädt Ausrüstung, Manasteine, Stigmen und Daevanion aus der NCSOFT-Armory und erstellt einen Upgrade-Plan – Sofort-Urteil, Quick-Wins, Tagesziel mit deutschen Zeiten, Gear-Tabelle mit nächstem Teil je Slot, Farm- und Anti-Waste-Liste, Ressourcen-Rechner. Für alle 8 Klassen und alle Global-Server.
+
+NCSOFT blockt Abrufe, die direkt von fremden Websites kommen. Deshalb läuft ein kleiner Proxy mit, der kostenlos auf **Cloudflare Pages** läuft – auf derselben Adresse wie die Website.
+
+### Online stellen (einmalig, ca. 5 Minuten)
+
+1. Kostenloses Konto bei [Cloudflare](https://dash.cloudflare.com/sign-up) anlegen.
+2. **Workers & Pages › Erstellen › Pages › Mit Git verbinden** und dieses Repository wählen.
+3. Einstellungen: Branch `main` (oder diesen Feature-Branch), Framework **Keins**, Build-Befehl **leer**, Ausgabeverzeichnis **leer bzw. `/`**.
+4. **Speichern und bereitstellen.** Nach rund einer Minute läuft alles unter `https://<projektname>.pages.dev`.
+
+Jeder Push aktualisiert die Seite automatisch. Der Proxy (`functions/api/`) beantwortet nur feste NCSOFT-Abfragen mit geprüften Parametern und cacht Antworten 10 Minuten. Grunddaten, Daevanion und Items sind getrennte Anfragen, damit jede im kostenlosen Tarif bleibt.
+
+**Website schon auf GitHub Pages?** Dann nur den Proxy als Worker starten (`cd proxy && npx wrangler deploy`) und die Worker-Adresse in `assets/js/config.js` als `apiBase` eintragen.
+
+**Lokal testen:** `node tools/dev-server.mjs` startet Website und Proxy auf http://localhost:8787 (Node 18+).
+
+## Charakter-Abruf im Terminal (Global)
 
 ```
 python3 tools/armory.py <Name>                 # sucht auf allen Global-Servern
@@ -55,7 +74,14 @@ assets/js/data.js     Spieldaten
 assets/js/zeit.js     Zeitzonen-Rechnung
 assets/js/karte.js    Karte (SVG, Zoom, Pins)
 assets/js/app.js      Oberfläche
-tools/armory.py       Charakter-Abruf aus der NCSOFT-Armory
+assets/js/audit.js    Analyse-Regeln des Charakter-Checks
+assets/js/charakter.js  Charakter-Check (Suche, Darstellung)
+assets/js/config.js   Adresse des Proxys (leer = gleiche Website)
+proxy/armory-core.mjs Proxy-Logik (NCSOFT-Abfragen, Cache, Prüfungen)
+functions/api/        Cloudflare Pages Function (nutzt armory-core)
+proxy/worker.mjs      Alternative: eigenständiger Cloudflare Worker
+tools/dev-server.mjs  Lokaler Server für Website und Proxy
+tools/armory.py       Charakter-Abruf im Terminal
 ```
 
 Fanprojekt, nicht mit NCSOFT verbunden. AION ist eine Marke von NCSOFT.

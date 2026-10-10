@@ -594,7 +594,7 @@
   }
 
   /* ================= Navigation ================= */
-  const VIEWS = ["uebersicht", "gearscore", "karte", "zeiten", "checkliste", "klassen", "quellen"];
+  const VIEWS = ["uebersicht", "charakter", "gearscore", "karte", "zeiten", "checkliste", "klassen", "quellen"];
   function show(view) {
     if (!VIEWS.includes(view)) view = "uebersicht";
     VIEWS.forEach((v) => {
@@ -766,6 +766,24 @@
     S.themeTouched = true;
     save(); applyTheme();
   }
+
+  /* Schnittstelle für den Charakter-Check */
+  window.DK_APP = {
+    go,
+    shifts: () => S.shifts,
+    status: () => ({ gs: S.gs, cls: S.cls, faction: S.faction }),
+    setStatus(st) {
+      if (st.gs != null) S.gs = Math.round(st.gs);
+      if (st.cls && D.classes.some((c) => c.id === st.cls)) { S.cls = st.cls; viewCls = st.cls; }
+      if (st.faction === "elyos" || st.faction === "asmo") S.faction = st.faction;
+      save();
+      $("#f-gs").value = S.gs;
+      $("#f-class").value = S.cls;
+      applyFaction();
+      K.setFocus(null);
+      refresh();
+    },
+  };
 
   /* ================= Start ================= */
   function init() {

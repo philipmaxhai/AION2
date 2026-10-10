@@ -564,6 +564,80 @@ window.DK_DATA = {
     { name: "Spiritmaster BiS (Aionbuilds, EU)", url: "https://aionbuilds.com/en/items/class/spiritmaster" },
     { name: "Stats & Manasteine (Odealo)", url: "https://odealo.com/articles/best-stats-manastones-for-every-class-aion-2-guide" },
     { name: "Klassen-Tierliste (KeenGamer)", url: "https://www.keengamer.com/articles/guides/aion-2-best-class-tier-list-pve-pvp-solo/" },
-    { name: "Server-Wartung & Launch (Mein-MMO)", url: "https://mein-mmo.de/en/aion-2-servers-are-live-everything-about-status-time-patch-notes-and-more-for-the-release-in-the-live-ticker,1590795/" }
-  ]
+    { name: "Server-Wartung & Launch (Mein-MMO)", url: "https://mein-mmo.de/en/aion-2-servers-are-live-everything-about-status-time-patch-notes-and-more-for-the-release-in-the-live-ticker,1590795/" },
+    { name: "Item-Datenbank: Drops, Verstärkung, Rezepte (Metabot)", url: "https://metabot.gg/en/aion-2/items/aulamus-orb" },
+    { name: "Urugugu Canyon Beute & Pity (Metabot)", url: "https://metabot.gg/en/aion-2/dungeons/urugugu-canyon" },
+    { name: "Vakron Sky Island Beute & Pity (Metabot)", url: "https://metabot.gg/en/aion-2/dungeons/vakron-sky-island" },
+    { name: "Kern-Stigmen nach Klasse (Aion2-Meta)", url: "https://aion2-meta.com/guides/spiritmaster/" },
+    { name: "Stigma-Kosten (VGTimes)", url: "https://vgtimes.com/guides/170418-aion-2-stigma-guide-best-skills-and-how-to-upgrade-them.html" },
+    { name: "Gear-Transfer (Game8)", url: "https://game8.co/games/Aion-2/archives/616977" }
+  ],
+
+  /* ---------- Charakter-Check: Upgrade-Stufen und Klassenregeln ----------
+   * Quellen: Spieldaten des Global-Clients über Metabot (Drops, Rezepte, Verstärkung),
+   * Kern-Stigmen aus Nutzungsdaten koreanischer Top-Spieler (Aion2-Meta).
+   */
+  audit: {
+    roles: {
+      gladiator: "dps", templar: "tank", assassin: "dps", ranger: "dps",
+      sorcerer: "dps", spiritmaster: "dps", cleric: "heal", chanter: "hybrid"
+    },
+    pcClass: {
+      2: "gladiator", 5: "gladiator", 6: "gladiator", 7: "gladiator", 8: "gladiator",
+      3: "templar", 9: "templar", 10: "templar", 11: "templar", 12: "templar",
+      4: "ranger", 13: "ranger", 14: "ranger", 15: "ranger", 16: "ranger",
+      17: "assassin", 18: "assassin", 19: "assassin", 20: "assassin",
+      21: "spiritmaster", 22: "spiritmaster", 23: "spiritmaster", 24: "spiritmaster",
+      25: "sorcerer", 26: "sorcerer", 27: "sorcerer", 28: "sorcerer",
+      29: "cleric", 30: "cleric", 31: "cleric", 32: "cleric",
+      33: "chanter", 34: "chanter", 35: "chanter", 36: "chanter"
+    },
+    weapons: {
+      gladiator: { type: "Großschwert", aulamus: "Aulamus Greatsword", craft: "Dragon Lord Greatsword", prof: "Schmiedekunst (Blacksmithing)", kromede: "Enraged Kromede Claymore" },
+      templar: { type: "Langschwert", aulamus: "Aulamus Longsword", craft: "Dragon Lord Longsword", prof: "Schmiedekunst (Blacksmithing)", kromede: "Enraged Kromede Sword" },
+      assassin: { type: "Dolch", aulamus: "Aulamus Dagger", craft: "Dragon Lord Dagger", prof: "Schmiedekunst (Blacksmithing)", kromede: "Enraged Kromede Silver Dagger" },
+      ranger: { type: "Bogen", aulamus: "Aulamus Bow", craft: "Dragon Lord Bow", prof: "Handwerk (Handicrafting)", kromede: "Enraged Kromede Longbow" },
+      sorcerer: { type: "Zauberbuch", aulamus: "Aulamus Spellbook", craft: "Dragon Lord Spellbook", prof: "Alchemie (Alchemy)", kromede: "Enraged Kromede Spellbook" },
+      spiritmaster: { type: "Orb", aulamus: "Aulamus Orb", craft: "Dragon Lord Orb", prof: "Alchemie (Alchemy)", kromede: "Enraged Kromede Jewel" },
+      cleric: { type: "Streitkolben", aulamus: "Aulamus Mace", craft: "Dragon Lord Mace", prof: "Schmiedekunst (Blacksmithing)", kromede: "Enraged Kromede Warhammer" },
+      chanter: { type: "Stab", aulamus: "Aulamus Staff", craft: "Dragon Lord Staff", prof: "Handwerk (Handicrafting)", kromede: "Enraged Kromede Rod" }
+    },
+    craftPrefix: { asmo: "Dark", elyos: "White" },
+    craftTable: { asmo: "Safe Haven (Altgard)", elyos: "Dawn Legion Base (Verteron)" },
+    craftBottleneck: "je 3× Wrathful Mind, 15× Wrathful Will und 5× Artisan's Ultimate Refining Stone – alle handelbar",
+    monoliths: { asmo: "Safe Haven und Nornir Assembly (Altgard)", elyos: "Dawn Legion Base und Zumion Village (Verteron)" },
+    slotNames: {
+      1: "Waffe", 2: "Guard", 3: "Helm", 4: "Schultern", 5: "Brust", 6: "Hose", 7: "Handschuhe", 8: "Stiefel", 19: "Umhang",
+      10: "Kette", 11: "Ohrring 1", 12: "Ohrring 2", 13: "Ring 1", 14: "Ring 2", 15: "Armband 1", 16: "Armband 2",
+      17: "Gürtel", 22: "Amulett", 23: "Rune 1", 24: "Rune 2"
+    },
+    slotOrder: [1, 2, 3, 4, 5, 6, 7, 8, 19, 10, 11, 12, 13, 14, 15, 16, 17, 22, 23, 24],
+    armor: { 3: "Helm", 4: "Pauldrons", 5: "Breastplate", 6: "Greaves", 7: "Gloves", 8: "Boots", 19: "Cloak" },
+    vakronChance: { 3: 2, 4: 2, 5: 1, 6: 2, 7: 3, 8: 2, 19: 3 },
+    accessories: { 10: "Necklace", 11: "Earrings", 12: "Earrings", 13: "Ring", 14: "Ring" },
+    aulamusChance: { Necklace: 2, Earrings: 3, Ring: 3, weapon: 0.86 },
+    pity: { tier70: 21, tier86: 28, weeklyCubes: 10 },
+    coreStigmas: {
+      gladiator: ["Lunge Stance", "Zikel's Blessing", "Rage Burst", "Focused Block"],
+      templar: ["Shield of Protection", "Taunt", "Battlefield Banner", "Doom Shield"],
+      assassin: ["Illusive Clone", "Swift Contract", "Triniel's Dagger", "Throw Shadowblade"],
+      ranger: ["Vaizel's Authority", "Bow of Blessing", "Supporting Fire", "Griffon Arrow"],
+      sorcerer: ["Element Enhancement", "Delayed Explosion", "Fire Wall", "Steel Barrier"],
+      spiritmaster: ["Summon: Ancient Spirit", "Enhance: Spirit's Benediction", "Flame Blessing", "Jointstrike: Corrode"],
+      cleric: ["Light of Protection", "Noble Aura", "Earth Punishment", "Benevolence"],
+      chanter: ["Undefeated Mantra", "Sprint Mantra", "Power of the Storm", "Marchutan's Wrath"]
+    },
+    stigmaBreakpoints: {
+      "Summon: Ancient Spirit": { level: 15, text: "Ab Rang 15 löst der Uralte Geist Elemental Fusion alle 5 statt alle 7 Angriffe aus (drei Guides bestätigen das)." }
+    },
+    keySkills: {
+      spiritmaster: { names: ["Elemental Fusion", "Combustion", "Summon: Fire Spirit"], target: 20 }
+    },
+    shardShops: "Albtraum-Shop (1.500 Phantasmal Fragments), Shugo-Fest-Shop (300 Münzen) oder Abyss-Shop (10.000–25.000 AP) – Preise je Splitter laut Guides",
+    /* Kinah und Verstärkungssteine je Schritt +0→+1 … +9→+10, IL-70-Waffe (Aulamus), garantiert */
+    enchantIL70: [[8750, 350], [12500, 500], [22800, 910], [35000, 1400], [49000, 1960], [65000, 2580], [82000, 3250], [99000, 3960], [119000, 4730], [139000, 5540]],
+    above10: "Ab +10 → +11 sinkt die Chance auf 65 %, ein Versuch kostet bei einer IL-70-Waffe 246.000 bis 1,28 Mio. Kinah.",
+    defensiveStones: ["Block", "HP", "Defense", "Evasion Bonus", "Evasion", "Critical Hit Resist", "MP", "Natural MP Regen", "Status Effect Resist", "Magic Defense", "Damage Tolerance"],
+    offensiveNodes: ["Attack Bonus", "Critical Hit +", "Multi-hit Chance", "Damage Boost", "Combat Speed", "Cooldown", "Critical Damage Boost", "Accuracy"]
+  }
 };

@@ -31,7 +31,7 @@ SEARCH = "https://api-search.plaync.com/aion2global/search/v2/character"
 API = "https://aion2.plaync.com"
 GAMEINFO = "https://aion2.plaync.com/en-us"
 LANG = "en-US"
-UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36"
+UA = "Daeva-Kompass/1.0 (+https://github.com/philipmaxhai/AION2)"
 
 REGIONS = {"eu": "Europa", "nae": "NA Ost", "naw": "NA West", "la": "Südamerika", "as": "Asien"}
 REGION_BY_DIGIT = {"1": "nae", "2": "naw", "3": "eu", "4": "la", "5": "as"}

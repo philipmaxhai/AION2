@@ -1,0 +1,3 @@
+name = "daeva-kompass-api"
+main = "worker.mjs"
+compatibility_date = "2026-09-01"

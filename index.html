@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AION 2 Daeva-Kompass</title>
-<meta name="description" content="Gearscore-Fahrplan ab 1400, interaktive Karte und Spielzeiten in deutscher Zeit für AION 2 – Fokus Spiritmaster, alle Klassen.">
+<meta name="description" content="Charakter-Check für AION 2 Global: Name eingeben und Upgrade-Plan bekommen. Dazu Gearscore-Fahrplan, interaktive Karte und Spielzeiten in deutscher Zeit – alle Klassen.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Marcellus+SC&display=swap">
@@ -48,6 +48,7 @@
   </div>
   <nav class="tabs" aria-label="Bereiche">
     <a href="#uebersicht">Übersicht</a>
+    <a href="#charakter">Charakter-Check</a>
     <a href="#gearscore">Gearscore</a>
     <a href="#karte">Karte</a>
     <a href="#zeiten">Zeiten</a>
@@ -63,10 +64,18 @@
   <section class="view" id="v-uebersicht" aria-labelledby="h-ov">
     <div class="hero">
       <div class="hero-head">
-        <p class="eyebrow">Main-Story durch · Level 45 · ab 1400 Gearscore</p>
+        <p class="eyebrow">AION 2 Global · alle Klassen · deutsche Zeit</p>
         <h1 id="h-ov">Dein Weg über 1400 Gearscore</h1>
-        <p class="lede">Was du heute tun solltest, wann es in deutscher Zeit passiert und wo auf der Karte. Gebaut für den Spiritmaster, nutzbar mit jeder Klasse.</p>
+        <p class="lede">Gib deinen Charakternamen ein: Die Seite lädt deine Ausrüstung aus der offiziellen Armory und sagt dir, welches Upgrade dich am schnellsten nach vorne bringt, wann es in deutscher Zeit passiert und wo auf der Karte.</p>
       </div>
+      <form class="ch-form ch-form--hero" id="ov-ch-form" role="search" autocomplete="off">
+        <label class="field ch-name-field">
+          <span>Charaktername</span>
+          <input type="text" name="name" id="ov-ch-name" maxlength="32" placeholder="z. B. WAVE" required>
+        </label>
+        <button type="submit" class="btn">Charakter prüfen</button>
+      </form>
+      <p class="small muted">Oder ohne Abruf: Gearscore, Klasse und Fraktion selbst einstellen.</p>
       <form class="status" id="status-form" autocomplete="off">
         <label class="field">
           <span>Dein Gearscore</span>
@@ -106,6 +115,39 @@
         <div data-part="class-mini"></div>
       </section>
     </div>
+  </section>
+
+  <!-- ===================== Charakter-Check ===================== -->
+  <section class="view" id="v-charakter" aria-labelledby="h-ch" hidden>
+    <header class="view-head">
+      <h1 id="h-ch">Charakter-Check</h1>
+      <p class="lede">Name eingeben, fertig: Die Seite liest Ausrüstung, Manasteine, Stigmen und Daevanion aus der NCSOFT-Armory und erstellt deinen Upgrade-Plan. Für alle Klassen und alle Global-Server.</p>
+    </header>
+    <form class="ch-form" id="ch-form" role="search" autocomplete="off">
+      <label class="field ch-name-field">
+        <span>Charaktername</span>
+        <input type="text" name="name" id="ch-name" maxlength="32" placeholder="z. B. WAVE" required>
+      </label>
+      <label class="field">
+        <span>Server (optional)</span>
+        <select id="ch-server"><option value="">Alle Global-Server</option></select>
+      </label>
+      <button type="submit" class="btn">Analysieren</button>
+    </form>
+    <div class="ch-recent" id="ch-recent"></div>
+    <div class="ch-status" id="ch-status" aria-live="polite" hidden></div>
+    <div id="ch-result"></div>
+    <details class="ch-adv">
+      <summary>Erweitert: Proxy-Adresse</summary>
+      <form class="ch-form" id="ch-api-form" autocomplete="off">
+        <label class="field ch-name-field">
+          <span>Adresse des Daten-Proxys</span>
+          <input type="url" id="ch-api" placeholder="leer = diese Website">
+        </label>
+        <button type="submit" class="btn btn--ghost">Speichern</button>
+      </form>
+      <p class="fine">Nur nötig, wenn die Seite auf GitHub Pages liegt und der Proxy als eigener Cloudflare Worker läuft.</p>
+    </details>
   </section>
 
   <!-- ===================== Gearscore ===================== -->
@@ -272,9 +314,12 @@
 <noscript><p class="wrap">Diese Seite braucht JavaScript für Zeiten, Karte und Checkliste.</p></noscript>
 <!--BODY-END-->
 
+<script src="assets/js/config.js"></script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/zeit.js"></script>
 <script src="assets/js/karte.js"></script>
+<script src="assets/js/audit.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="assets/js/charakter.js"></script>
 </body>
 </html>
