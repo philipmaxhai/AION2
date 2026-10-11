@@ -20,19 +20,21 @@
 
   /* Englische Werte-Namen der Armory → Begriffe des deutschen Clients */
   const STAT_DE = {
-    "Max Attack": "Max. Angriffskraft", "Attack": "Angriffskraft", "Attack Bonus": "Angriffskraft-Bonus",
+    "Max Attack": "Max. Angriffskraft", "Attack": "Angriffskraft", "Attack Bonus": "Zusatzangriffskraft",
     "Accuracy": "Präzision", "Accuracy Bonus": "Präzisionsbonus", "Critical Hit": "Kritischer Treffer",
-    "Critical Attack": "Krit.-Angriffskraft", "Critical Hit Resist": "Krit.-Widerstand", "Critical Damage Boost": "Krit.-Schadensbonus",
-    "Defense": "Verteidigung", "Defense Bonus": "Verteidigungsbonus", "HP": "LP", "MP": "MP", "Block": "Block",
-    "Evasion": "Ausweichen", "Evasion Bonus": "Ausweichbonus", "Natural MP Regen": "Natürliche MP-Regeneration",
+    "Critical Attack": "Krit.-Angriffskraft", "Critical Hit Resist": "Krit.-Widerstand", "Critical Damage Boost": "Krit.-Schadensverstärkung",
+    "Critical Damage Tolerance": "Krit.-Schadensresistenz", "Max HP": "Max. LP", "Max MP": "Max. MP",
+    "Defense": "Verteidigung", "Defense Bonus": "Zusatzverteidigung", "HP": "LP", "MP": "MP", "Block": "Block",
+    "Evasion": "Ausweichen", "Evasion Bonus": "Zusatzausweichen", "Natural MP Regen": "Natürliche MP-Regeneration",
     "Might": "Macht", "Precision": "Präzision", "Dexterity": "Agilität", "Willpower": "Willenskraft",
-    "Status Effect Resist": "Statuseffekt-Widerstand", "Status Effect Chance": "Statuseffekt-Chance",
+    "Status Effect Resist": "Widerstand (Statuseffekte)", "Status Effect Chance": "Statuseffekt-Trefferchance",
     "Perfect Resist": "Perfektion-Widerstand", "Perfect Chance": "Perfektion", "Penetration": "Durchschlag",
     "Weapon Damage Boost": "Waffenschadensbonus", "Power Shard Damage Bonus": "Kraftsplitter-Schaden",
-    "Combat Speed": "Kampfgeschwindigkeit", "Multi-hit Chance": "Mehrfachtreffer-Chance", "Multi-hit Resist": "Mehrfachtreffer-Widerstand",
+    "Combat Speed": "Kampftempo", "Multi-hit Chance": "Mehrfachtreffer", "Multi-hit Resist": "Widerstand (Mehrfachtreffer)",
+    "Multi-Hit Chance": "Mehrfachtreffer", "Multi-Hit Resist": "Widerstand (Mehrfachtreffer)",
     "PvE Damage Boost": "Schadensverstärkung (PvE)", "PvE Damage Tolerance": "Schadensresistenz (PvE)", "Damage Boost": "Schadensverstärkung",
     "Damage Tolerance": "Schadensresistenz", "HP Potion Recovery increase": "LP-Trank-Heilung", "Regeneration": "Regeneration",
-    "Cooldown Reduction": "Abklingzeit-Reduktion", "Back Attack": "Rückenangriff", "Front Attack": "Frontangriff", "Move Speed": "Bewegungstempo",
+    "Cooldown Reduction": "Abklingzeitverringerung", "Back Attack": "Rückenangriff", "Front Attack": "Frontangriff", "Move Speed": "Bewegungstempo",
   };
   const statDe = (name) => STAT_DE[name] || name;
   /* „Attack Bonus +3“ → „Angriffskraft-Bonus +3“, „Spirit Strike +1“ → deutscher Skillname */
@@ -465,7 +467,7 @@
         id: "daevanion", score: 25, cat: "quick",
         title: "Daevanion-Kristalle zuerst in offensive Knoten",
         why: `Auf deinen PvE-Brettern sind noch ${pveOpen} Knoten mit Angriffskraft, Krit oder Skill-Stufen für deine genutzten Skills zu.`,
-        how: "Erst Unique- und Legend-Knoten, dann die gewöhnlichen Angriffs- und Krit-Knoten. PvP-Bretter zuletzt.",
+        how: "Die genaue Reihenfolge zeigt dein Brett weiter unten: nummeriert, als günstigster Weg von deinen offenen Knoten aus. PvP-Bretter zuletzt.",
         conf: "ok",
       });
     }

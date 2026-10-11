@@ -288,7 +288,7 @@ export async function loadBoards(cid, sid, boardIds, fetchImpl = fetch) {
     if (!d) return;
     out[id] = {
       nodes: (d.nodeList || []).filter((n) => n.type && n.type !== "None").map((n) => ({
-        type: n.type, grade: n.grade, open: !!n.open, name: n.name,
+        type: n.type, grade: n.grade, open: !!n.open, name: n.name, row: n.row, col: n.col,
         effects: (n.effectList || []).map((e) => e.desc),
       })),
       openStats: (d.openStatEffectList || []).map((e) => e.desc),

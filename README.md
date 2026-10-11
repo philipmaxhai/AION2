@@ -12,8 +12,9 @@ Die Seite geht davon aus, dass die Main-Story durch ist, du Level 45 bist und mi
 - **Spielzeiten**: Tages-/Wochen-Reset, Raumzeit-Riss, Shugo-Fest, Dimensionsinvasion, Artefakt-Belagerung und Bosse, immer in deutscher Zeit (MEZ/MESZ, Umstellung automatisch). Tagesleiste, Wochentabelle, Versatz pro Termin zum Korrigieren und Erinnerung 5 Minuten vorher.
 - **Checkliste**: Täglich und wöchentlich, setzt sich zum Reset selbst zurück.
 - **Klassen**: Spiritmaster ausführlich (Geister, Stigmen, Skill-Ränge, Daevanion, Gear-Werte, Ablauf), dazu Gladiator, Templar, Assassin, Ranger, Sorcerer, Cleric und Chanter – mit den offiziellen Klassenwappen.
+- **Daevanion**: Für jede Klasse alle fünf Bretter als Bild, mit der empfohlenen Route: welche Knoten zuerst, nummeriert, mit Punkten und Summe. Als PNG speichern oder als Link teilen. Grundlage sind die Bretter bekannter Spieler je Klasse; die Reihenfolge berechnet die Seite als günstigsten Weg vom Start.
 
-Design im Fantasy-Stil: dunkel als Abyss-Nacht mit Daeva-Gold, hell als Pergament. Item-, Skill- und Klassenbilder kommen vom NCSOFT-CDN.
+Ruhiges Design in Dunkel und Hell, mit der offiziellen Key-Art und Item-, Skill- und Klassenbildern vom NCSOFT-CDN.
 
 Alles, was du einstellst, speichert nur dein Browser (localStorage).
 
@@ -24,7 +25,8 @@ Name eingeben, fertig: Die Seite lädt Ausrüstung, Manasteine, Stigmen und Daev
 - **Sofort-Urteil** mit Bild: das Upgrade mit dem größten Gewinn pro Aufwand.
 - **Fahrplan zum Abhaken**: Heute (Quick-Wins unter 10 Minuten, Tagesziel, Zeiten in deutscher Zeit), diese Woche, nächste 2–3 Wochen, ab 2100 Gearscore.
 - **Charakterfenster**: alle 20 Slots mit Item-Bild, Seltenheitsrahmen und Status. Ein Klick zeigt den Plan für das Teil: Ziel-Item mit Werte-Vergleich und Material-Liste, was +10 bringt und kostet, Manasteine mit Bewertung, Zusatzwerte, was später kommt.
-- **Stigmen, Skills, Daevanion und Werte** mit den Symbolen aus dem Spiel, Farm- und Anti-Waste-Liste, Ressourcen-Rechner für Kinah, AP und Verstärkungssteine.
+- **Dein Daevanion-Brett**: offene Knoten markiert, die nächsten empfohlenen Knoten nummeriert, von deinem Stand aus berechnet.
+- **Stigmen, Skills und Werte** mit den Symbolen aus dem Spiel, Farm- und Anti-Waste-Liste, Ressourcen-Rechner für Kinah, AP und Verstärkungssteine.
 
 NCSOFT blockt Abrufe, die direkt von fremden Websites kommen. Deshalb läuft ein kleiner Proxy mit, kostenlos als **Cloudflare Worker** auf derselben Adresse wie die Website.
 
@@ -61,6 +63,8 @@ Kein Build nötig. `public/index.html` lässt sich direkt im Browser öffnen; de
 
 ## Daten anpassen
 
+Die Daevanion-Bretter (`public/assets/js/data-daevanion.js`) erzeugt `python3 -I tools/daevanion_daten.py` neu (lädt die Planer-Seiten aller Klassen, prüft sie gegen gespeicherte Armory-Daten des Beschwörers, falls vorhanden). Die Prioritäten je Klasse stehen in `daevanionPlan` in `data.js`.
+
 Alle Spieldaten stehen in [`public/assets/js/data.js`](public/assets/js/data.js):
 
 - `events`: Spielzeiten. `tz` ist die Zeitzone, in der die Quelle die Zeit angibt (`UTC` oder `Europe/Berlin`); die Seite rechnet in deutsche Zeit um.
@@ -79,7 +83,7 @@ Stand 09.10.2026, vier Tage nach dem Global-Launch am 05.10.2026. NCSOFT hat fü
 ```
 public/                         Website (nur dieser Ordner ist öffentlich)
 public/index.html               Seite
-public/assets/css/style.css     Design (Fantasy, dunkel und Pergament-hell)
+public/assets/css/style.css     Design (dunkel und hell)
 public/assets/js/data.js        Spieldaten und Regeln des Charakter-Checks
 public/assets/js/data-items.js  Ziel-Items (Bilder, Werte, Rezepte, Verstärkungskosten), erzeugt
 public/assets/js/zeit.js        Zeitzonen-Rechnung
@@ -87,7 +91,8 @@ public/assets/js/karte.js       Karte (SVG, Zoom, Pins)
 public/assets/js/app.js         Oberfläche
 public/assets/js/audit.js       Analyse-Regeln des Charakter-Checks
 public/assets/js/charakter.js   Charakter-Check (Suche, Charakterfenster, Fahrplan)
-public/assets/js/deko.js        Aether-Funken im Hero
+public/assets/js/daevanion.js   Daevanion: Route, Brett als Bild, PNG-Export
+public/assets/js/data-daevanion.js  Daevanion-Bretter aller Klassen, erzeugt
 public/assets/js/config.js      Proxy- und Live-Adresse
 wrangler.jsonc                  Cloudflare Worker: public/ ausliefern, /api/* an den Proxy
 proxy/worker.mjs                Worker-Einstieg

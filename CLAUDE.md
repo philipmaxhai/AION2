@@ -33,7 +33,13 @@ Die Armory-Endpunkte (`api-search.plaync.com`, `aion2.plaync.com`) sind undokume
 
 ## Website
 
-- Alles Öffentliche liegt in `public/`: `index.html`, `assets/css/style.css`, `assets/js/{config,data,data-items,zeit,karte,audit,app,charakter,deko}.js` (Reihenfolge der Script-Tags: `data-items.js` nach `data.js` und vor `audit.js`).
-- Design: Fantasy-Stil, dunkel (Abyss-Nacht mit Gold) und hell (Pergament). Farben nur über die CSS-Variablen in `style.css`, beide Varianten pflegen. Schriften: Cinzel (Überschriften), Alegreya Sans (Text), Cormorant Garamond (kursive Einleitungen). `deko.js` zeichnet die Aether-Funken im Hero und respektiert „Bewegung reduzieren“.
+- Alles Öffentliche liegt in `public/`: `index.html`, `assets/css/style.css`, `assets/js/{config,data,data-items,data-daevanion,zeit,karte,audit,daevanion,app,charakter}.js` (Reihenfolge der Script-Tags: die `data-*.js` nach `data.js`, `daevanion.js` nach `audit.js` und vor `app.js`).
+- Design: ruhig und redaktionell, kein generischer „Fantasy-Template“-Look. Dunkel (Anthrazit) und hell (Papier), Gold nur als Akzent; keine Verläufe auf Text, keine Leuchteffekte, keine Zierecken, wenig verschachtelte Kästen (Listen mit feinen Linien statt Karten in Karten). Schriften: Cormorant Garamond (Überschriften, normale Schreibweise), Alegreya Sans (Text). Farben nur über die CSS-Variablen in `style.css`, beide Varianten pflegen. Der Hero zeigt die offizielle Key-Art vom NCSOFT-CDN.
+
+## Daevanion
+
+- `public/assets/js/data-daevanion.js`: Raster aller fünf Bretter (15×15, Position, Typ, Seltenheit) und die Skill-Knoten je Klasse mit deutschen Namen. Aus dem GameWith-Planer erzeugt (Daten der offiziellen Charakterseiten), für den Beschwörer Knoten für Knoten gegen die Armory geprüft. Werte-Knoten sind für alle Klassen gleich. Nicht von Hand pflegen, neu erzeugen.
+- `DK_DATA.daevanionPlan` in `data.js`: Kern-Skills, Passive und Ecken je Klasse (englische Namen wie in der Armory) mit Quelle. Neue Erkenntnisse dort eintragen.
+- `public/assets/js/daevanion.js`: Route (günstigster Weg vom Start, Knotenkosten 1/2/3/4: erst Kern-Skills und die wichtigste Passive, dann Ecken, dann übrige Passive, danach Ausbau nach Nutzen pro Punkt), Brett als SVG, PNG-Export, Ansicht „Daevanion“ (`?klasse=…&brett=…#daevanion`). Im Charakter-Check startet die Route von den offenen Knoten des Charakters (der Proxy liefert `row`/`col` je Knoten).
 - Spieldaten, Zeiten, Karte und Klassen: `public/assets/js/data.js`
 - Zeiten werden in `Europe/Berlin` angezeigt; Quellzeiten stehen mit ihrer Zeitzone (`UTC` oder `Europe/Berlin`) in `events`.

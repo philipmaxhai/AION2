@@ -404,7 +404,8 @@
     let html = '<article class="cls cls--' + c.id + '">';
     html += '<header class="cls-head">' + emblem(c.id, "cls-emblem") + '<div class="cls-title"><p class="eyebrow">' + esc(c.role) + "</p><h2>" + esc(c.name) + ' <span class="muted">' + esc(c.de) + "</span></h2>" +
       '<p class="cls-tags"><span>' + esc(c.weapon) + "</span><span>" + esc(c.range) + "</span></p></div>" +
-      (c.id !== S.cls ? '<button type="button" class="btn" data-action="set-class" data-id="' + c.id + '">Das ist meine Klasse</button>' : '<span class="chip chip--ok">Deine Klasse</span>') + "</header>";
+      '<div class="cls-actions">' + (c.id !== S.cls ? '<button type="button" class="btn" data-action="set-class" data-id="' + c.id + '">Das ist meine Klasse</button>' : '<span class="chip chip--ok">Deine Klasse</span>') +
+      '<button type="button" class="btn btn--ghost" data-action="open-dv" data-id="' + c.id + '">Daevanion-Brett ansehen</button></div></header>';
     html += '<p class="lede">' + esc(c.summary) + '</p><p class="muted small">Tier-Einschätzung: ' + esc(c.tier) + "</p>";
     html += '<div class="cols">' +
       '<section><h3>Werte-Priorität (PvE)</h3><ol class="prio">' + c.stats.map((s) => "<li>" + esc(s) + "</li>").join("") + "</ol>" +
@@ -614,7 +615,7 @@
   }
 
   /* ================= Navigation ================= */
-  const VIEWS = ["uebersicht", "charakter", "gearscore", "karte", "zeiten", "checkliste", "klassen", "quellen"];
+  const VIEWS = ["uebersicht", "charakter", "gearscore", "daevanion", "karte", "zeiten", "checkliste", "klassen", "quellen"];
   function show(view) {
     if (!VIEWS.includes(view)) view = "uebersicht";
     VIEWS.forEach((v) => {
@@ -709,6 +710,7 @@
       case "boss-clear": delete S.kills[id]; save(); refresh(["boss-timers", "map-panel"]); liveMap(t); break;
       case "view-class": viewCls = id; refresh(["class-tabs", "class-detail"]); break;
       case "open-class": viewCls = id; refresh(["class-tabs", "class-detail"]); go("klassen"); break;
+      case "open-dv": if (window.DK_DV) window.DK_DV.show(id, 0); break;
       case "set-class":
         S.cls = id; viewCls = id; save();
         $("#f-class").value = id;

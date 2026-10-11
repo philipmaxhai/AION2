@@ -55,7 +55,7 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* egal */ } },
   };
 
-  let current = null; // { character, audit, sel }
+  let current = null; // { character, audit, sel, dvSel }
   let lastQuery = null;
   let pendingSid = null;
 
@@ -282,10 +282,13 @@
     h += planHtml(ch, a);
     h += gearHtml(ch, a);
     h += `<div class="two">${stigmaHtml(ch, a)}${skillsHtml(ch, a)}</div>`;
-    h += `<div class="two">${boardsHtml(ch, a)}${statsHtml(ch, a)}</div>`;
+    h += boardsHtml(ch, a);
     h += `<div class="two" id="ch-farm">
-      <section class="panel"><h3>Farmen</h3><ul class="plain">${a.farm.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></section>
-      <section class="panel panel--warn"><h3>Nicht verschwenden</h3><ul class="donts">${a.waste.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></section>
+      ${statsHtml(ch, a)}
+      <div class="stack">
+        <section class="panel"><h3>Farmen</h3><ul class="plain">${a.farm.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></section>
+        <section class="panel panel--warn"><h3>Nicht verschwenden</h3><ul class="donts">${a.waste.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></section>
+      </div>
     </div>`;
     h += resHtml(ch, a, res);
     if (ch.meta.partial) h += `<p class="notice">Ein Teil der Details (Manasteine oder Daevanion) kam nicht an. Die Auswertung ist deshalb unvollständig – „Neu laden“ versucht es erneut.</p>`;
@@ -594,40 +597,58 @@
     </section>`;
   }
 
-  /* Daevanion-Bretter mit Gottheiten-Symbol und offenen Knoten */
+  /* Daevanion: dein Brett mit offenen Knoten und den nächsten empfohlenen Schritten (Route aus daevanion.js) */
+  function daevData(ch, a) {
+    const V = window.DK_DV;
+    if (!V || !a.cls) return [];
+    return ch.boards.map((b) => {
+      const bi = V.boardIndex(b.name);
+      if (bi < 0 || !b.nodes || !b.nodes.some((n) => n.row)) return null;
+      const m = V.route(a.cls, bi).m;
+      const open = b.nodes.filter((n) => n.open && n.row).map((n) => m.at.get(n.row * 100 + n.col)).filter(Boolean).map((n) => n.i);
+      return { b, bi, r: V.route(a.cls, bi, open) };
+    }).filter(Boolean);
+  }
+
   function boardsHtml(ch, a) {
-    const deity = {};
-    ch.stats.forEach((s) => {
-      const m = /\[([^\]]+)\]/.exec(s.name || "");
-      if (m && STAT_IMG[s.type]) deity[m[1]] = IMG + "info/" + STAT_IMG[s.type] + ".png";
-    });
-    const nodeChip = (label, n, kind) => {
-      const g = /\s\((Rare|Legend|Unique|Epic|Mythic)\)$/.exec(label);
-      const grade = g ? g[1].toLowerCase() : kind === "skill" ? "rare" : "common";
-      const text = g ? label.slice(0, g.index) : label;
-      const file = ["common", "rare", "legend", "unique"].includes(grade) ? grade : "unique";
-      return `<li class="node node--${grade}">${pic(`${IMG}daevanion/board_icon_${file}.png`, "node-ico")}<span>${esc(text)}${n > 1 ? ` ×${n}` : ""}</span></li>`;
-    };
-    const rows = a.boards.map((b) => {
-      const pct = b.total ? Math.round((b.open / b.total) * 100) : 0;
-      const off = Object.entries(b.offensive).sort((x, y) => y[1] - x[1]);
-      const sk = Object.entries(b.skills);
-      const icon = deity[b.name] || `${IMG}daevanion/board_icon_start_${clsFile(a.cls || "fighter")}.png`;
-      let note;
-      if (!b.loaded) note = '<p class="small muted">Knoten nicht geladen.</p>';
-      else if (b.pvp) note = '<p class="small muted">PvP-Brett: für PvE zuletzt.</p>';
-      else if (off.length || sk.length) note = `<p class="small muted">Noch zu, zuerst nehmen:</p><ul class="nodes">${sk.map(([k, v]) => nodeChip(k, v, "skill")).join("")}${off.slice(0, 6).map(([k, v]) => nodeChip(k, v, "stat")).join("")}</ul>`;
-      else note = '<p class="small ok-text">Offensive Knoten erledigt.</p>';
-      return `<li class="board${b.pvp ? " is-pvp" : ""}">
-        ${pic(icon, "board-ico")}
-        <div class="board-body"><div class="board-head"><strong>${esc(nm(b))}</strong>${b.pvp ? ' <span class="chip chip--offen">PvP</span>' : ""}<span class="num muted">${b.open}/${b.total}</span></div>
-        <div class="meter"><div class="meter-fill" style="width:${pct}%"></div></div>${note}</div>
-      </li>`;
-    }).join("");
-    return `<section class="panel" id="ch-daev" aria-labelledby="ch-daev-h">
-      <h3 id="ch-daev-h">Daevanion</h3>
-      ${rows ? `<ul class="boards">${rows}</ul>` : '<p class="empty">Keine Daevanion-Daten.</p>'}
-      <p class="fine">Reihenfolge: Skill-Stufen für deine genutzten Skills, dann Unique- und Legend-Knoten, dann Angriffskraft und Krit. PvP-Bretter zuletzt.</p>
+    const list = daevData(ch, a);
+    if (!list.length) {
+      const rows = a.boards.map((b) => `<li class="board"><div class="board-body"><div class="board-head"><strong>${esc(nm(b))}</strong><span class="num muted">${b.open}/${b.total}</span></div>
+        <div class="meter"><div class="meter-fill" style="width:${b.total ? Math.round((b.open / b.total) * 100) : 0}%"></div></div></div></li>`).join("");
+      return `<section class="panel" id="ch-daev" aria-labelledby="ch-daev-h"><h3 id="ch-daev-h">Daevanion</h3>
+        ${rows ? `<ul class="boards">${rows}</ul>` : '<p class="empty">Keine Daevanion-Daten.</p>'}
+        <p class="fine">Die Knoten-Positionen kamen nicht an. „Neu laden“ versucht es erneut.</p></section>`;
+    }
+    if (current.dvSel == null || !list.some((x) => x.bi === current.dvSel)) {
+      const todo = list.find((x) => !x.r.pvp && x.r.cost.kern > 0);
+      current.dvSel = (todo || list[0]).bi;
+    }
+    const sel = list.find((x) => x.bi === current.dvSel);
+    const V = window.DK_DV;
+    const LIMIT = 12;
+    const next = sel.r.steps.slice(0, LIMIT).filter((s) => s.tier !== "rest");
+    const tabs = list.map((x) => `<button type="button" role="tab" class="dv-tab${x.bi === sel.bi ? " is-on" : ""}" aria-selected="${x.bi === sel.bi}" data-ch="dvboard" data-i="${x.bi}">
+      <span class="dv-tab-name">${esc(nm(x.b))}</span><span class="dv-tab-sub">${x.b.open}/${x.b.total} offen · ${x.r.pvp ? "PvP" : x.r.cost.kern ? `Kern fehlt ${x.r.cost.kern} P.` : "Kern fertig"}</span></button>`).join("");
+    const status = sel.r.pvp
+      ? "Azphel ist das PvP-Brett mit eigenen Punkten. Für PvE bringt es nichts."
+      : sel.r.cost.kern
+        ? `Bis die Kern-Route fertig ist, fehlen dir ${sel.r.cost.kern} Punkte. Die nächsten Schritte sind nummeriert.`
+        : `Die Kern-Route auf ${nm(sel.b)} ist fertig. Als Nächstes der Ausbau (noch ${sel.r.cost.ausbau} Punkte).`;
+    return `<section class="panel dv-ch" id="ch-daev" aria-labelledby="ch-daev-h">
+      <header class="panel-head"><h3 id="ch-daev-h">Daevanion: dein Brett</h3><button type="button" class="link-btn" data-ch="dvall" data-i="${sel.bi}">Empfohlenes Brett für ${esc(((D.classes.find((c) => c.id === a.cls) || {}).de) || "deine Klasse")}</button></header>
+      <div class="dv-boards" role="tablist" aria-label="Brett">${tabs}</div>
+      <div class="dv-layout">
+        <div class="dv-board">
+          ${V.boardFigure(sel.r, { cls: a.cls, limit: LIMIT, label: `Dein Brett ${nm(sel.b)} mit den nächsten Schritten` })}
+          ${V.legendHtml(sel.r, true)}
+        </div>
+        <div class="dv-plan">
+          <p>${esc(status)}</p>
+          ${next.length ? `<h4>Die nächsten ${next.length} Knoten</h4>
+          <ol class="dv-steps"><li class="dv-step dv-step--head"><span class="dv-no">Nr.</span><span class="dv-what">Knoten</span><span class="dv-pts">Punkte</span><span class="dv-sum">Summe</span></li>${V.stepRows(sel.r, next)}</ol>` : ""}
+          <p class="small muted">Gold = Kern-Route, türkis = Ausbau, ausgefüllt = schon offen. Die Reihenfolge ist der günstigste Weg von deinen offenen Knoten aus.</p>
+        </div>
+      </div>
     </section>`;
   }
 
@@ -759,6 +780,12 @@
       } catch (err) { fallback(); }
     } else if (act === "slot") {
       selectSlot(Number(b.getAttribute("data-slot")), b.hasAttribute("data-scroll"));
+    } else if (act === "dvboard" && current && current.audit) {
+      current.dvSel = Number(b.getAttribute("data-i"));
+      const box = $("#ch-daev");
+      if (box) box.outerHTML = boardsHtml(current.character, current.audit);
+    } else if (act === "dvall" && current && current.audit && window.DK_DV) {
+      window.DK_DV.show(current.audit.cls, Number(b.getAttribute("data-i")));
     } else if (act === "jump") {
       const t = document.getElementById(b.getAttribute("data-to"));
       if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });

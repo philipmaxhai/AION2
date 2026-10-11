@@ -541,6 +541,9 @@ window.DK_DATA = {
   ],
 
   sources: [
+    { name: "Daevanion-Builds je Klasse, Bretter bekannter Spieler (AION2 Vault)", url: "https://aion2vault.com/builds/gladiator/daevanion/" },
+    { name: "Daevanion-Guide: Kosten, Punkte, Prioritäten je Klasse (Metabot)", url: "https://metabot.gg/en/aion-2/guides/daevanion-guide" },
+    { name: "Daevanion-Planer mit Brett-Daten aller Klassen (GameWith)", url: "https://gamewith.ai/aion2/en/daevanion-planner" },
     { name: "Aion 2 Gear Score Guide (Corpus)", url: "https://corpus.gg/blog/aion-2/gear-score-guide" },
     { name: "Gear Score Farming 1400–2100 (Skycoach)", url: "https://skycoach.gg/blog/aion-2/articles/how-to-farm-gs" },
     { name: "Progression 45 bis 2100 (Raid Relay)", url: "https://raidrelay.com/aion-2-gear-score-guide" },
@@ -577,6 +580,69 @@ window.DK_DATA = {
    * Quellen: Spieldaten des Global-Clients über Metabot (Drops, Rezepte, Verstärkung),
    * Kern-Stigmen aus Nutzungsdaten koreanischer Top-Spieler (Aion2-Meta).
    */
+  /* Daevanion: Prioritäten je Klasse für PvE (englische Namen wie in der Armory, Anzeige deutsch aus data-daevanion.js).
+   * core: aktive Skills, deren Knoten auf jedem PvE-Brett zuerst kommen. passive: Passive in Reihenfolge (die erste kommt mit den Kern-Skills).
+   * corners: 4-Punkte-Ecken in Reihenfolge. Quelle: öffentliche Bretter bekannter Spieler, zusammengefasst bei aion2vault.com,
+   * und die Klassen-Analyse von Metabot. Die Route selbst (Reihenfolge der Knoten) berechnet daevanion.js: günstigster Weg vom Start. */
+  daevanionPlan: {
+    gladiator: {
+      core: ["Overhead Slam", "Ruinous Blow", "Rending Blow", "Keen Strike"],
+      passive: ["Attack Preparation", "Impact Hit", "Murderous Burst", "Blood Absorption"],
+      corners: ["Combat Speed", "Damage Boost", "Cooldown Reduction", "Multi-Hit Chance", "Critical Damage Boost"],
+      quelle: "Bretter von Grobs (227 Punkte, Level 45) und Ulfhednar",
+      hinweis: "Max. MP nur nehmen, wenn dir das Mana ausgeht."
+    },
+    templar: {
+      core: ["Judgment", "Pummel", "Vicious Strike", "Punishment"],
+      passive: ["Fury", "Insulting Roar", "Impact Hit", "Punishing Benediction", "Enhance Health", "Ironclad Defense"],
+      corners: ["Combat Speed", "Cooldown Reduction", "Damage Boost", "Damage Tolerance", "Multi-Hit Chance", "Critical Damage Boost"],
+      quelle: "Bretter von Xia, Leonis und NoBS Game Guides",
+      hinweis: "Zikel ist für den Templer mindestens so wichtig wie Nezekan: dort liegen Kampfrausch, Gebrüll der Verachtung und Schocktreffer doppelt."
+    },
+    assassin: {
+      core: ["Quick Slice", "Savage Roar", "Heart Gore", "Insignia Explosion"],
+      passive: ["Assault Stance", "Rear Smite", "Exploit Weakness", "Impact Hit"],
+      corners: ["Combat Speed", "Cooldown Reduction", "Damage Boost", "Multi-Hit Chance", "Critical Damage Boost"],
+      quelle: "Bretter von Grobs (82 Punkte früh, Level-45-Pläne)",
+      hinweis: "Nezekan zuerst füllen: dort liegen drei der vier wichtigsten Passiven."
+    },
+    ranger: {
+      core: ["Deadshot", "Gale Arrow", "Drill Dart", "Tempest Shot", "Snipe", "Burst Arrow", "Snare Shot"],
+      passive: ["Focused Eye", "Hunter's Resolve", "Hunter's Soul"],
+      corners: ["Damage Boost", "Critical Damage Boost", "Cooldown Reduction", "Multi-Hit Chance", "Combat Speed"],
+      quelle: "öffentliche Ranger-Bretter, zusammengefasst bei aion2vault",
+      hinweis: "Nezekan zuerst: Fokussiertes Auge und Entschlossenheit des Jägers liegen dort doppelt."
+    },
+    sorcerer: {
+      core: ["Hellfire", "Wish of Concentration", "Blaze", "Bittercold Wind", "Firestorm", "Winter's Shackles", "Flame Arrow"],
+      passive: ["Fire Mark", "Robe of Flame", "Vitality Evaporation", "Grace of Enhancement"],
+      corners: ["Damage Boost", "Critical Damage Boost", "Cooldown Reduction", "Combat Speed", "Multi-Hit Chance"],
+      quelle: "Bretter von shr1kn (268 und 401 Punkte), aLuckyRO",
+      hinweis: "Feuerzeichen zuerst: Flammenexplosion hängt davon ab."
+    },
+    spiritmaster: {
+      core: ["Combustion", "Elemental Fusion", "Summon: Fire Spirit", "Cold Shock", "Dimensional Control"],
+      passive: ["Spirit Strike", "Spirit Revitalization", "Element Unification"],
+      corners: ["Combat Speed", "Cooldown Reduction", "Damage Boost", "Multi-Hit Chance", "Critical Damage Boost"],
+      quelle: "Bretter von Grobs (290 Punkte, Level 45) und init.rb",
+      hinweis: "Die Krit.-Schaden-Ecken auf Vaizel erst spät nehmen."
+    },
+    cleric: {
+      core: ["Condemnation", "Judgment Thunder", "Divine Aura", "Chain of Torment", "Debilitating Mark", "Earth's Retribution"],
+      passive: ["Empyrean Lord's Grace", "Healing Enhancement", "Earth's Grace"],
+      corners: ["Cooldown Reduction", "Combat Speed", "Damage Boost", "Critical Damage Boost", "Multi-Hit Chance"],
+      quelle: "Bretter von MrRosaPony (239 Punkte), Lucia, BoredAF und whelps",
+      hinweis: "Zum Farmen ohne Punkte in Heilungen. Wer in der Gruppe heilt, nimmt Licht der Heilung und Glanz der Genesung dazu."
+    },
+    chanter: {
+      core: ["Dark Crush", "Onslaught", "Incandescent Blow", "Spinning Strike", "Recuperation"],
+      passive: ["Attack Preparation", "Wind's Promise", "Earth's Promise"],
+      corners: ["Combat Speed", "Cooldown Reduction", "Damage Boost", "Critical Damage Boost", "Multi-Hit Chance", "Damage Tolerance"],
+      quelle: "Bretter von Grobs (85 Punkte früh, 325 Punkte Level 45)",
+      hinweis: "Gelübde der Erde senkt die Schadensresistenz des Ziels – stark in der Gruppe."
+    }
+  },
+
   audit: {
     roles: {
       gladiator: "dps", templar: "tank", assassin: "dps", ranger: "dps",
