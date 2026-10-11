@@ -195,7 +195,7 @@ function trimItem(d) {
     maxEnchantLevel: d.maxEnchantLevel,
     mainStats: (d.mainStats || []).map(pickStat),
     subStats: (d.subStats || []).map(pickStat),
-    subSkills: (d.subSkills || []).map(pickStat),
+    subSkills: (d.subSkills || []).map((x) => ({ ...pickStat(x), level: x.level })),
     stones: (d.magicStoneStat || []).map((st) => ({ ...pickStat(st), icon: stoneIcon(st) })),
     stoneSlots: d.magicStoneSlotCount || 0,
     godStones: (d.godStoneStat || []).map(pickStat),

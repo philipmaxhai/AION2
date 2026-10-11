@@ -12,9 +12,10 @@ Die Seite geht davon aus, dass die Main-Story durch ist, du Level 45 bist und mi
 - **Spielzeiten**: Tages-/Wochen-Reset, Raumzeit-Riss, Shugo-Fest, Dimensionsinvasion, Artefakt-Belagerung und Bosse, immer in deutscher Zeit (MEZ/MESZ, Umstellung automatisch). Tagesleiste, Wochentabelle, Versatz pro Termin zum Korrigieren und Erinnerung 5 Minuten vorher.
 - **Checkliste**: Täglich und wöchentlich, setzt sich zum Reset selbst zurück.
 - **Klassen**: Spiritmaster ausführlich (Geister, Stigmen, Skill-Ränge, Daevanion, Gear-Werte, Ablauf), dazu Gladiator, Templar, Assassin, Ranger, Sorcerer, Cleric und Chanter – mit den offiziellen Klassenwappen.
+- **Skills & Makros**: Für jede Klasse die Leiste mit gestapelten Linien (welcher Skill unten Vorrang hat), das passende Makro, eigene Tasten und Opener, die Skillpunkte-Reihenfolge beim Leveln und auf Stufe 45 (Durchschnittsstufen von rund 150 Top-Spielern je Klasse), die Stigmen nach Slot und eine Anleitung zum Einrichten des Makros. Als Text kopierbar.
 - **Daevanion**: Für jede Klasse alle fünf Bretter als Bild, mit der empfohlenen Route: welche Knoten zuerst, nummeriert, mit Punkten und Summe. Als PNG speichern oder als Link teilen. Grundlage sind die Bretter bekannter Spieler je Klasse; die Reihenfolge berechnet die Seite als günstigsten Weg vom Start.
 
-Ruhiges Design in Dunkel und Hell, mit der offiziellen Key-Art und Item-, Skill- und Klassenbildern vom NCSOFT-CDN.
+Modernes, app-artiges Design in Dunkel und Hell (Seitenleiste auf dem Desktop, Reiter auf dem Handy, Schrift Archivo), mit der offiziellen Key-Art und Item-, Skill- und Klassenbildern vom NCSOFT-CDN.
 
 Alles, was du einstellst, speichert nur dein Browser (localStorage).
 
@@ -26,6 +27,7 @@ Name eingeben, fertig: Die Seite lädt Ausrüstung, Manasteine, Stigmen und Daev
 - **Fahrplan zum Abhaken**: Heute (Quick-Wins unter 10 Minuten, Tagesziel, Zeiten in deutscher Zeit), diese Woche, nächste 2–3 Wochen, ab 2100 Gearscore.
 - **Charakterfenster**: alle 20 Slots mit Item-Bild, Seltenheitsrahmen und Status. Ein Klick zeigt den Plan für das Teil: Ziel-Item mit Werte-Vergleich und Material-Liste, was +10 bringt und kostet, Manasteine mit Bewertung, Zusatzwerte, was später kommt.
 - **Dein Daevanion-Brett**: offene Knoten markiert, die nächsten empfohlenen Knoten nummeriert, von deinem Stand aus berechnet.
+- **Skillpunkte-Check**: geschätzte Verteilung deiner 384 Punkte, Vergleich jeder Skill-Stufe mit den Top-Spielern deiner Klasse und ein konkreter Vorschlag zum Umverteilen.
 - **Stigmen, Skills und Werte** mit den Symbolen aus dem Spiel, Farm- und Anti-Waste-Liste, Ressourcen-Rechner für Kinah, AP und Verstärkungssteine.
 
 NCSOFT blockt Abrufe, die direkt von fremden Websites kommen. Deshalb läuft ein kleiner Proxy mit, kostenlos als **Cloudflare Worker** auf derselben Adresse wie die Website.
@@ -63,6 +65,8 @@ Kein Build nötig. `public/index.html` lässt sich direkt im Browser öffnen; de
 
 ## Daten anpassen
 
+Die Skill-Daten (`public/assets/js/data-skills.js`: deutsche Namen, Symbole, Stufen und Stigmen der Top-Spieler) erzeugt `python3 -I tools/skills_daten.py` neu. Leiste, Makro, Opener und Tipps je Klasse stehen kuratiert in `skillPlan` in `data.js`.
+
 Die Daevanion-Bretter (`public/assets/js/data-daevanion.js`) erzeugt `python3 -I tools/daevanion_daten.py` neu (lädt die Planer-Seiten aller Klassen, prüft sie gegen gespeicherte Armory-Daten des Beschwörers, falls vorhanden). Die Prioritäten je Klasse stehen in `daevanionPlan` in `data.js`.
 
 Alle Spieldaten stehen in [`public/assets/js/data.js`](public/assets/js/data.js):
@@ -76,7 +80,7 @@ Jeder Eintrag hat eine `confidence`: `ok` (mehrere Quellen einig), `community` (
 
 ## Datenlage
 
-Stand 09.10.2026, vier Tage nach dem Global-Launch am 05.10.2026. NCSOFT hat für Europa noch keinen offiziellen Zeitplan veröffentlicht. Die Werte stammen aus Community-Guides (Liste unter „Quellen“ auf der Seite) und widersprechen sich teilweise. Unsichere Werte sind markiert und Zeiten lassen sich auf der Seite per Versatz korrigieren.
+Stand 11.10.2026, sechs Tage nach dem Global-Launch am 05.10.2026. NCSOFT hat für Europa noch keinen offiziellen Zeitplan veröffentlicht. Die Werte stammen aus Community-Guides (Liste unter „Quellen“ auf der Seite) und widersprechen sich teilweise. Unsichere Werte sind markiert und Zeiten lassen sich auf der Seite per Versatz korrigieren.
 
 ## Aufbau
 
@@ -93,6 +97,8 @@ public/assets/js/audit.js       Analyse-Regeln des Charakter-Checks
 public/assets/js/charakter.js   Charakter-Check (Suche, Charakterfenster, Fahrplan)
 public/assets/js/daevanion.js   Daevanion: Route, Brett als Bild, PNG-Export
 public/assets/js/data-daevanion.js  Daevanion-Bretter aller Klassen, erzeugt
+public/assets/js/skills.js      Skills & Makros je Klasse
+public/assets/js/data-skills.js Skills aller Klassen mit Top-Spieler-Stufen, erzeugt
 public/assets/js/config.js      Proxy- und Live-Adresse
 wrangler.jsonc                  Cloudflare Worker: public/ ausliefern, /api/* an den Proxy
 proxy/worker.mjs                Worker-Einstieg
@@ -100,6 +106,8 @@ proxy/armory-core.mjs           Proxy-Logik (NCSOFT-Abfragen, Cache, Prüfungen)
 functions/api/                  Alternative für Cloudflare Pages
 tools/dev-server.mjs            Lokaler Server für Website und Proxy
 tools/armory.py                 Charakter-Abruf im Terminal
+tools/daevanion_daten.py        erzeugt data-daevanion.js
+tools/skills_daten.py           erzeugt data-skills.js
 ```
 
 Fanprojekt, nicht mit NCSOFT verbunden. AION ist eine Marke von NCSOFT.

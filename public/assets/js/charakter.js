@@ -587,14 +587,50 @@
       const lvl = s ? Number(s.level) : 0;
       return `<li>${s ? pic(s.icon, "ks-img") : ""}<span>${esc(s ? nm(s) : n)}</span><span class="num ${lvl >= ks.target ? "ok-text" : "warn-text"}">${s ? lvl : "–"} / ${ks.target}</span></li>`;
     }).join("") : "";
+    const clsDe = (D.classes.find((c) => c.id === a.cls) || {}).de || a.clsName;
     return `<section class="panel" aria-labelledby="ch-skill-h">
-      <h3 id="ch-skill-h">Skills & Build</h3>
+      <h3 id="ch-skill-h">Skills &amp; Build</h3>
       ${active.length ? `<p class="lbl-line">Ausgerüstete Skills</p><ul class="skills">${active.map(cell).join("")}</ul>` : ""}
+      ${skillPointsHtml(a)}
       ${keyRows ? `<p class="lbl-line">Kern-Skills (Ziel-Stufe ${ks.target}+)</p><ul class="keyskills">${keyRows}</ul>` : ""}
       ${build.map((b) => `<p class="lbl-line">${esc(b.title)}</p><ol class="prio">${b.list.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>`).join("")}
       ${passive.length ? `<details class="more-skills"><summary>Passive Skills (${passive.length})</summary><ul class="skills skills--small">${passive.map(cell).join("")}</ul></details>` : ""}
+      ${window.DK_SK && a.cls ? `<p class="ch-sk-link"><button type="button" class="btn btn--ghost" data-action="open-sk" data-id="${esc(a.cls)}">Leiste &amp; Makro für ${esc(clsDe)}</button></p>` : ""}
       <p class="fine">Die Armory zeigt keine Gesamtwerte für Genauigkeit, Krit und Geschwindigkeit. Breakpoints prüfst du im Werte-Fenster im Spiel.</p>
     </section>`;
+  }
+
+  /* Skillpunkte: geschätzte Verteilung, Vorschlag zum Umverteilen und Vergleich mit den Top-Spielern (audit.js → skillPoints) */
+  function skillPointsHtml(a) {
+    const sp = a.skillPts;
+    if (!sp || !sp.rows.length) return "";
+    const L = AU.fmtLv;
+    const rows = sp.rows.slice().sort((x, y) => (x.rank || 99) - (y.rank || 99));
+    const state = (r) => {
+      if (r.top == null) return ["", ""];
+      if (r.ziel && r.top - r.level >= 3) return ["warn", "unter Schnitt"];
+      if (!r.ziel && r.pts >= 8 && r.level - r.top >= 3) return ["warn", "Punkte frei machen"];
+      return ["ok", r.ziel ? "passt" : "niedrig lassen"];
+    };
+    const mv = sp.moves;
+    const table = rows.map((r) => {
+      const [k, t] = state(r);
+      return `<tr${k === "warn" ? ' class="is-warn"' : ""}><th scope="row">${pic(r.icon, "sp-img")}<span>${esc(nm(r))}</span></th>
+        <td class="num">${r.level}</td><td class="num">${r.pts}</td><td class="num">${r.top != null ? L(r.top) : "–"}</td><td><span class="sp-tag sp-tag--${k || "none"}">${esc(t)}</span></td></tr>`;
+    }).join("");
+    const flagged = rows.filter((r) => state(r)[0] === "warn").length;
+    return `<div class="sp">
+      <p class="lbl-line">Skillpunkte</p>
+      ${sp.level >= 45 && sp.loaded ? `<div class="sp-meter" role="img" aria-label="Etwa ${sp.used} von ${sp.pool} Punkten verteilt"><span style="width:${Math.min(100, (sp.used / sp.pool) * 100).toFixed(1)}%"></span></div>
+      <p class="small muted">Etwa <b>${sp.used}</b> von <b>${sp.pool}</b> Punkten verteilt (geschätzt aus Stufe minus Daevanion und Ausrüstung). Mit allen Punkten passen ${sp.slots} Skills auf 10.</p>` : ""}
+      ${mv ? `<div class="sp-move"><p class="sp-move-h">${mv.free.length ? "Vorschlag: umverteilen" : "Vorschlag: freie Punkte hierhin"}</p>
+        <ul>${mv.free.map((r) => `<li class="sp-down">${pic(r.icon, "sp-img")}<span>${esc(nm(r))}</span><b>${r.pts} → 1</b><em>+${r.cost} Punkte</em></li>`).join("")}
+        ${mv.raise.map((r) => `<li class="sp-up">${pic(r.icon, "sp-img")}<span>${esc(nm(r))}</span><b>${r.pts} → 10</b><em>−${r.need} Punkte</em></li>`).join("")}</ul>
+        <p class="small muted">Grundlage: Durchschnittsstufen von ${sp.top.spieler} Top-Spielern deiner Klasse (Metabot, Stand ${esc(sp.top.stand.split("-").reverse().join("."))}).${mv.rest ? ` Danach bleiben ${mv.rest} Punkte frei.` : ""}</p></div>` : ""}
+      <details class="sp-all"${flagged && !mv ? " open" : ""}><summary>Alle Skills im Vergleich${flagged ? ` · ${flagged} auffällig` : ""}</summary>
+        <div class="tbl-wrap"><table class="tbl sp-tbl"><thead><tr><th scope="col">Skill</th><th scope="col">Stufe</th><th scope="col" title="Stufe aus Skillpunkten, geschätzt">Punkte</th><th scope="col">Top-Schnitt</th><th scope="col">Einschätzung</th></tr></thead><tbody>${table}</tbody></table></div>
+      </details>
+    </div>`;
   }
 
   /* Daevanion: dein Brett mit offenen Knoten und den nächsten empfohlenen Schritten (Route aus daevanion.js) */

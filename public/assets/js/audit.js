@@ -57,6 +57,66 @@
     return s;
   }
 
+  const fmtLv = (n) => String(Math.round(n * 10) / 10).replace(".", ",");
+  const und = (list) => list.length > 1 ? list.slice(0, -1).join(", ") + " und " + list[list.length - 1] : list.join("");
+
+  /* Skillpunkte je Skill schätzen und mit den Top-Spielern der Klasse vergleichen.
+   * Daten: DK_DATA.skills (Durchschnittsstufen der Top-Spieler) und DK_DATA.skillPlan.punkte (Kosten, 384 Punkte).
+   * Punkte-Stufe = Armory-Stufe − Daevanion-Knoten − Skill-Stufen auf der Ausrüstung, begrenzt auf 1–10. */
+  function skillPoints(ch, cls) {
+    const SK = D.skills && D.skills.klassen && D.skills.klassen[cls];
+    const SP = D.skillPlan && D.skillPlan.punkte;
+    if (!SK || !SP || !ch.skills || !ch.skills.length) return null;
+    const cum = [0, 0];
+    for (let l = 2; l <= 10; l++) cum[l] = cum[l - 1] + SP.kosten[l];
+    const daev = {}, gearB = {};
+    for (const b of ch.boards || []) {
+      for (const e of b.openSkills || []) {
+        const m = /^(.+?)\s*\+(\d+)$/.exec(String(e));
+        if (m) daev[m[1]] = (daev[m[1]] || 0) + Number(m[2]);
+      }
+    }
+    for (const e of ch.equipment || []) {
+      for (const s of (e.detail && e.detail.subSkills) || []) gearB[s.name] = (gearB[s.name] || 0) + (num(s.level) || num(s.value) || 1);
+    }
+    const loaded = (ch.boards || []).some((b) => b.nodes && b.nodes.length);
+    const rows = ch.skills.filter((s) => (s.category === "Active" || s.category === "Passive") && s.acquired).map((s) => {
+      const t = SK.top.skills[s.name] || null;
+      const level = num(s.level), d = daev[s.name] || 0, g = gearB[s.name] || 0;
+      const pts = Math.max(1, Math.min(10, level - d - g));
+      return { name: s.name, de: s.de, icon: s.icon, typ: s.category === "Active" ? "a" : "p", level, daev: d, gear: g, pts, cost: cum[pts], top: t ? t[1] : null, pick: t ? t[0] : null };
+    });
+    const pool = SP.quellen.reduce((a, q) => a + q[1], 0);
+    const used = rows.reduce((a, r) => a + r.cost, 0);
+    const slots = Math.floor(pool / cum[10]);
+    const ranked = rows.filter((r) => r.top != null).sort((a, b) => b.top - a.top);
+    const want = new Set(ranked.slice(0, slots).map((r) => r.name));
+    rows.forEach((r) => { r.ziel = want.has(r.name) ? 10 : null; r.rank = ranked.indexOf(r) + 1 || null; });
+    const level = num(ch.profile && ch.profile.level);
+    let moves = null;
+    // Nur mit geladenen Brettern: ohne Daevanion-Knoten wäre die Punkte-Stufe zu hoch geschätzt
+    if (loaded && level >= 45) {
+      const raise = ranked.filter((r) => want.has(r.name) && r.pts < 10 && r.top - r.level >= 3).map((r) => Object.assign({}, r, { need: cum[10] - r.cost }));
+      const free = ranked.filter((r) => !want.has(r.name) && r.pts >= 8 && r.level - r.top >= 3).sort((a, b) => a.top - b.top);
+      if (raise.length) {
+        const spare = Math.max(0, pool - used);
+        const needAll = raise.slice(0, 3).reduce((a, r) => a + r.need, 0);
+        const pickFree = [];
+        let refund = 0;
+        for (const r of free) {
+          if (refund + spare >= needAll) break;
+          pickFree.push(r);
+          refund += r.cost;
+        }
+        let budget = refund + spare;
+        const pickRaise = [];
+        for (const r of raise) if (pickRaise.length < 3 && r.need <= budget) { pickRaise.push(r); budget -= r.need; }
+        if (pickRaise.length) moves = { free: pickFree, raise: pickRaise, refund, spare, rest: budget };
+      }
+    }
+    return { rows, pool, used, slots, loaded, moves, level, top: SK.top };
+  }
+
   /* Verstärkungskosten bis +10 nach Item-Level-Stufe (garantierte Schritte) */
   function costTier(il) { return il >= 86 ? "86" : il >= 78 ? "78" : "70"; }
   function enchantCost(from, to, il) {
@@ -256,7 +316,7 @@
 
       /* Zusatzwerte und Skill-Bonus */
       const subs = (d.subStats || []).map((s) => ({ name: s.name, de: statDe(s.name), value: s.value, rating: rate(role, s.name) }));
-      const subSkills = (d.subSkills || []).map((s) => ({ name: s.name, de: skillDe[s.name] || s.name, value: s.value || "" }));
+      const subSkills = (d.subSkills || []).map((s) => ({ name: s.name, de: skillDe[s.name] || s.name, value: s.value || (s.level ? "+" + s.level : "") }));
       if (subs.length || subSkills.length) plan.subs = { list: subs, skills: subSkills };
       if (d.soulBindRate != null && num(d.soulBindRate) < 100) plan.soul = num(d.soulBindRate);
 
@@ -320,6 +380,37 @@
         title: `Kern-Stigmen auf 15: ${lowCore.map((s) => `${nm(s)} (${s.level})`).join(", ")}`,
         why: "Das sind die Stigmen, die die Top-Spieler deiner Klasse in PvE nutzen.",
         how: `Zusammen ${lowCore.reduce((a, s) => a + s.shards, 0)} Splitter. ${A.shardShops}.`,
+        conf: "community",
+      });
+    }
+
+    /* ---------- Skillpunkte: deine Stufen gegen die Top-Spieler deiner Klasse ----------
+     * Punkte-Stufe = Stufe in der Armory minus Daevanion-Knoten minus Skill-Stufen auf der Ausrüstung (geschätzt, höchstens 10).
+     * Mit allen 384 Punkten passen 18 Skills auf 10. Welche, zeigt die Durchschnittsstufe der Top-Spieler (data-skills.js). */
+    const skillPts = skillPoints(ch, cls);
+    if (skillPts && skillPts.moves) {
+      const mv = skillPts.moves;
+      const swap = mv.free.length > 0;
+      const why = `${mv.raise.map((r) => `${nm(r)}: Top-Spieler im Schnitt Stufe ${fmtLv(r.top)}, du ${r.level}`).join("; ")}.`;
+      if (!swap) {
+        add({
+          id: "skill-verteilen", score: 45, cat: "quick", icon: mv.raise[0].icon,
+          title: `Skillpunkte verteilen: ${und(mv.raise.map((r) => nm(r)))} auf 10`,
+          why: `${why} Rechnerisch sind noch etwa ${mv.spare} Punkte offen.`,
+          how: `Freie Punkte im Skill-Fenster (K) zuerst dort hinein: ${mv.raise.map((r) => `${nm(r)} ${r.pts} → 10 (${r.need} Punkte)`).join(", ")}. Fehlen Punkte, kommen sie aus Weisheitssteinen (versiegelte Dungeons und Regionsquests) – die Steine im Inventar benutzen.`,
+          conf: "community",
+        });
+      } else add({
+        id: "skill-umverteilen", score: 45, cat: "quick", icon: mv.raise[0].icon,
+        title: `Skillpunkte umverteilen: ${und(mv.raise.map((r) => nm(r)))} auf 10`,
+        why: `${why} Dafür stecken bei dir Punkte in ${und(mv.free.map((r) => `${nm(r)} (Punkte-Stufe ${r.pts}, Top-Schnitt ${fmtLv(r.top)})`))}.`,
+        how: `Im Skill-Fenster (K) zurücksetzen und neu verteilen: ${und(mv.free.map((r) => nm(r)))} nur noch auf 1 (${mv.refund} Punkte frei), dafür ${mv.raise.map((r) => `${nm(r)} ${r.pts} → 10 (${r.need} Punkte)`).join(", ")}. Umskillen gibt alle Punkte zurück und kostet laut Guides nur etwas Kinah.`,
+        steps: [
+          "Skill-Fenster öffnen (K) und die Skillpunkte zurücksetzen.",
+          `${und(mv.free.map((r) => nm(r)))} nur auf Stufe 1 lassen (${mv.refund} Punkte).`,
+          ...mv.raise.map((r) => `${nm(r)} auf Punkte-Stufe 10 statt ${r.pts} (${r.need} Punkte).`),
+          "Alles andere wie vorher verteilen, dann an der Trainingspuppe prüfen, ob Leiste und Makro noch stimmen.",
+        ],
         conf: "community",
       });
     }
@@ -588,6 +679,7 @@
     if (amu && amu.enchant < 10) farm.push(`Amulett-Schriftrollen: Federn an den Monolithen ${A.monoliths[faction]}.`);
     if (belt && belt.enchant < 10) farm.push("Gürtel-Schriftrollen: Festungen.");
     if (shardsNeeded) farm.push(`Stigma-Splitter (${shardsNeeded} bis alle Kern-Stigmen auf 15): ${A.shardShops}.`);
+    if (skillPts && skillPts.loaded && skillPts.level >= 45 && skillPts.pool - skillPts.used >= 10) farm.push(`Skillpunkte: Verteilt sind etwa ${skillPts.used} von ${skillPts.pool}. Die übrigen kommen aus Weisheitssteinen – 61 versiegelte Dungeons (je 2, goldenes Fragezeichen auf der Karte) und 59 Regionsquests (je 1, grüne Markierung). Steine im Inventar benutzen.`);
     farm.push("Verstärkungssteine: Erfolg „Urugugu Canyon Eroberung abschließen“ (1/3/5/10/15/20×) gibt je 2.480 Steine und 53.000 Kinah; doppelte IL-70-Waffen zerlegen gibt 320 Steine.");
 
     const waste = [
@@ -624,9 +716,9 @@
     return {
       cls, clsName: clsData ? clsData.name : ch.profile.className, role, faction, gs, nextGate,
       verdict, candidates: cands, quick, today, times, phases, gear, stigmas, shardsNeeded,
-      emptyStones, badStones, boards, build, farm, waste, costs, hasArcana, statDe,
+      emptyStones, badStones, boards, build, farm, waste, costs, hasArcana, statDe, skillPts,
     };
   }
 
-  window.DK_AUDIT = { analyse, shardsTo, enchantCost, statDe, effectDe };
+  window.DK_AUDIT = { analyse, shardsTo, enchantCost, statDe, effectDe, skillPoints, fmtLv };
 })();

@@ -165,7 +165,7 @@
     kern: "#e3c27a", kernFill: "#2a2416", ausbau: "#6cc3bb", ausbauFill: "#132126",
     restFill: "#151a1f", text: "#ece8df", muted: "#6f7680", open: "#d4b06a",
   };
-  const FONT = "Alegreya Sans, Segoe UI, Arial, sans-serif";
+  const FONT = "Archivo, Segoe UI, Arial, sans-serif";
 
   /* r: Ergebnis von route(); opt: { limit: wie viele Schritte nummeriert werden, export: mit Kopf- und Fußzeile } */
   function svg(r, opt) {

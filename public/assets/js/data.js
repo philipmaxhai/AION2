@@ -5,7 +5,7 @@
  *             "offen" = Quellen widersprechen sich / nicht offiziell bestätigt.
  */
 window.DK_DATA = {
-  stand: "09.10.2026",
+  stand: "11.10.2026",
 
   /* ---------- Gearscore-Schwellen (Item-Level) ---------- */
   gates: [
@@ -573,7 +573,14 @@ window.DK_DATA = {
     { name: "Vakron Sky Island Beute & Pity (Metabot)", url: "https://metabot.gg/en/aion-2/dungeons/vakron-sky-island" },
     { name: "Kern-Stigmen nach Klasse (Aion2-Meta)", url: "https://aion2-meta.com/guides/spiritmaster/" },
     { name: "Stigma-Kosten (VGTimes)", url: "https://vgtimes.com/guides/170418-aion-2-stigma-guide-best-skills-and-how-to-upgrade-them.html" },
-    { name: "Gear-Transfer (Game8)", url: "https://game8.co/games/Aion-2/archives/616977" }
+    { name: "Gear-Transfer (Game8)", url: "https://game8.co/games/Aion-2/archives/616977" },
+    { name: "Makros für alle Klassen: Linien, Schritte, Opener (AION2 Builds)", url: "https://aion2builds.org/tools/macro/" },
+    { name: "Makro-Guide: Taste, Füller, erlaubt oder nicht (Timesaver)", url: "https://timesaver.gg/blog/aion-2-macros-guide" },
+    { name: "Klassen-Builds: Kern-Skills, Stigmen, Ablauf (Metabot)", url: "https://metabot.gg/en/aion-2/guides/class-builds-guide" },
+    { name: "Skill-Stufen und Stigmen der Top-Spieler je Klasse (Metabot)", url: "https://metabot.gg/en/aion-2/classes/spiritmaster/build" },
+    { name: "Skillpunkte: 203 + 122 + 59 (AllThings.how)", url: "https://allthings.how/aion-2-how-to-get-more-skill-points/" },
+    { name: "Skillpunkte, Spezialisierungen, Stufen über 10 (Aion2Guide)", url: "https://aion2guide.org/systems/aion-2-skill-points-guide/" },
+    { name: "Skill-Namen und Symbole je Klasse, deutsch (GameWith)", url: "https://gamewith.ai/aion2/de/classes" }
   ],
 
   /* ---------- Charakter-Check: Upgrade-Stufen und Klassenregeln ----------
@@ -643,6 +650,207 @@ window.DK_DATA = {
     }
   },
 
+  /* ---------- Skills & Makros je Klasse ----------
+   * [[English Name]] in Texten wird mit dem deutschen Namen und Symbol aus data-skills.js angezeigt.
+   * leiste: Linien (gestapelte Skills auf einem Leistenplatz) von oben nach unten; der unterste hat Vorrang.
+   * makro: Schritte des Makros – Zahl = Linie aus leiste, Text = einzelner Skill.
+   * eigene: Skills auf eigenen Tasten [Name, Hinweis]. opener: Reihenfolge zum Kampfbeginn, "makro" = Makrotaste halten.
+   * Quellen: Linien, Schritte, Opener und eigene Tasten von aion2builds.org (Stand 9.10.2026),
+   * Kern-Skills und Ablauf von metabot.gg (Stand 6.10.2026), Skillpunkte von allthings.how.
+   * Die Stufen der Top-Spieler und die Leveling-Reihenfolge stehen in data-skills.js (erzeugt).
+   */
+  skillPlan: {
+    punkte: {
+      quellen: [["Stufe 45", 203], ["61 versiegelte Dungeons (je 2 Weisheitssteine)", 122], ["59 Regionsquests (je 1 Weisheitsstein)", 59]],
+      kosten: [0, 0, 1, 1, 1, 2, 2, 2, 4, 4, 4],
+      hinweis: "Weisheitssteine (Wisdom Stones) aus dem Inventar benutzen, erst dann zählen die Punkte. Monolithe und Spuren-Federn geben keine Skillpunkte. Umskillen gibt alle Punkte zurück und kostet laut Guides nur etwas Kinah."
+    },
+    makro: {
+      schritte: [
+        ["Taste belegen", "Esc → Einstellungen → Tastenbelegung → Allgemein → Makro. Ab Werk ist keine Taste belegt; üblich sind rechte Maustaste oder eine Seitentaste."],
+        ["Linien stapeln", "Skills-Menü (K): Die Leiste wird zum 5×12-Raster. Bis zu vier Skills übereinander in eine Spalte legen. Unten liegt der wichtigste Skill, ganz oben der eine Füller ohne Abklingzeit."],
+        ["Makro bauen", "Im Makro-Editor jede Linie als Schritt eintragen (über ihren untersten Platz) und 10 ms Verzögerung setzen. Bei 80–100 ms Ping 40–50 ms."],
+        ["Steuerung prüfen", "AION-2-Steuerungsmodus und Skill-Warteschlange einschalten. Im AION-1-Modus ist das Makro eingeschränkt."],
+        ["Halten", "Im Kampf die Makrotaste halten, dazu den Grundangriff auf der linken Maustaste."],
+        ["An der Puppe testen", "Die Guides sind sich nicht einig, ob oben oder unten Vorrang hat. Wirkt das Makro nur einen Skill, liegen zwei Skills ohne Abklingzeit in der Linie oder der Füller liegt an der falschen Stelle."]
+      ],
+      raus: "Nicht ins Makro: Umschalter (Mantras, Licht des Schutzes), Aufladeskills (Zielpfeil, Bestrafung, Höllenflamme), Verteidigung, Bewegung, Kontrolle und Schockaufhebung.",
+      regel: "Erlaubt ist nur das Makro im Spiel. Makros aus Maus-Software und Zusatzprogramme, die Tasten drücken, können zur Sperre führen."
+    },
+    klassen: {
+      gladiator: {
+        kurz: "Großschwert im Nahkampf: [[Ruinous Blow]] öffnet das Schadensfenster, im Buff wird umgeworfen und zugeschlagen.",
+        zuerst: "Ruinous Blow",
+        ablauf: [
+          "Mit [[Leaping Slam]] heran, dann [[Ruinous Blow]]: trifft bis zu 4 Gegner und gibt 20 s lang +20 % PvE-Schadensverstärkung (Abklingzeit 45 s).",
+          "Im Buff: [[Mocking Blade]] wirft um, [[Overhead Slam]] trifft Gegner am Boden, danach [[Rage Burst]].",
+          "Bis [[Ruinous Blow]] wieder bereit ist: [[Rending Blow]] (keine Abklingzeit, 4 Ziele) und [[Keen Strike]]."
+        ],
+        leiste: [
+          { name: "Hauptlinie", taste: "RMB", skills: ["Rending Blow", "Overhead Slam", "Rage Burst"] },
+          { name: "Verheerend-Linie", taste: "E", skills: ["Lifestealing Blade", "Ruinous Blow"] },
+          { name: "Buff-Linie", taste: "R", skills: ["Zikel's Blessing", "Lunge Stance"] }
+        ],
+        makro: [0, 1, 2],
+        eigene: [["Focused Block", "auf den ersten Bossangriff"], ["Leaping Slam", "heranspringen"], ["Mocking Blade", "umwerfen"], ["Defiance", "aus Kontrolle befreien"]],
+        opener: ["Lunge Stance", "Zikel's Blessing", "Leaping Slam", "Ruinous Blow", "makro"],
+        tipps: [
+          "Nach dem Umwerfen: [[Mocking Blade]] → [[Overhead Slam]] → [[Aerial Snare]].",
+          "Die Top-Spieler nehmen [[Focused Block]] statt [[Lifestealing Blade]]. Dann liegt in der Verheerend-Linie nur [[Ruinous Blow]]; [[Lifestealing Blade]] lohnt sich solo beim Leveln."
+        ]
+      },
+      templar: {
+        kurz: "Schild-Tank: Gegner sammeln und betäuben, [[Punishment]] für den großen Buff, mit [[Warding Strike]] stehen bleiben.",
+        zuerst: "Punishment",
+        ablauf: [
+          "Sammeln: [[Poach]] und [[Shield Smite]] (10 s Abklingzeit, 4 Ziele, Betäubung) ziehen die Gegner zu dir. Was zur Gruppe läuft, holt [[Taunt]] zurück.",
+          "Schaden: [[Judgment]] und [[Annihilate]], dann [[Punishment]] aufladen: 20 s lang +200 Genauigkeit und +20 % PvE-Schadensverstärkung. [[Empyrean Lord's Punishment]] betäubt bis zu 4 Ziele.",
+          "Überleben: [[Warding Strike]] heilt dich und gibt +20 % PvE-Schadensresistenz. Lücken füllt [[Vicious Strike]]."
+        ],
+        leiste: [
+          { name: "Verderben-Linie", skills: ["Warding Strike", "Shield Smite", "Judgment", "Doom Shield"] },
+          { name: "Hiebe-Linie", skills: ["Pummel", "Annihilate", "Debilitating Smash"] }
+        ],
+        makro: [0, 1],
+        makroTaste: "RMB",
+        eigene: [["Punishment", "aufladen, sobald bereit"], ["Battlefield Banner", "Buff"], ["Empyrean Lord's Punishment", "Gruppen-Betäubung"], ["Taunt", "Ausreißer zurückholen"]],
+        opener: ["Poach", "Shield Smite", "Judgment", "Annihilate", "Punishment", "makro"],
+        tipps: [
+          "Makro auf die rechte Maustaste, dazu links [[Vicious Strike]] halten.",
+          "[[Shield Smite]] schaltet [[Judgment]] kurz frei, deshalb liegen beide in derselben Linie."
+        ]
+      },
+      assassin: {
+        kurz: "Krit-Burst mit Glyphen: fünf Glyphen setzen, mit [[Insignia Explosion]] zünden, [[Heart Gore]] bei jedem Krit.",
+        zuerst: "Heart Gore",
+        ablauf: [
+          "Glyphen setzen: [[Shadowstrike]] bringt dich hinter das Ziel, [[Savage Fang]] setzt alle 5 Glyphen auf einmal, [[Savage Roar]] eine weitere.",
+          "Burst von hinten: [[Illusive Clone]], dann [[Heart Gore]] (löst bei Krit aus und gibt MP) und [[Ambush]] von hinten (+30 %).",
+          "Zünden: [[Insignia Explosion]] wird mit jeder Glyphe stärker. Bis [[Savage Fang]] wieder bereit ist, füllen [[Triniel's Dagger]] und [[Quick Slice]]."
+        ],
+        leiste: [
+          { name: "Schadenslinie", skills: ["Savage Roar", "Ambush", "Heart Gore", "Insignia Explosion"] },
+          { name: "Buff-Linie", hand: true, skills: ["Triniel's Dagger", "Savage Fang", "Swift Contract", "Illusive Clone"] }
+        ],
+        makro: [0, "Quick Slice"],
+        eigene: [["Shadowstrike", "Öffner, hinter das Ziel"], ["Flash Slice", "durchziehen"], ["Infiltrate", "Ausweichen"]],
+        opener: ["Illusive Clone", "Swift Contract", "Savage Fang", "Triniel's Dagger", "makro"],
+        tipps: [
+          "Die Buff-Linie drückst du von Hand, sie gehört nicht ins Makro.",
+          "Im 20-Sekunden-Burst hat [[Heart Gore]] laut aion2builds keine Abklingzeit."
+        ]
+      },
+      ranger: {
+        kurz: "Bogen auf 20 m: [[Gale Arrow]] und [[Marking Shot]] oben halten, aus verlangsamten Zielen Bonusschaden holen.",
+        zuerst: "Gale Arrow",
+        ablauf: [
+          "Buffs: [[Marking Shot]] gibt Präzision (+300 Krit), dazu [[Vaizel's Authority]] und [[Bow of Blessing]].",
+          "Pack vorbereiten: [[Snare Shot]] verlangsamt, [[Gale Arrow]] (4 Ziele) hält den Orkan-Buff: +7 % Kampftempo und +7 % PvE-Schadensverstärkung.",
+          "Burst: [[Burst Arrow]], voll aufgeladener [[Deadshot]] (+35 % mit Präzision), dann [[Griffon Arrow]]. [[Drill Dart]] und [[Snipe]] füllen."
+        ],
+        leiste: [
+          { name: "Greifen-Linie", skills: ["Burst Arrow", "Snare Shot", "Griffon Arrow"] },
+          { name: "Orkan-Linie", skills: ["Tempest Shot", "Drill Dart", "Gale Arrow"] }
+        ],
+        makro: [0, 1],
+        eigene: [["Snipe", "linke Maustaste halten"], ["Deadshot", "Seitentaste, voll aufladen"], ["Marking Shot", "Präzision"]],
+        opener: ["Bow of Blessing", "Supporting Fire", "Vaizel's Authority", "Marking Shot", "Deadshot"],
+        tipps: [
+          "AION-2-Steuerung nutzen und die Skill-Warteschlange einschalten, sonst greift das Makro nicht richtig.",
+          "[[Deadshot]] immer voll aufladen; mit Präzision trifft er 35 % härter."
+        ]
+      },
+      sorcerer: {
+        kurz: "Feuer-Burst mit Eis-Kontrolle. [[Grace of Enhancement]] gibt +20 % PvE-Schadensverstärkung, solange die MP über 25 % bleiben.",
+        zuerst: "Hellfire",
+        ablauf: [
+          "Vor dem Pull: [[Wish of Concentration]] und [[Element Enhancement]], dann [[Ice Chain]], damit das Pack stehen bleibt.",
+          "Feuer legen: [[Delayed Explosion]] und [[Fire Wall]] unter das Pack, dann [[Hellfire]] aufladen (bis zu 4 Ziele).",
+          "Schleife: [[Firestorm]] und [[Blaze]] auf Ziele mit Feuerzeichen ([[Blaze]] gibt 100 MP), dazwischen [[Bittercold Wind]] und [[Flame Arrow]]. MP über 25 % halten."
+        ],
+        leiste: [
+          { name: "Buff-Linie", skills: ["Delayed Explosion", "Bittercold Wind", "Element Enhancement"] },
+          { name: "Konzentrations-Linie", skills: ["Fire Wall", "Cold Storm", "Wish of Concentration"] },
+          { name: "Feuer-Linie", skills: ["Firestorm", "Blaze"] },
+          { name: "Eis-Linie", skills: ["Ice Chain", "Winter's Shackles"] }
+        ],
+        makro: [0, 1, "Flame Arrow", 2, "Flame Arrow", 3, "Flame Scattershot"],
+        eigene: [["Hellfire", "auf Stufe 3 aufladen"]],
+        opener: ["Delayed Explosion", "Element Enhancement", "Wish of Concentration", "Fire Wall", "Cold Storm", "Bittercold Wind", "Winter's Shackles", "Hellfire", "makro"],
+        tipps: [
+          "Verzögerung 10 ms unter 50 ms Ping, 40–50 ms bei 80–100 ms Ping.",
+          "Unter 25 % MP fällt der Bonus von [[Grace of Enhancement]] weg. Die MP von [[Blaze]] und [[Absorb Essence]] sind mehr wert, als der Tooltip zeigt."
+        ]
+      },
+      spiritmaster: {
+        kurz: "Du und dein Geist: Geister-Skills laden [[Elemental Fusion]] auf und schalten [[Dimensional Control]] frei, DoTs auf jedem Ziel stärken zwei Passive.",
+        zuerst: "Jointstrike: Curse",
+        ablauf: [
+          "Beschwören: [[Summon: Ancient Spirit]] (30 s, bis zu 4 Ziele), dann [[Summon: Fire Spirit]] oder [[Summon: Water Spirit]] und [[Enhance: Spirit's Benediction]].",
+          "DoTs verteilen: [[Jointstrike: Corrode]] und [[Jointstrike: Curse]] aufs Pack, dann [[Dimensional Control]] (nach jedem Geister-Skill frei).",
+          "Einlösen: [[Elemental Fusion]] bei 4 Element-Stapeln. [[Combustion]] und [[Cold Shock]] füllen bis zur nächsten."
+        ],
+        leiste: [
+          { name: "Geister-Linie", skills: ["Summon: Fire Spirit", "Summon: Earth Spirit", "Summon: Water Spirit", "Elemental Fusion"] },
+          { name: "Buff-Linie", skills: ["Summon: Ancient Spirit", "Flame Blessing", "Enhance: Spirit's Benediction"] },
+          { name: "Schadenslinie", skills: ["Combustion", "Dimensional Control", "Jointstrike: Curse", "Jointstrike: Corrode"] }
+        ],
+        makro: [1, 0, 2],
+        eigene: [["Cold Shock", "linke Maustaste halten"]],
+        opener: ["Flame Blessing", "Enhance: Spirit's Benediction", "Summon: Ancient Spirit", "Summon: Fire Spirit", "makro"],
+        tipps: [
+          "Läuft am besten unter etwa 60 ms Ping.",
+          "Geister- und Schadenslinie zusätzlich auf eigene Tasten legen, um sie gezielt zu drücken.",
+          "[[Summon: Ancient Spirit]] ab Stigma-Stufe 15: [[Elemental Fusion]] alle 5 statt alle 7 Angriffe."
+        ]
+      },
+      cleric: {
+        kurz: "Heiler mit starkem Debuff: [[Chain of Torment]] senkt die PvE-Schadensresistenz des Ziels für die ganze Gruppe.",
+        zuerst: "Healing Light",
+        ablauf: [
+          "Vor dem Pull: [[Light of Protection]] (+10,5 % PvE-Schadensverstärkung und -resistenz für dich und die Gruppe), [[Divine Aura]] und [[Noble Aura]].",
+          "Schwächen und treffen: [[Chain of Torment]] aufs Ziel, dazu [[Condemnation]], [[Earth Punishment]] und [[Judgment Thunder]].",
+          "Heilen nach Bedarf: [[Healing Light]] geht an das Gruppenmitglied mit den wenigsten LP. [[Earth's Retribution]] füllt zwischen den Heilungen."
+        ],
+        leiste: [
+          { name: "Gebets-Linie", taste: "Q", skills: ["Condemnation", "Chain of Torment", "Earth Punishment", "Prayer of Amplification"] },
+          { name: "Aura-Linie", taste: "T", skills: ["Judgment Thunder", "Divine Aura"] },
+          { name: "Debuff-Linie", taste: "1", hand: true, skills: ["Debilitating Mark", "Lightning Strike Scattershot"] },
+          { name: "Heil-Linie", taste: "E", hand: true, skills: ["Healing Light", "Light of Regeneration"] }
+        ],
+        makro: [0, 1],
+        eigene: [["Earth's Retribution", "linke Maustaste"], ["Radiant Recovery", "reinigt und heilt"], ["Bolt", "Schaden"], ["Light of Protection", "Umschalter, einmal an"], ["Noble Aura", "Aura"]],
+        opener: ["Light of Protection", "Divine Aura", "Noble Aura", "Chain of Torment", "makro"],
+        tipps: [
+          "Heil- und Debuff-Linie bleiben eigene Tasten: heilen, wenn die LP wirklich fallen.",
+          "Mit Kantor in der Gruppe: [[Chain of Torment]] wirkt nicht zusammen mit dessen Gelübde der Erde, [[Light of Protection]] nicht mit der Invokation der Unbesiegbarkeit. Aufgaben aufteilen.",
+          "Die Gebets-Linie nutzt [[Prayer of Amplification]]. Die Top-Spieler haben im vierten Slot öfter [[Summon Resurrection]]."
+        ]
+      },
+      chanter: {
+        kurz: "Stab-Hybrid: Alles dreht sich um [[Dark Crush]], das Betäubungen kurz freischalten. Die Mantras laufen dauerhaft.",
+        zuerst: "Spinning Strike",
+        ablauf: [
+          "Mantras an: [[Undefeated Mantra]] und [[Sprint Mantra]], dann [[Power of the Storm]]: +20 % Kampftempo und 10 % kürzere Abklingzeiten für die Gruppe.",
+          "Finsterbruch öffnen: [[Rushing Smash]], dann [[Impactful Crush]] (Betäubung) öffnet [[Dark Crush]]. [[Marchutan's Wrath]] trifft bis zu 4 Ziele und öffnet ein weiteres Fenster von 3 s.",
+          "Schleife: [[Spinning Strike]] für den stapelnden Krit-Schadensbonus (+15 %), dann [[Incandescent Blow]] und [[Onslaught]]. [[Recuperation]] heilt die Gruppe."
+        ],
+        leiste: [
+          { name: "Finsterbruch-Linie", skills: ["Impactful Crush", "Marchutan's Wrath", "Spinning Strike", "Dark Crush"] },
+          { name: "Sprung-Linie", hand: true, skills: ["Tremor Crush", "Rushing Smash"] }
+        ],
+        makro: [0, "Incandescent Blow"],
+        eigene: [["Onslaught", "linke Maustaste"], ["Undefeated Mantra", "Umschalter"], ["Sprint Mantra", "Umschalter"], ["Recuperation", "Gruppenheilung"], ["Power of the Storm", "Gruppen-Buff"]],
+        opener: ["Power of the Storm", "Rushing Smash", "makro"],
+        tipps: [
+          "Mantras sind Umschalter: einmal einschalten, nie ins Makro.",
+          "Das Makro zusammen mit [[Onslaught]] auf der linken Maustaste halten.",
+          "Mit Kleriker in der Gruppe: [[Earth's Promise]] und [[Undefeated Mantra]] überschneiden sich mit dessen Kette des Schmerzes und Licht des Schutzes."
+        ]
+      }
+    }
+  },
+
   audit: {
     roles: {
       gladiator: "dps", templar: "tank", assassin: "dps", ranger: "dps",
@@ -683,14 +891,15 @@ window.DK_DATA = {
     accessories: { 10: "Necklace", 11: "Earrings", 12: "Earrings", 13: "Ring", 14: "Ring" },
     aulamusChance: { Necklace: 2, Earrings: 3, Ring: 3, weapon: 0.86 },
     pity: { tier70: 21, tier86: 28, weeklyCubes: 10 },
+    /* Die vier meistgenutzten Stigmen der Top-Spieler je Klasse (Metabot, Stand 3.10.2026, siehe data-skills.js) */
     coreStigmas: {
       gladiator: ["Lunge Stance", "Zikel's Blessing", "Rage Burst", "Focused Block"],
-      templar: ["Shield of Protection", "Taunt", "Battlefield Banner", "Doom Shield"],
-      assassin: ["Illusive Clone", "Swift Contract", "Triniel's Dagger", "Throw Shadowblade"],
+      templar: ["Taunt", "Empyrean Lord's Punishment", "Battlefield Banner", "Doom Shield"],
+      assassin: ["Illusive Clone", "Swift Contract", "Savage Fang", "Triniel's Dagger"],
       ranger: ["Vaizel's Authority", "Bow of Blessing", "Supporting Fire", "Griffon Arrow"],
-      sorcerer: ["Element Enhancement", "Delayed Explosion", "Fire Wall", "Steel Barrier"],
+      sorcerer: ["Element Enhancement", "Delayed Explosion", "Fire Wall", "Cold Storm"],
       spiritmaster: ["Summon: Ancient Spirit", "Enhance: Spirit's Benediction", "Flame Blessing", "Jointstrike: Corrode"],
-      cleric: ["Light of Protection", "Noble Aura", "Earth Punishment", "Benevolence"],
+      cleric: ["Light of Protection", "Noble Aura", "Earth Punishment", "Summon Resurrection"],
       chanter: ["Undefeated Mantra", "Sprint Mantra", "Power of the Storm", "Marchutan's Wrath"]
     },
     stigmaBreakpoints: {
