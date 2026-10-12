@@ -80,11 +80,14 @@
       for (const s of (e.detail && e.detail.subSkills) || []) gearB[s.name] = (gearB[s.name] || 0) + (num(s.level) || num(s.value) || 1);
     }
     const loaded = (ch.boards || []).some((b) => b.nodes && b.nodes.length);
+    /* Skills, die das PvP-Build braucht (Metabot auf 10, aion2builds-Ziele) – beim Umverteilen markieren */
+    const pvpPlan = D.skillPlan && D.skillPlan.klassen && D.skillPlan.klassen[cls] && D.skillPlan.klassen[cls].pvp;
+    const pvpSet = new Set(((SK.top.builds.pvp || {}).skills || []).filter((x) => x[1] >= 10).map((x) => x[0]).concat(pvpPlan ? pvpPlan.ziele.map((z) => z[0]) : []));
     const rows = ch.skills.filter((s) => (s.category === "Active" || s.category === "Passive") && s.acquired).map((s) => {
       const t = SK.top.skills[s.name] || null;
       const level = num(s.level), d = daev[s.name] || 0, g = gearB[s.name] || 0;
       const pts = Math.max(1, Math.min(10, level - d - g));
-      return { name: s.name, de: s.de, icon: s.icon, typ: s.category === "Active" ? "a" : "p", level, daev: d, gear: g, pts, cost: cum[pts], top: t ? t[1] : null, pick: t ? t[0] : null };
+      return { name: s.name, de: s.de, icon: s.icon, typ: s.category === "Active" ? "a" : "p", level, daev: d, gear: g, pts, cost: cum[pts], top: t ? t[1] : null, pick: t ? t[0] : null, pvp: pvpSet.has(s.name) };
     });
     const pool = SP.quellen.reduce((a, q) => a + q[1], 0);
     const used = rows.reduce((a, r) => a + r.cost, 0);
@@ -403,7 +406,7 @@
       } else add({
         id: "skill-umverteilen", score: 45, cat: "quick", icon: mv.raise[0].icon,
         title: `Skillpunkte umverteilen: ${und(mv.raise.map((r) => nm(r)))} auf 10`,
-        why: `${why} Dafür stecken bei dir Punkte in ${und(mv.free.map((r) => `${nm(r)} (Punkte-Stufe ${r.pts}, Top-Schnitt ${fmtLv(r.top)})`))}.`,
+        why: `${why} Dafür stecken bei dir Punkte in ${und(mv.free.map((r) => `${nm(r)} (Punkte-Stufe ${r.pts}, Top-Schnitt ${fmtLv(r.top)})`))}.${mv.free.some((r) => r.pvp) ? ` Gilt für PvE: ${und(mv.free.filter((r) => r.pvp).map(nm))} brauchst du im PvP – spielst du viel PvP, leg dir dafür ein eigenes Preset an.` : ""}`,
         how: `Im Skill-Fenster (K) zurücksetzen und neu verteilen: ${und(mv.free.map((r) => nm(r)))} nur noch auf 1 (${mv.refund} Punkte frei), dafür ${mv.raise.map((r) => `${nm(r)} ${r.pts} → 10 (${r.need} Punkte)`).join(", ")}. Umskillen gibt alle Punkte zurück und kostet laut Guides nur etwas Kinah.`,
         steps: [
           "Skill-Fenster öffnen (K) und die Skillpunkte zurücksetzen.",

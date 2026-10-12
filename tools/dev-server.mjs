@@ -30,7 +30,8 @@ const cache = {
   async put(req, res) {
     const age = Number((/max-age=(\d+)/.exec(res.headers.get("Cache-Control") || "") || [])[1] || 0);
     if (!age) return;
-    store.set(req.url, { body: await res.text(), status: res.status, headers: Object.fromEntries(res.headers), expires: Date.now() + age * 1000 });
+    // Als Bytes speichern: auch Bilder (/api/icon) laufen durch den Cache
+    store.set(req.url, { body: new Uint8Array(await res.arrayBuffer()), status: res.status, headers: Object.fromEntries(res.headers), expires: Date.now() + age * 1000 });
   },
 };
 

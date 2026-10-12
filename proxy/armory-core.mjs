@@ -15,6 +15,7 @@
  *   GET /api/charakter?cid=<characterId>&sid=2318  direkt laden (nach Auswahl)
  *   GET /api/daevanion?cid=..&sid=..&boards=51,52  Daevanion-Bretter im Detail
  *   GET /api/items?cid=..&sid=..&list=1:110630048:5,2:…   Item-Details (Slot:Item-ID:Verstärkung)
+ *   GET /api/icon?n=ICON_EL_SKILL_001              Skill-Symbol vom NCSOFT-CDN mit CORS (für den PNG-Export der Leiste)
  * Grunddaten, Daevanion und Items sind getrennt, damit jede Anfrage im kostenlosen
  * Cloudflare-Tarif bleibt (10 ms CPU, 50 Unteranfragen).
  */
@@ -24,6 +25,9 @@ const API = "https://aion2.plaync.com";
 const GAMEINFO = "https://aion2.plaync.com/en-us";
 const LANG = "en-US";
 const UA = "Daeva-Kompass/1.0 (+https://github.com/philipmaxhai/AION2)";
+const ICON_BASE = "https://assets.playnccdn.com/static-aion2-gamedata/resources/";
+const ICON_RE = /^ICON_[A-Za-z0-9_]{1,48}$/;
+const TTL_ICON = 7 * 24 * 3600;
 
 export const REGIONS = ["eu", "nae", "naw", "la", "as"];
 const REGION_BY_DIGIT = { 1: "nae", 2: "naw", 3: "eu", 4: "la", 5: "as" };
@@ -358,6 +362,8 @@ export async function handleApi(request, { fetchImpl = fetch, cache = null, wait
       res = await boardsRoute(url, fetchImpl);
     } else if (route === "items") {
       res = await itemsRoute(url, fetchImpl);
+    } else if (route === "icon") {
+      res = await iconRoute(url, fetchImpl);
     } else {
       res = json({ status: "fehler", message: "Unbekannte Route." }, 404);
     }
@@ -394,6 +400,21 @@ async function itemsRoute(url, fetchImpl) {
     .slice(0, 20).map(([slot, itemId, enchant]) => ({ slot: Number(slot), itemId: Number(itemId), enchant: Number(enchant) }));
   if (!ids || !list.length) return json({ status: "fehler", message: "cid, sid und list nötig." }, 400);
   return json({ status: "ok", items: await loadItems(ids.cid, ids.sid, list, fetchImpl) }, 200, TTL_CHARACTER);
+}
+
+/* Skill-Symbol durchreichen: das CDN sendet keine CORS-Header, ein Canvas-Export bräuchte sie aber.
+ * Nur Dateinamen der Form ICON_… aus dem festen Spieldaten-Ordner, sonst nichts. */
+async function iconRoute(url, fetchImpl) {
+  const n = url.searchParams.get("n") || "";
+  if (!ICON_RE.test(n)) return json({ status: "fehler", message: "Ungültiges Symbol." }, 400);
+  const r = await fetchImpl(`${ICON_BASE}${n}.png`, { headers: { "User-Agent": UA } });
+  if (!r.ok || !/^image\//.test(r.headers.get("Content-Type") || "")) {
+    return json({ status: "fehler", message: "Symbol nicht gefunden." }, r.status === 404 ? 404 : 502);
+  }
+  return new Response(r.body, {
+    status: 200,
+    headers: { ...CORS, "Content-Type": "image/png", "Cache-Control": `public, max-age=${TTL_ICON}` },
+  });
 }
 
 async function characterRoute(url, fetchImpl) {

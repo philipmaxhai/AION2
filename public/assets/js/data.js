@@ -653,9 +653,13 @@ window.DK_DATA = {
   /* ---------- Skills & Makros je Klasse ----------
    * [[English Name]] in Texten wird mit dem deutschen Namen und Symbol aus data-skills.js angezeigt.
    * leiste: Linien (gestapelte Skills auf einem Leistenplatz) von oben nach unten; der unterste hat Vorrang.
-   * makro: Schritte des Makros – Zahl = Linie aus leiste, Text = einzelner Skill.
-   * eigene: Skills auf eigenen Tasten [Name, Hinweis]. opener: Reihenfolge zum Kampfbeginn, "makro" = Makrotaste halten.
-   * Quellen: Linien, Schritte, Opener und eigene Tasten von aion2builds.org (Stand 9.10.2026),
+   * makro: Schritte des Makros – Zahl = Linie aus leiste, Text = einzelner Skill (muss auf einer Taste liegen).
+   * tasten: komplette Belegung [Taste, Inhalt, Hinweis]; Inhalt = Linie (Zahl), Skill (englisch) oder "makro".
+   *   Tasten: LMB, RMB, M4, M5 (Maus), 1–4, Q, E, R, F, Z, X, C, V. Schema in tastenSchema.
+   * opener: Reihenfolge zum Kampfbeginn, "makro" = Makrotaste halten.
+   * pvp: dasselbe für PvP plus stigmen (Set), stigmenName, stigmenAlt [Name, Grund], ziele [Skill, Gesamt-Stufe] (aion2builds),
+   *   passive, kombos (statt ablauf).
+   * Quellen: Linien, Schritte und Opener von aion2builds.org (Stand 9.10.2026); die komplette Tastenbelegung ist ein Vorschlag der Seite nach tastenSchema,
    * Kern-Skills und Ablauf von metabot.gg (Stand 6.10.2026), Skillpunkte von allthings.how.
    * Die Stufen der Top-Spieler und die Leveling-Reihenfolge stehen in data-skills.js (erzeugt).
    */
@@ -677,6 +681,21 @@ window.DK_DATA = {
       raus: "Nicht ins Makro: Umschalter (Mantras, Licht des Schutzes), Aufladeskills (Zielpfeil, Bestrafung, Höllenflamme), Verteidigung, Bewegung, Kontrolle und Schockaufhebung.",
       regel: "Erlaubt ist nur das Makro im Spiel. Makros aus Maus-Software und Zusatzprogramme, die Tasten drücken, können zur Sperre führen."
     },
+    /* PvP allgemein. Linien und Makro im PvP sind ein Vorschlag der Seite (aus den PvP-Kombos von Metabot und den Tooltips),
+     * Stigmen und Ziel-Stufen kommen aus aion2builds und Metabot. */
+    pvp: {
+      regeln: [
+        ["Kontrolle von Hand", "Betäubung, Umwerfen, Furcht, Siegel und Schilde gehören auf eigene Tasten. Im Makro zünden sie sonst auf Gegner, die gerade immun sind."],
+        ["Bedingte Skills nach unten", "Unten in die Druck-Linie gehören die Skills, die nur auf kontrollierte Ziele wirken. Sie zünden von selbst, sobald deine Kontrolle sitzt; sonst läuft der Füller."],
+        ["Schockaufhebung", "60 s Abklingzeit. Wann du sie drückst, hängt von der Klasse ab – steht in der Tastenbelegung bei Maus 4."],
+        ["Zwei Presets", "Eine Leiste für PvE, eine für PvP, und die Stigmen mittauschen. aion2builds spricht von PvE- und PvP-Presets."],
+        ["Daevanion: Azphel", "Azphel ist das PvP-Brett mit eigenen Punkten: PvP-Schadensverstärkung und -Resistenz. Danach die Skill-Knoten deiner PvP-Skills."],
+        ["Werte", "Wo die Ausrüstung die Wahl lässt: PvP-Schadensverstärkung, PvP-Schadensresistenz und Widerstand gegen Statuseffekte."]
+      ],
+      hinweis: "Für Global gibt es noch kein festes PvP-Meta: Saison 1 läuft, Balance-Patches kommen oft. Linien und Makro im PvP sind ein Vorschlag der Seite, abgeleitet aus den PvP-Kombos von Metabot und den Skill-Tooltips. Stigmen und Ziel-Stufen kommen aus aion2builds und Metabot."
+    },
+    /* Tasten-Schema für alle Klassen (Spiel-Standard für Schnellslots ist nicht festgelegt; angelehnt an das Schema von Boostroom) */
+    tastenSchema: [["LMB", "Grundangriff halten"], ["RMB", "Makro halten"], ["1–4", "Linien A–D"], ["Q · E", "Kontrolle und Folge-Skill"], ["R · F", "Burst und Schutz"], ["Z · X · C · V", "Rest"], ["M4", "Schockaufhebung"], ["M5", "Sprung, Ausweich-Skill oder Aufladen"]],
     klassen: {
       gladiator: {
         kurz: "Großschwert im Nahkampf: [[Ruinous Blow]] öffnet das Schadensfenster, im Buff wird umgeworfen und zugeschlagen.",
@@ -688,16 +707,48 @@ window.DK_DATA = {
         ],
         leiste: [
           { name: "Hauptlinie", taste: "RMB", skills: ["Rending Blow", "Overhead Slam", "Rage Burst"] },
-          { name: "Verheerend-Linie", taste: "E", skills: ["Lifestealing Blade", "Ruinous Blow"] },
+          { name: "Verheerend-Linie", taste: "E", skills: ["Ruinous Blow"] },
           { name: "Buff-Linie", taste: "R", skills: ["Zikel's Blessing", "Lunge Stance"] }
         ],
         makro: [0, 1, 2],
-        eigene: [["Focused Block", "auf den ersten Bossangriff"], ["Leaping Slam", "heranspringen"], ["Mocking Blade", "umwerfen"], ["Defiance", "aus Kontrolle befreien"]],
         opener: ["Lunge Stance", "Zikel's Blessing", "Leaping Slam", "Ruinous Blow", "makro"],
         tipps: [
           "Nach dem Umwerfen: [[Mocking Blade]] → [[Overhead Slam]] → [[Aerial Snare]].",
-          "Die Top-Spieler nehmen [[Focused Block]] statt [[Lifestealing Blade]]. Dann liegt in der Verheerend-Linie nur [[Ruinous Blow]]; [[Lifestealing Blade]] lohnt sich solo beim Leveln."
-        ]
+          "Solo und beim Leveln: [[Lifestealing Blade]] statt [[Focused Block]] ausrüsten und oben in die Verheerend-Linie legen – der Treffer heilt dich. Top-Spieler und aion2builds nehmen in Gruppen [[Focused Block]]."
+        ],
+        tasten: [
+          ["LMB", "Keen Strike", "Grundangriff halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "aus Kontrolle befreien"], ["M5", "Leaping Slam", "heranspringen"],
+          ["1", 0], ["2", 1], ["3", 2],
+          ["Q", "Mocking Blade", "umwerfen"], ["E", "Aerial Snare", "nach dem Umwerfen"], ["F", "Focused Block", "erster Bossangriff"],
+          ["Z", "Sword Aura Rampage", "auf taumelnde Ziele"], ["X", "Crushing Wave", "bis 4 Ziele"], ["C", "Rush Strike", "nach dem Ausweichen"], ["V", "Ankle Slice", "bis 4 Ziele"]
+        ],
+        pvp: {
+          kurz: "Umwerf-Kette im Nahkampf: [[Mocking Blade]] wirft um, [[Overhead Slam]] trifft am Boden, [[Aerial Snare]] verlängert. Wer weniger kontrolliert wird, gewinnt.",
+          stigmen: ["Lunge Stance", "Armor of Balance", "Tenaciousness", "Blade Toss"],
+          stigmenName: "Abyss",
+          stigmenAlt: [["Focused Block", "Arena: statt Klingenwurf, blockt einen Burst"], ["Wrath Wave", "Gruppenkampf: wirft bis zu 4 um"], ["Zikel's Blessing", "mehr Schaden statt Rüstung des Gleichgewichts"]],
+          ziele: [["Overhead Slam", 20], ["Mocking Blade", 16], ["Defiance", 16], ["Aerial Snare", 16]],
+          passive: ["Attack Preparation", "Survival Willpower", "Survival Stance", "Impact Hit"],
+          leiste: [{ name: "Druck-Linie", skills: ["Rending Blow", "Overhead Slam"] }],
+          makro: [0],
+          tasten: [
+            ["LMB", "Keen Strike", "Grundangriff halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "für den Stun, der dich tötet"], ["M5", "Leaping Slam", "heranspringen"],
+            ["1", 0],
+            ["Q", "Mocking Blade", "umwerfen, heilt dich"], ["E", "Aerial Snare", "in die Luft, verlängert"], ["R", "Lunge Stance", "+20 % Kampftempo"], ["F", "Tenaciousness", "3 s immun"],
+            ["Z", "Armor of Balance", "+50 % Widerstand gegen Stun und Umwerfen"], ["X", "Blade Toss", "−50 % Heilung, −30 % Verteidigung"], ["C", "Rush Strike", "nach dem Ausweichen"], ["V", "Ruinous Blow", "Burst, bis 4 Ziele"]
+          ],
+          opener: ["Leaping Slam", "Mocking Blade", "Overhead Slam", "Aerial Snare", "Lunge Stance", "Ruinous Blow", "makro"],
+          kombos: [
+            "Umwerf-Kette: [[Mocking Blade]] (3 s am Boden, heilt dich) → [[Overhead Slam]] → [[Aerial Snare]] (50 % in die Luft) → [[Overhead Slam]] beim Aufschlag.",
+            "Dranbleiben: nach dem Ausweichen [[Rush Strike]] (Chance auf Umwerfen) oder [[Leaping Slam]] auf 20 m.",
+            "Burst, solange er liegt: [[Lunge Stance]], dann [[Ruinous Blow]].",
+            "Halten: [[Armor of Balance]] vor dem gegnerischen Burst, [[Tenaciousness]] unter Fokus, [[Defiance]] erst für den Stun, nach dem der Burst kommt."
+          ],
+          tipps: [
+            "Arena: [[Focused Block]] statt [[Blade Toss]] – nur der vierte Slot ändert sich (aion2builds).",
+            "[[Blade Toss]] halbiert die Heilung des Ziels: im Abyss gegen Kleriker und Kantor."
+          ]
+        }
       },
       templar: {
         kurz: "Schild-Tank: Gegner sammeln und betäuben, [[Punishment]] für den großen Buff, mit [[Warding Strike]] stehen bleiben.",
@@ -712,13 +763,44 @@ window.DK_DATA = {
           { name: "Hiebe-Linie", skills: ["Pummel", "Annihilate", "Debilitating Smash"] }
         ],
         makro: [0, 1],
-        makroTaste: "RMB",
-        eigene: [["Punishment", "aufladen, sobald bereit"], ["Battlefield Banner", "Buff"], ["Empyrean Lord's Punishment", "Gruppen-Betäubung"], ["Taunt", "Ausreißer zurückholen"]],
         opener: ["Poach", "Shield Smite", "Judgment", "Annihilate", "Punishment", "makro"],
         tipps: [
           "Makro auf die rechte Maustaste, dazu links [[Vicious Strike]] halten.",
           "[[Shield Smite]] schaltet [[Judgment]] kurz frei, deshalb liegen beide in derselben Linie."
-        ]
+        ],
+        tasten: [
+          ["LMB", "Vicious Strike", "Grundangriff halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "aus Kontrolle befreien"], ["M5", "Shield Rush", "nach dem Ausweichen"],
+          ["1", 0], ["2", 1],
+          ["Q", "Poach", "heranziehen"], ["E", "Taunt", "Ausreißer zurückholen"], ["R", "Punishment", "aufladen, sobald bereit"], ["F", "Battlefield Banner", "Angriff aus Verteidigung"],
+          ["Z", "Empyrean Lord's Punishment", "Gruppen-Betäubung"], ["X", "Flash Rampage", "auf taumelnde Ziele"]
+        ],
+        pvp: {
+          kurz: "Fangen, betäuben, nachsetzen: zwei Betäubungen, zwei Wege ans Ziel, und [[Annihilate]] trifft nur Betäubte oder Liegende. Du gewinnst, indem du länger stehst.",
+          stigmen: ["Executing Blade", "Empyrean Lord's Punishment", "Doom Shield", "Nezekan's Shield"],
+          stigmenName: "1 gegen 1",
+          stigmenAlt: [["Second Skin", "gegen Magie-Schaden"], ["Comrade in Arms", "Gruppen-PvP: teilt Schaden mit Mitspielern"], ["Grapple", "Gruppe: zieht bis zu 4 heran und hält sie fest"], ["Noble Armor", "mehr maximale LP"]],
+          ziele: [["Judgment", 20], ["Punishment", 20], ["Pummel", 20], ["Annihilate", 20]],
+          passive: ["Enhance Health", "Ironclad Defense", "Guarding Seal"],
+          leiste: [{ name: "Druck-Linie", skills: ["Pummel", "Judgment", "Annihilate"] }],
+          makro: [0],
+          tasten: [
+            ["LMB", "Vicious Strike", "Grundangriff halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "für die Kontrolle, die dich tötet"], ["M5", "Shield Rush", "nach dem Ausweichen, Betäubung möglich"],
+            ["1", 0],
+            ["Q", "Shield Smite", "60 % Betäubung, 4 Ziele"], ["E", "Empyrean Lord's Punishment", "zweite Betäubung auf 20 m"], ["R", "Punishment", "aufladen, Vollstrecker-Buff"], ["F", "Nezekan's Shield", "Schild 41 % LP, auch Gruppe"],
+            ["Z", "Executing Blade", "−30 % Verteidigung, +20 % auf Betäubte"], ["X", "Poach", "heranziehen und festhalten"], ["C", "Doom Shield", "Ansturm 20 m, Umwerfen"]
+          ],
+          opener: ["Doom Shield", "Shield Smite", "Annihilate", "Executing Blade", "Judgment", "Punishment", "makro"],
+          kombos: [
+            "Fangen: [[Doom Shield]] (20 m, 75 % Umwerfen) oder nach dem Ausweichen [[Shield Rush]]; läuft er weg, holt ihn [[Poach]] zurück.",
+            "Betäubungs-Kette: [[Shield Smite]] → [[Annihilate]] → [[Executing Blade]] (+20 % auf Betäubte) → [[Judgment]]. Läuft die Betäubung aus: [[Empyrean Lord's Punishment]].",
+            "Burst: [[Punishment]] aufladen, solange er liegt oder betäubt ist.",
+            "Halten: [[Nezekan's Shield]] vor dem gegnerischen Burst, [[Defiance]] für die Kontrolle, die dich sonst tötet."
+          ],
+          tipps: [
+            "Nahkämpfer werden im PvP auf Abstand gehalten: Ansturm-Skills und [[Doom Shield]] zählen mehr als in PvE (aion2builds).",
+            "Gegen Magier und Beschwörer: [[Second Skin]] statt [[Nezekan's Shield]]."
+          ]
+        }
       },
       assassin: {
         kurz: "Krit-Burst mit Glyphen: fünf Glyphen setzen, mit [[Insignia Explosion]] zünden, [[Heart Gore]] bei jedem Krit.",
@@ -733,12 +815,44 @@ window.DK_DATA = {
           { name: "Buff-Linie", hand: true, skills: ["Triniel's Dagger", "Savage Fang", "Swift Contract", "Illusive Clone"] }
         ],
         makro: [0, "Quick Slice"],
-        eigene: [["Shadowstrike", "Öffner, hinter das Ziel"], ["Flash Slice", "durchziehen"], ["Infiltrate", "Ausweichen"]],
         opener: ["Illusive Clone", "Swift Contract", "Savage Fang", "Triniel's Dagger", "makro"],
         tipps: [
           "Die Buff-Linie drückst du von Hand, sie gehört nicht ins Makro.",
           "Im 20-Sekunden-Burst hat [[Heart Gore]] laut aion2builds keine Abklingzeit."
-        ]
+        ],
+        tasten: [
+          ["LMB", "Quick Slice", "Grundangriff halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "aus Kontrolle befreien"], ["M5", "Infiltrate", "nach dem Ausweichen hinter das Ziel"],
+          ["1", 0], ["2", 1, "von Hand zum Burst"],
+          ["Q", "Shadowstrike", "Öffner, hinter das Ziel"], ["E", "Flash Slice", "durchziehen"],
+          ["Z", "Storm Rampage", "auf taumelnde Ziele"], ["X", "Whirlwind Slice", "nach dem Ausweichen eines Angriffs"], ["C", "Shadow Fall", "auf betäubte Ziele"]
+        ],
+        pvp: {
+          kurz: "Burst aus der Tarnung: betäuben, Glyphen setzen, von hinten zuschlagen und mit [[Insignia Explosion]] erneut betäuben, bevor der Gegner reagiert.",
+          stigmen: ["Illusive Clone", "Swift Contract", "Triniel's Dagger", "Shadow Walk"],
+          stigmenName: "Duell",
+          stigmenAlt: [["Evasion Stance", "weicht kurz allem aus"], ["Smoke Bomb", "Blenden auf 10 m"], ["Aerial Bind", "in die Luft, sicher bei 5 Glyphen"], ["Evasion Contract", "löst Verlangsamung und Festhalten"]],
+          ziele: [],
+          passive: ["Exploit Weakness", "Impact Hit", "Rear Smite"],
+          leiste: [{ name: "Druck-Linie", skills: ["Savage Roar", "Ambush", "Heart Gore"] }, { name: "Buff-Linie", hand: true, skills: ["Triniel's Dagger", "Swift Contract", "Illusive Clone"] }],
+          makro: [0, "Quick Slice"],
+          tasten: [
+            ["LMB", "Quick Slice", "Grundangriff halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "aus Kontrolle befreien"], ["M5", "Infiltrate", "nach dem Ausweichen, blendet"],
+            ["1", 0], ["2", 1, "Burst von Hand"],
+            ["Q", "Shadowstrike", "Teleport, 3 s Betäubung"], ["E", "Shadow Fall", "auf Betäubte: Umwerfen"], ["R", "Insignia Explosion", "Flächen-Betäubung"], ["F", "Flash Slice", "Seite wechseln, blendet"],
+            ["Z", "Whirlwind Slice", "Betäubung nach Ausweichen"], ["X", "Shadow Walk", "Tarnung vor dem Kampf"]
+          ],
+          opener: ["Shadow Walk", "Shadowstrike", "Illusive Clone", "Savage Roar", "Triniel's Dagger", "Ambush", "Shadow Fall", "Insignia Explosion", "makro"],
+          kombos: [
+            "Öffner: [[Shadow Walk]] außerhalb des Kampfes, dann [[Shadowstrike]] (hinter das Ziel, 3 s Betäubung).",
+            "Kontroll-Kette: betäubt → [[Shadow Fall]] (Umwerfen) → [[Insignia Explosion]] (neue Betäubung, stärker mit Glyphen).",
+            "Schaden: [[Illusive Clone]] setzt [[Heart Gore]] zurück, [[Ambush]] von hinten +30 %, [[Triniel's Dagger]] verlängert die Abklingzeiten des Gegners.",
+            "Raus: [[Flash Slice]] oder nach dem Ausweichen [[Infiltrate]] – beide blenden."
+          ],
+          tipps: [
+            "Im PvP stehst du nicht immer hinter dem Ziel: das Rückenangriff-Passiv reicht auf Stufe 5 (Metabot).",
+            "[[Impact Hit]] ist das Passiv, das aion2builds für PvP dazunimmt."
+          ]
+        }
       },
       ranger: {
         kurz: "Bogen auf 20 m: [[Gale Arrow]] und [[Marking Shot]] oben halten, aus verlangsamten Zielen Bonusschaden holen.",
@@ -753,12 +867,44 @@ window.DK_DATA = {
           { name: "Orkan-Linie", skills: ["Tempest Shot", "Drill Dart", "Gale Arrow"] }
         ],
         makro: [0, 1],
-        eigene: [["Snipe", "linke Maustaste halten"], ["Deadshot", "Seitentaste, voll aufladen"], ["Marking Shot", "Präzision"]],
         opener: ["Bow of Blessing", "Supporting Fire", "Vaizel's Authority", "Marking Shot", "Deadshot"],
         tipps: [
           "AION-2-Steuerung nutzen und die Skill-Warteschlange einschalten, sonst greift das Makro nicht richtig.",
           "[[Deadshot]] immer voll aufladen; mit Präzision trifft er 35 % härter."
-        ]
+        ],
+        tasten: [
+          ["LMB", "Snipe", "halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "aus Kontrolle befreien"], ["M5", "Deadshot", "voll aufladen"],
+          ["1", 0], ["2", 1],
+          ["Q", "Marking Shot", "Präzision, bewegt dich"], ["E", "Explosion Trap", "Falle legen"], ["R", "Vaizel's Authority", "+20 % Angriff"],
+          ["Z", "Bow of Blessing", "+200 Krit"], ["X", "Supporting Fire", "Kugel feuert mit"], ["C", "Arrow Scattershot", "auf taumelnde Ziele"]
+        ],
+        pvp: {
+          kurz: "Abstand ist dein Schutz: markieren, verlangsamen, mit Präzision betäuben, dann Burst – und weiter auf Abstand bleiben.",
+          stigmen: ["Vaizel's Authority", "Bow of Blessing", "Arrow Storm", "Explosive Arrow"],
+          stigmenName: "PvP",
+          stigmenAlt: [["Sealing Arrow", "Siegel 5 s"], ["Ambush Kick", "zurückstoßen und Abstand gewinnen"], ["Mother Nature's Breath", "kurz mehr Schadensresistenz"], ["Illusory Arrow", "Blenden 3 s"]],
+          ziele: [["Tempest Shot", 20]],
+          passive: ["Hunter's Resolve", "Focused Eye", "Wind Vigor"],
+          leiste: [{ name: "Orkan-Linie", skills: ["Tempest Shot", "Drill Dart", "Gale Arrow"] }, { name: "Verlangsamt-Linie", skills: ["Explosive Arrow", "Burst Arrow"] }],
+          makro: [0, 1],
+          tasten: [
+            ["LMB", "Snipe", "halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "aus Kontrolle befreien"], ["M5", "Marking Shot", "Präzision und Ausweichschritt"],
+            ["1", 0], ["2", 1],
+            ["Q", "Snare Shot", "verlangsamt, öffnet Sprengpfeil"], ["E", "Suppressing Arrow", "Betäubung mit Präzision"], ["R", "Deadshot", "voll aufladen"], ["F", "Arrow Storm", "Flächen-Betäubung"],
+            ["Z", "Vaizel's Authority", "+20 % Angriff"], ["X", "Bow of Blessing", "+200 Krit"], ["C", "Explosion Trap", "Falle beim Abstandhalten"]
+          ],
+          opener: ["Vaizel's Authority", "Bow of Blessing", "Marking Shot", "Snare Shot", "Suppressing Arrow", "Burst Arrow", "Deadshot", "makro"],
+          kombos: [
+            "Öffnen: [[Marking Shot]] (Präzision) → [[Snare Shot]] (verlangsamt) → [[Suppressing Arrow]] (Betäubung, nur mit Präzision).",
+            "Burst: [[Burst Arrow]] (nur auf Verlangsamte) → voll aufgeladener [[Deadshot]] (+35 % mit Präzision) → [[Explosive Arrow]] (+20 % auf Verlangsamte).",
+            "Mehrere Gegner nah: [[Arrow Storm]] betäubt bis zu 4.",
+            "Abstand halten: [[Gale Arrow]] und [[Snipe]] im Laufen, [[Explosion Trap]] auf deinen Weg legen."
+          ],
+          tipps: [
+            "[[Tempest Shot]] auf Stufe 20 bringt eine Rückstoß-Spezialisierung (aion2builds).",
+            "Die Verlangsamung ist im PvP dein wichtigstes Werkzeug: [[Snare Shot]] auf Punkte-Stufe 10 (Metabot)."
+          ]
+        }
       },
       sorcerer: {
         kurz: "Feuer-Burst mit Eis-Kontrolle. [[Grace of Enhancement]] gibt +20 % PvE-Schadensverstärkung, solange die MP über 25 % bleiben.",
@@ -775,12 +921,44 @@ window.DK_DATA = {
           { name: "Eis-Linie", skills: ["Ice Chain", "Winter's Shackles"] }
         ],
         makro: [0, 1, "Flame Arrow", 2, "Flame Arrow", 3, "Flame Scattershot"],
-        eigene: [["Hellfire", "auf Stufe 3 aufladen"]],
         opener: ["Delayed Explosion", "Element Enhancement", "Wish of Concentration", "Fire Wall", "Cold Storm", "Bittercold Wind", "Winter's Shackles", "Hellfire", "makro"],
         tipps: [
           "Verzögerung 10 ms unter 50 ms Ping, 40–50 ms bei 80–100 ms Ping.",
           "Unter 25 % MP fällt der Bonus von [[Grace of Enhancement]] weg. Die MP von [[Blaze]] und [[Absorb Essence]] sind mehr wert, als der Tooltip zeigt."
-        ]
+        ],
+        tasten: [
+          ["LMB", "Flame Arrow", "Grundangriff halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "aus Kontrolle befreien"],
+          ["1", 0], ["2", 1], ["3", 2], ["4", 3],
+          ["Q", "Frost", "einfrieren"], ["E", "Frost Burst", "auf eingefrorene Ziele"], ["R", "Hellfire", "auf Stufe 3 aufladen"],
+          ["Z", "Flame Scattershot", "letzter Makro-Schritt"]
+        ],
+        pvp: {
+          kurz: "Kontrolle, dann Burst: einfrieren, [[Frost Burst]], Feuer in den Timer von [[Delayed Explosion]] legen. Ohne Abstand verliert ein Magier.",
+          stigmen: ["Element Enhancement", "Steel Barrier", "Delayed Explosion", "Curse: Tree"],
+          stigmenName: "PvP",
+          stigmenAlt: [["Hibernation", "5 s immun"], ["Soul Freeze", "Siegel 5 s"], ["Lumiel's Space", "in die Luft, bis zu 4 Ziele"], ["Arctic Armor", "mehr Schadensresistenz, friert Angreifer ein"]],
+          ziele: [],
+          passive: ["Grace of Enhancement", "Fire Mark", "Robe of Cold"],
+          leiste: [{ name: "Feuer-Linie", skills: ["Firestorm", "Blaze"] }, { name: "Eis-Linie", skills: ["Ice Chain", "Frost Burst"] }],
+          makro: [0, "Flame Arrow", 1],
+          tasten: [
+            ["LMB", "Flame Arrow", "Grundangriff halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "aus Kontrolle befreien"],
+            ["1", 0], ["2", 1],
+            ["Q", "Frost", "50 % einfrieren"], ["E", "Winter's Shackles", "verlangsamt bis zu 4"], ["R", "Hellfire", "in den Timer aufladen"], ["F", "Steel Barrier", "Schild 16 % LP"],
+            ["Z", "Delayed Explosion", "+15 % Schaden im Timer"], ["X", "Curse: Tree", "einen Gegner 10 s raus"], ["C", "Element Enhancement", "+20 % Feuer und Wasser"], ["V", "Bittercold Wind", "Fläche"]
+          ],
+          opener: ["Element Enhancement", "Frost", "Frost Burst", "Delayed Explosion", "Winter's Shackles", "Hellfire", "makro"],
+          kombos: [
+            "Kill-Kombo: [[Frost]] (50 % einfrieren) → [[Frost Burst]] (nur auf Eingefrorene) → [[Delayed Explosion]] (+15 % Schaden für 4 s) → [[Hellfire]] in den Timer aufladen → [[Firestorm]] und [[Blaze]].",
+            "Abstand: [[Ice Chain]] und [[Winter's Shackles]] verlangsamen, [[Robe of Cold]] verlangsamt jeden, der dich trifft.",
+            "Gruppe: [[Curse: Tree]] nimmt einen Gegner 10 s aus dem Kampf (bricht bei Schaden).",
+            "MP: [[Flame Arrow]] zwischen den Fenstern, damit [[Grace of Enhancement]] aktiv bleibt (+10 % PvP-Schaden ab 25 % MP)."
+          ],
+          tipps: [
+            "Spielt sich laut aion2builds auch mit höherem Ping (ab 50 ms) gut.",
+            "[[Frost]] im PvP auf Punkte-Stufe 10: die Einfrier-Chance ist die Kombo (Metabot)."
+          ]
+        }
       },
       spiritmaster: {
         kurz: "Du und dein Geist: Geister-Skills laden [[Elemental Fusion]] auf und schalten [[Dimensional Control]] frei, DoTs auf jedem Ziel stärken zwei Passive.",
@@ -796,13 +974,44 @@ window.DK_DATA = {
           { name: "Schadenslinie", skills: ["Combustion", "Dimensional Control", "Jointstrike: Curse", "Jointstrike: Corrode"] }
         ],
         makro: [1, 0, 2],
-        eigene: [["Cold Shock", "linke Maustaste halten"]],
         opener: ["Flame Blessing", "Enhance: Spirit's Benediction", "Summon: Ancient Spirit", "Summon: Fire Spirit", "makro"],
         tipps: [
           "Läuft am besten unter etwa 60 ms Ping.",
           "Geister- und Schadenslinie zusätzlich auf eigene Tasten legen, um sie gezielt zu drücken.",
           "[[Summon: Ancient Spirit]] ab Stigma-Stufe 15: [[Elemental Fusion]] alle 5 statt alle 7 Angriffe."
-        ]
+        ],
+        tasten: [
+          ["LMB", "Cold Shock", "halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "aus Kontrolle befreien"],
+          ["1", 0], ["2", 1], ["3", 2],
+          ["Q", "Soul's Cry", "Furcht für Notfälle"], ["E", "Rapid Scattershot", "auf taumelnde Ziele"], ["Z", "Summon: Wind Spirit", "dritter Geist"]
+        ],
+        pvp: {
+          kurz: "Der Geist bindet den Gegner, du kontrollierst: [[Soul's Cry]] lässt ihn 5 s fliehen, [[Seize Magic]] nimmt seine Buffs, [[Command: Proxy]] lenkt Schaden auf den Geist.",
+          stigmen: ["Summon: Ancient Spirit", "Enhance: Spirit's Benediction", "Command: Proxy", "Seize Magic"],
+          stigmenName: "PvP",
+          stigmenAlt: [["Jointstrike: Corrode", "statt Stellvertretung; stark gegen Kantor und Heilung"], ["Cry of Terror", "Flächen-Furcht; gegen Kleriker und Kantor"]],
+          ziele: [["Defiance", 20], ["Cold Shock", 20], ["Elemental Fusion", 20], ["Jointstrike: Curse", 20], ["Combustion", 20]],
+          passive: ["Spirit Protection", "Revitalization Contract", "Spirit Strike", "Mental Focus"],
+          leiste: [{ name: "Geister-Linie", skills: ["Summon: Fire Spirit", "Summon: Earth Spirit", "Elemental Fusion"] }, { name: "Schadenslinie", skills: ["Combustion", "Dimensional Control", "Jointstrike: Curse"] }],
+          makro: [0, 1],
+          tasten: [
+            ["LMB", "Cold Shock", "halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "erste Kontrolle sofort brechen"],
+            ["1", 0], ["2", 1],
+            ["Q", "Soul's Cry", "70 % Furcht, 5 s"], ["E", "Seize Magic", "nimmt bis zu 2 Buffs"], ["R", "Enhance: Spirit's Benediction", "+10 % PvP-Schaden und -Resistenz"], ["F", "Command: Proxy", "halber Schaden auf den Geist"],
+            ["Z", "Summon: Ancient Spirit", "30 s, lädt Fusion"], ["X", "Summon: Water Spirit", "zweiter Geist"], ["C", "Summon: Wind Spirit", "dritter Körper im Feld"]
+          ],
+          opener: ["Enhance: Spirit's Benediction", "Summon: Earth Spirit", "Jointstrike: Curse", "Summon: Ancient Spirit", "Soul's Cry", "makro"],
+          kombos: [
+            "Angreifen (aion2builds): [[Enhance: Spirit's Benediction]] → [[Summon: Earth Spirit]] → [[Jointstrike: Curse]] → [[Summon: Ancient Spirit]], dann [[Soul's Cry]] und Makro.",
+            "Angegriffen werden: die erste Kontrolle sofort mit [[Defiance]] brechen, dann [[Command: Proxy]] (die Hälfte des Schadens geht auf den Geist).",
+            "Gegen Gladiator, Kleriker und Waldläufer: [[Seize Magic]] entfernt ihre Buffs. Gegen Assassine und Magier: [[Command: Proxy]].",
+            "Schaden: [[Elemental Fusion]] bei 4 Stapeln, [[Combustion]] und [[Cold Shock]] füllen, solange der Geist trifft."
+          ],
+          tipps: [
+            "[[Defiance]] im PvP hochziehen (aion2builds: Ziel-Stufe 20) – im PvE reicht Stufe 1.",
+            "Geister übernehmen deine Werte beim Beschwören: erst buffen, dann beschwören."
+          ]
+        }
       },
       cleric: {
         kurz: "Heiler mit starkem Debuff: [[Chain of Torment]] senkt die PvE-Schadensresistenz des Ziels für die ganze Gruppe.",
@@ -819,13 +1028,44 @@ window.DK_DATA = {
           { name: "Heil-Linie", taste: "E", hand: true, skills: ["Healing Light", "Light of Regeneration"] }
         ],
         makro: [0, 1],
-        eigene: [["Earth's Retribution", "linke Maustaste"], ["Radiant Recovery", "reinigt und heilt"], ["Bolt", "Schaden"], ["Light of Protection", "Umschalter, einmal an"], ["Noble Aura", "Aura"]],
         opener: ["Light of Protection", "Divine Aura", "Noble Aura", "Chain of Torment", "makro"],
         tipps: [
           "Heil- und Debuff-Linie bleiben eigene Tasten: heilen, wenn die LP wirklich fallen.",
           "Mit Kantor in der Gruppe: [[Chain of Torment]] wirkt nicht zusammen mit dessen Gelübde der Erde, [[Light of Protection]] nicht mit der Invokation der Unbesiegbarkeit. Aufgaben aufteilen.",
           "Die Gebets-Linie nutzt [[Prayer of Amplification]]. Die Top-Spieler haben im vierten Slot öfter [[Summon Resurrection]]."
-        ]
+        ],
+        tasten: [
+          ["LMB", "Earth's Retribution", "Grundangriff halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "aus Kontrolle befreien"],
+          ["1", 0], ["2", 1], ["3", 2, "von Hand"], ["4", 3, "von Hand"],
+          ["Q", "Radiant Recovery", "reinigt und heilt die Gruppe"], ["R", "Bolt", "aufladen"], ["F", "Light of Protection", "Umschalter, einmal an"], ["Z", "Noble Aura", "Aura"]
+        ],
+        pvp: {
+          kurz: "Heilen, reinigen, schwächen: [[Debilitating Mark]] senkt Schaden und Heilung des Gegners, [[Radiant Recovery]] löst Kontrolle von Mitspielern.",
+          stigmen: ["Prayer of Amplification", "Light of Protection", "Yustiel's Power", "Voice of Doom"],
+          stigmenName: "Duell und kleine Kämpfe",
+          stigmenAlt: [["Absolution", "Gruppen-PvP statt Stimme des Verderbens: löst 2 Debuffs"], ["Salvation", "3 s immun"], ["Summon Resurrection", "Abyss und offene Welt"]],
+          ziele: [["Earth's Retribution", 20], ["Bolt", 16]],
+          passive: ["Immortal Veil", "Healing Enhancement", "Survival Willpower"],
+          leiste: [{ name: "Druck-Linie", skills: ["Judgment Thunder", "Condemnation", "Chain of Torment"] }, { name: "Heil-Linie", hand: true, skills: ["Healing Light", "Light of Regeneration"] }],
+          makro: [0],
+          tasten: [
+            ["LMB", "Earth's Retribution", "ignoriert Block und Ausweichen"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "aus Kontrolle befreien"],
+            ["1", 0], ["2", 1, "heilen von Hand"],
+            ["Q", "Radiant Recovery", "löst 1 Debuff, heilt"], ["E", "Debilitating Mark", "Fokusziel schwächen"], ["R", "Prayer of Amplification", "+20 % Angriff"], ["F", "Yustiel's Power", "Gruppe +10 % PvP-Resistenz"],
+            ["Z", "Voice of Doom", "Duell: Schaden über Zeit"], ["X", "Bolt", "aufladen"], ["C", "Light of Protection", "Umschalter"]
+          ],
+          opener: ["Light of Protection", "Debilitating Mark", "Chain of Torment", "Condemnation", "Voice of Doom", "makro"],
+          kombos: [
+            "Fokusziel: [[Debilitating Mark]] → [[Chain of Torment]] → [[Condemnation]] (nur auf Ziele mit Kette) → [[Voice of Doom]].",
+            "Mitspieler betäubt oder in Furcht: sofort [[Radiant Recovery]].",
+            "Großer Schaden kommt: [[Yustiel's Power]] für die Gruppe, in Not [[Salvation]], wenn ausgerüstet.",
+            "MP: [[Earth's Retribution]] zwischen den Heilungen."
+          ],
+          tipps: [
+            "Bei [[Chain of Torment]] und [[Debilitating Mark]] im PvP die Kontroll-Spezialisierung nehmen (aion2builds).",
+            "Abyss und offene Welt: [[Summon Resurrection]] mitnehmen."
+          ]
+        }
       },
       chanter: {
         kurz: "Stab-Hybrid: Alles dreht sich um [[Dark Crush]], das Betäubungen kurz freischalten. Die Mantras laufen dauerhaft.",
@@ -840,13 +1080,45 @@ window.DK_DATA = {
           { name: "Sprung-Linie", hand: true, skills: ["Tremor Crush", "Rushing Smash"] }
         ],
         makro: [0, "Incandescent Blow"],
-        eigene: [["Onslaught", "linke Maustaste"], ["Undefeated Mantra", "Umschalter"], ["Sprint Mantra", "Umschalter"], ["Recuperation", "Gruppenheilung"], ["Power of the Storm", "Gruppen-Buff"]],
         opener: ["Power of the Storm", "Rushing Smash", "makro"],
         tipps: [
           "Mantras sind Umschalter: einmal einschalten, nie ins Makro.",
           "Das Makro zusammen mit [[Onslaught]] auf der linken Maustaste halten.",
           "Mit Kleriker in der Gruppe: [[Earth's Promise]] und [[Undefeated Mantra]] überschneiden sich mit dessen Kette des Schmerzes und Licht des Schutzes."
-        ]
+        ],
+        tasten: [
+          ["LMB", "Onslaught", "Grundangriff halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "aus Kontrolle befreien"], ["M5", 1, "zum Ziel springen"],
+          ["1", 0],
+          ["Q", "Recuperation", "Gruppenheilung, reinigt"], ["E", "Incandescent Blow", "Makro-Schritt"], ["R", "Power of the Storm", "Kampftempo, Abklingzeiten"], ["F", "Heat Wave Blow", "bis 4 Ziele"],
+          ["Z", "Undefeated Mantra", "Umschalter"], ["X", "Sprint Mantra", "Umschalter"], ["C", "Gust Rampage", "auf taumelnde Ziele"]
+        ],
+        pvp: {
+          kurz: "Betäuben und umwerfen im Wechsel: Betäubung → [[Wave Blow]] → neue Betäubung, dazwischen [[Dark Crush]]. Heilen und Reinigen hält die Gruppe im Kampf.",
+          stigmen: ["Undefeated Mantra", "Sprint Mantra", "Power of the Storm", "Obliterate"],
+          stigmenName: "PvP",
+          stigmenAlt: [["Barrier Spell", "LP fallen 3 s nicht unter 10 %"], ["Healing Touch", "starke Gruppenheilung"], ["Focused Defense", "sicherer Block"], ["Ensnaring Mark", "Siegel 5 s"]],
+          ziele: [],
+          passive: ["Blessing of Life", "Attack Preparation", "Survival Willpower"],
+          leiste: [{ name: "Finsterbruch-Linie", skills: ["Incandescent Blow", "Spinning Strike", "Wave Blow", "Dark Crush"] }],
+          makro: [0],
+          tasten: [
+            ["LMB", "Onslaught", "Grundangriff halten"], ["RMB", "makro", "Makro halten"], ["M4", "Defiance", "gibt im PvP weniger Resistenz"], ["M5", "Tremor Crush", "nach dem Ausweichen, Betäubung"],
+            ["1", 0],
+            ["Q", "Impactful Crush", "60 % Betäubung, öffnet Finsterbruch"], ["E", "Obliterate", "Umwerfen, bis 4 Ziele"], ["R", "Power of the Storm", "Kampftempo, Abklingzeiten"], ["F", "Recuperation", "reinigt die Gruppe"],
+            ["Z", "Undefeated Mantra", "Umschalter"], ["X", "Sprint Mantra", "Umschalter"], ["C", "Rushing Smash", "heranstürmen"]
+          ],
+          opener: ["Power of the Storm", "Rushing Smash", "Impactful Crush", "Wave Blow", "Dark Crush", "Spinning Strike", "makro"],
+          kombos: [
+            "Kontroll-Kette: nach dem Ausweichen [[Tremor Crush]] (Betäubung) → [[Wave Blow]] (umwerfen, nur Betäubte) → [[Impactful Crush]] (neue Betäubung, öffnet [[Dark Crush]]) → [[Dark Crush]].",
+            "Schaden: [[Spinning Strike]] (+15 % Krit-Schaden, stapelt), dann [[Incandescent Blow]].",
+            "Gruppe: [[Obliterate]] wirft bis zu 4 um. Ist ein Mitspieler kontrolliert, reinigt [[Recuperation]].",
+            "Die Druck-Linie zündet [[Wave Blow]] und [[Dark Crush]] nur, wenn deine Betäubung sitzt – sonst läuft der Füller."
+          ],
+          tipps: [
+            "[[Impactful Crush]]: die Spezialisierung ab Skill-Stufe 16 ist die PvP-Wahl (aion2builds).",
+            "Die Mantras sind Umschalter und laufen dauerhaft – nie ins Makro."
+          ]
+        }
       }
     }
   },

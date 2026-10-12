@@ -595,7 +595,7 @@
       ${keyRows ? `<p class="lbl-line">Kern-Skills (Ziel-Stufe ${ks.target}+)</p><ul class="keyskills">${keyRows}</ul>` : ""}
       ${build.map((b) => `<p class="lbl-line">${esc(b.title)}</p><ol class="prio">${b.list.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>`).join("")}
       ${passive.length ? `<details class="more-skills"><summary>Passive Skills (${passive.length})</summary><ul class="skills skills--small">${passive.map(cell).join("")}</ul></details>` : ""}
-      ${window.DK_SK && a.cls ? `<p class="ch-sk-link"><button type="button" class="btn btn--ghost" data-action="open-sk" data-id="${esc(a.cls)}">Leiste &amp; Makro für ${esc(clsDe)}</button></p>` : ""}
+      ${window.DK_SK && a.cls ? `<p class="ch-sk-link"><button type="button" class="btn btn--ghost" data-action="open-sk" data-id="${esc(a.cls)}">Leiste &amp; Makro (PvE)</button> <button type="button" class="btn btn--ghost" data-action="open-sk" data-mode="pvp" data-id="${esc(a.cls)}">PvP-Leiste</button></p>` : ""}
       <p class="fine">Die Armory zeigt keine Gesamtwerte für Genauigkeit, Krit und Geschwindigkeit. Breakpoints prüfst du im Werte-Fenster im Spiel.</p>
     </section>`;
   }
@@ -624,7 +624,7 @@
       ${sp.level >= 45 && sp.loaded ? `<div class="sp-meter" role="img" aria-label="Etwa ${sp.used} von ${sp.pool} Punkten verteilt"><span style="width:${Math.min(100, (sp.used / sp.pool) * 100).toFixed(1)}%"></span></div>
       <p class="small muted">Etwa <b>${sp.used}</b> von <b>${sp.pool}</b> Punkten verteilt (geschätzt aus Stufe minus Daevanion und Ausrüstung). Mit allen Punkten passen ${sp.slots} Skills auf 10.</p>` : ""}
       ${mv ? `<div class="sp-move"><p class="sp-move-h">${mv.free.length ? "Vorschlag: umverteilen" : "Vorschlag: freie Punkte hierhin"}</p>
-        <ul>${mv.free.map((r) => `<li class="sp-down">${pic(r.icon, "sp-img")}<span>${esc(nm(r))}</span><b>${r.pts} → 1</b><em>+${r.cost} Punkte</em></li>`).join("")}
+        <ul>${mv.free.map((r) => `<li class="sp-down">${pic(r.icon, "sp-img")}<span>${esc(nm(r))}${r.pvp ? ' <small class="sp-pvp">im PvP wichtig</small>' : ""}</span><b>${r.pts} → 1</b><em>+${r.cost} Punkte</em></li>`).join("")}
         ${mv.raise.map((r) => `<li class="sp-up">${pic(r.icon, "sp-img")}<span>${esc(nm(r))}</span><b>${r.pts} → 10</b><em>−${r.need} Punkte</em></li>`).join("")}</ul>
         <p class="small muted">Grundlage: Durchschnittsstufen von ${sp.top.spieler} Top-Spielern deiner Klasse (Metabot, Stand ${esc(sp.top.stand.split("-").reverse().join("."))}).${mv.rest ? ` Danach bleiben ${mv.rest} Punkte frei.` : ""}</p></div>` : ""}
       <details class="sp-all"${flagged && !mv ? " open" : ""}><summary>Alle Skills im Vergleich${flagged ? ` · ${flagged} auffällig` : ""}</summary>

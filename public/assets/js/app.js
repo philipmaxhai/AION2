@@ -406,6 +406,7 @@
       '<p class="cls-tags"><span>' + esc(c.weapon) + "</span><span>" + esc(c.range) + "</span></p></div>" +
       '<div class="cls-actions">' + (c.id !== S.cls ? '<button type="button" class="btn" data-action="set-class" data-id="' + c.id + '">Das ist meine Klasse</button>' : '<span class="chip chip--ok">Deine Klasse</span>') +
       '<button type="button" class="btn btn--ghost" data-action="open-sk" data-id="' + c.id + '">Skills &amp; Makro</button>' +
+      '<button type="button" class="btn btn--ghost" data-action="open-sk" data-mode="pvp" data-id="' + c.id + '">PvP</button>' +
       '<button type="button" class="btn btn--ghost" data-action="open-dv" data-id="' + c.id + '">Daevanion-Brett</button></div></header>';
     html += '<p class="lede">' + esc(c.summary) + '</p><p class="muted small">Tier-Einschätzung: ' + esc(c.tier) + "</p>";
     html += '<div class="cols">' +
@@ -712,7 +713,7 @@
       case "view-class": viewCls = id; refresh(["class-tabs", "class-detail"]); break;
       case "open-class": viewCls = id; refresh(["class-tabs", "class-detail"]); go("klassen"); break;
       case "open-dv": if (window.DK_DV) window.DK_DV.show(id, 0); break;
-      case "open-sk": if (window.DK_SK) window.DK_SK.show(id); break;
+      case "open-sk": if (window.DK_SK) window.DK_SK.show(id, a.getAttribute("data-mode") || "pve"); break;
       case "set-class":
         S.cls = id; viewCls = id; save();
         $("#f-class").value = id;

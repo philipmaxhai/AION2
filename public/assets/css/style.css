@@ -1069,6 +1069,48 @@ kbd { font-family: var(--font); font-size: 0.72rem; font-weight: 700; padding: 1
 .sk-out { color: var(--fg-2); }
 .sk-rule { color: var(--fg-2); border-left: 3px solid var(--warn); padding-left: 12px; }
 
+/* Modus PvE / PvP */
+.sk-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border: 1px solid var(--line-2); border-radius: 12px; background: var(--bg-2); max-width: 560px; }
+.sk-mode-btn { font: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 9px 14px; border: 0; border-radius: 9px; background: none; color: var(--muted); text-align: left; font-stretch: var(--narrow); font-weight: 800; font-size: 1.15rem; line-height: 1.1; }
+.sk-mode-btn small { font-stretch: 100%; font-weight: 500; font-size: 0.75rem; color: var(--faint); }
+.sk-mode-btn:hover { color: var(--fg); }
+.sk-mode-btn.is-on { background: var(--surface); color: var(--fg); box-shadow: 0 0 0 1px var(--line-2); }
+.sk-mode-btn.is-on small { color: var(--muted); }
+
+/* Tastenbild */
+.kb { --icon: 40px; margin: 0; display: flex; flex-wrap: wrap; gap: 14px 24px; padding: 16px; border-radius: 12px; background: var(--bg-2); border: 1px solid var(--line); }
+.kb-group { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.kb-glabel { font-size: 0.7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.kb-keys { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 8px; }
+.kb-key { width: 96px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; min-width: 0; }
+.kb-stack { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; height: calc(var(--rows, 1) * (var(--icon) + 4px)); }
+.kb-ico { display: block; line-height: 0; border-radius: 9px; }
+.kb-ico .sk-ico { width: var(--icon); height: var(--icon); }
+.kb-ico.is-first { box-shadow: 0 0 0 2px var(--accent); }
+.kb-macro { display: grid; place-items: center; width: var(--icon); height: var(--icon); border-radius: 9px; border: 2px solid var(--accent); color: var(--accent); background: var(--accent-soft); font-weight: 800; font-size: 1.2rem; }
+.kb-cap { font-size: 0.78rem; min-width: 34px; padding: 3px 7px; }
+.kb-nm { font-size: 0.84rem; font-stretch: var(--narrow); font-weight: 600; line-height: 1.2; color: var(--fg); overflow-wrap: break-word; -webkit-hyphens: auto; hyphens: auto; max-width: 100%; }
+.kb-key--line .kb-nm { color: var(--accent); }
+.kb-note { font-size: 0.72rem; line-height: 1.25; color: var(--muted); }
+.kb figcaption { flex-basis: 100%; font-size: var(--fs-xs); color: var(--muted); }
+/* Schmal: Tasten als Liste – Taste, Skills nebeneinander (links oben, rechts Vorrang), Name */
+@container main (max-width: 560px) {
+  .kb { --icon: 32px; padding: 10px 12px; gap: 10px; }
+  .kb-group { flex-basis: 100%; }
+  .kb-keys { flex-direction: column; flex-wrap: nowrap; gap: 0; }
+  .kb-key { width: 100%; display: grid; grid-template-columns: 62px auto minmax(0, 1fr); grid-template-areas: "cap stack nm" "cap stack note"; align-items: center; column-gap: 10px; row-gap: 1px; text-align: left; padding: 7px 0; border-bottom: 1px solid var(--line); }
+  .kb-key:last-child { border-bottom: 0; }
+  .kb-cap { grid-area: cap; justify-self: start; }
+  .kb-stack { grid-area: stack; flex-direction: row; height: auto; gap: 3px; }
+  .kb-nm { grid-area: nm; align-self: end; }
+  .kb-note { grid-area: note; align-self: start; }
+}
+.sk-diff { display: flex; flex-wrap: wrap; gap: 6px; }
+.sk-alt-list { flex-direction: column; align-items: flex-start; }
+.sk-alt-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.sk-list--pvp .sk-row { grid-template-columns: 52px 36px minmax(0, 1fr); }
+.sk-list--goal .sk-row { grid-template-columns: 36px minmax(0, 1fr) auto; }
+
 /* Charakter-Check: Skillpunkte */
 .sp { display: flex; flex-direction: column; gap: 8px; }
 .sp-meter { height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; }
@@ -1080,6 +1122,7 @@ kbd { font-family: var(--font); font-size: 0.72rem; font-weight: 700; padding: 1
 .sp-move b { font-variant-numeric: tabular-nums; }
 .sp-move em { font-style: normal; font-size: 0.78rem; color: var(--muted); min-width: 5.5em; text-align: right; }
 .sp-down b { color: var(--muted); }
+.sp-pvp { font-size: 0.7rem; font-weight: 600; color: var(--warn); white-space: nowrap; }
 .sp-up b { color: var(--ok); }
 .sp-img { width: 26px; height: 26px; border-radius: 6px; object-fit: cover; display: block; border: 1px solid var(--line-2); background: #111419; }
 .sp-all summary { cursor: pointer; color: var(--accent); font-weight: 600; font-size: var(--fs-sm); }
