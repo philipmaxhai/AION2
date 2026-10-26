@@ -161,6 +161,7 @@
         setStatus(null, "");
         current = { character: data.character, sel: null };
         remember(data.character);
+        if (window.DK_BG) window.DK_BG.fromCharacter(data.character);
         updateUrl(data.character);
         render();
       } else if (data.status === "mehrere") {
@@ -595,7 +596,7 @@
       ${keyRows ? `<p class="lbl-line">Kern-Skills (Ziel-Stufe ${ks.target}+)</p><ul class="keyskills">${keyRows}</ul>` : ""}
       ${build.map((b) => `<p class="lbl-line">${esc(b.title)}</p><ol class="prio">${b.list.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>`).join("")}
       ${passive.length ? `<details class="more-skills"><summary>Passive Skills (${passive.length})</summary><ul class="skills skills--small">${passive.map(cell).join("")}</ul></details>` : ""}
-      ${window.DK_SK && a.cls ? `<p class="ch-sk-link"><button type="button" class="btn btn--ghost" data-action="open-sk" data-id="${esc(a.cls)}">Leiste &amp; Makro (PvE)</button> <button type="button" class="btn btn--ghost" data-action="open-sk" data-mode="pvp" data-id="${esc(a.cls)}">PvP-Leiste</button></p>` : ""}
+      ${window.DK_SK && a.cls ? `<p class="ch-sk-link"><button type="button" class="btn btn--ghost" data-action="open-sk" data-id="${esc(a.cls)}">Leiste &amp; Makro (PvE)</button> <button type="button" class="btn btn--ghost" data-action="open-sk" data-mode="pvp" data-id="${esc(a.cls)}">PvP-Leiste</button>${window.DK_BG ? ` <button type="button" class="btn btn--ghost" data-action="open-bg" data-id="tempo">Begleiter-Plan</button>` : ""}</p>` : ""}
       <p class="fine">Die Armory zeigt keine Gesamtwerte für Genauigkeit, Krit und Geschwindigkeit. Breakpoints prüfst du im Werte-Fenster im Spiel.</p>
     </section>`;
   }

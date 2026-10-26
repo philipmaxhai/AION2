@@ -505,6 +505,97 @@
     return { missing: [...icons.values()].filter((v) => !v).length };
   }
 
+  /* ---------- Schadenstest mit der Kampfanalyse des Spiels ----------
+   * Ergebnisse je Klasse und Modus im Browser (dk.dps), neueste zuerst. Der Timer gibt die Testdauer vor. */
+  const DPS_KEY = "dk.dps";
+  const timer = { dauer: 60, phase: "idle", end: 0, iv: null };
+  function dpsAll() { try { return JSON.parse(localStorage.getItem(DPS_KEY) || "{}") || {}; } catch (e) { return {}; } }
+  function dpsSave(all) { try { localStorage.setItem(DPS_KEY, JSON.stringify(all)); } catch (e) { /* Speicher gesperrt */ } }
+  const dpsList = (cls, mode) => dpsAll()[cls + ":" + mode] || [];
+  const fmtNum = (n) => Math.round(n).toLocaleString("de-DE");
+
+  function beep(freq, ms) {
+    try {
+      const C = window.AudioContext || window.webkitAudioContext;
+      if (!C) return;
+      const ctx = beep.ctx || (beep.ctx = new C());
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = freq; g.gain.value = 0.08;
+      o.connect(g); g.connect(ctx.destination);
+      o.start(); o.stop(ctx.currentTime + ms / 1000);
+    } catch (e) { /* ohne Ton */ }
+  }
+  function clockText() {
+    if (timer.phase === "idle") return `${Math.floor(timer.dauer / 60)}:${String(timer.dauer % 60).padStart(2, "0")}`;
+    if (timer.phase === "end") return "Fertig";
+    const left = Math.max(0, Math.ceil((timer.end - Date.now()) / 1000));
+    return timer.phase === "count" ? String(left) : `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+  }
+  function paintClock() {
+    const c = document.getElementById("sk-clock");
+    if (c) { c.textContent = clockText(); c.className = "dk-clock" + (timer.phase === "run" || timer.phase === "count" ? " is-run" : timer.phase === "end" ? " is-end" : ""); }
+    const b = document.querySelector('#sk-app [data-sk="dps-start"]');
+    if (b) b.textContent = timer.phase === "run" || timer.phase === "count" ? "Abbrechen" : "Test starten";
+  }
+  function tickTimer() {
+    if (timer.phase === "count" && Date.now() >= timer.end) {
+      timer.phase = "run"; timer.end = Date.now() + timer.dauer * 1000; beep(880, 180);
+    } else if (timer.phase === "count") {
+      const left = Math.ceil((timer.end - Date.now()) / 1000);
+      if (left !== tickTimer.last) { tickTimer.last = left; beep(440, 90); }
+    } else if (timer.phase === "run" && Date.now() >= timer.end) {
+      timer.phase = "end"; clearInterval(timer.iv); timer.iv = null; beep(660, 220); setTimeout(() => beep(990, 260), 260);
+      const inp = document.getElementById("sk-dps-val"); if (inp) inp.focus();
+    }
+    paintClock();
+  }
+  function startTimer() {
+    if (timer.phase === "run" || timer.phase === "count") { timer.phase = "idle"; clearInterval(timer.iv); timer.iv = null; paintClock(); return; }
+    timer.phase = "count"; timer.end = Date.now() + 3000; tickTimer.last = null;
+    clearInterval(timer.iv); timer.iv = setInterval(tickTimer, 200); tickTimer();
+  }
+
+  function testHtml(cls, mode) {
+    const KA = D.kampfanalyse;
+    if (!KA) return "";
+    const list = dpsList(cls, mode);
+    const best = list.reduce((m, r) => Math.max(m, r.dps), 0);
+    const rows = list.map((r, i) => {
+      const diff = best ? (r.dps / best - 1) * 100 : 0;
+      return `<li class="dps-row${r.dps === best ? " is-best" : ""}"><span>${esc(r.name)}<small>${esc(r.datum)} · ${r.dauer} s</small></span>
+        <span class="sk-meter"><span style="width:${best ? Math.round((r.dps / best) * 100) : 0}%"></span></span>
+        <span><b>${fmtNum(r.dps)}</b> DPS <span class="dps-diff">${r.dps === best ? "beste" : "−" + Math.abs(diff).toFixed(1).replace(".", ",") + " %"}</span></span>
+        <button type="button" class="link-btn" data-sk="dps-del" data-i="${i}" aria-label="Eintrag ${esc(r.name)} löschen">löschen</button></li>`;
+    }).join("");
+    const variant = `${mode === "pvp" ? "PvP" : "PvE"}-Makro${list.length ? " " + (list.length + 1) : ""}`;
+    return `<section class="sk-sec" id="sk-test" aria-labelledby="sk-test-h">
+      <header class="sk-sec-head"><h3 id="sk-test-h">Schadenstest · Kampfanalyse</h3>
+        <p>AION 2 misst deinen Schaden selbst: <b>${esc(KA.taste)}</b> öffnet die Kampfanalyse mit ${esc(KA.zeigt.join(", "))}. So findest du heraus, welche Leiste und welches Makro bei dir wirklich mehr Schaden machen.</p></header>
+      <div class="sk-cols">
+        <div class="sk-col">
+          <h4>So testest du</h4>
+          <ol class="dk-steps">${KA.test.map((t) => `<li>${esc(t)}</li>`).join("")}</ol>
+          <p class="sk-hint">${esc(KA.grenzen)}</p>
+        </div>
+        <div class="sk-col">
+          <h4>Timer</h4>
+          <div class="dk-timer">
+            <span id="sk-clock" class="dk-clock">${clockText()}</span>
+            <div class="seg seg--sm" role="group" aria-label="Testdauer">${KA.dauer.map((d) => `<button type="button" class="seg-btn${timer.dauer === d ? " is-on" : ""}" aria-pressed="${timer.dauer === d}" data-sk="dps-dauer" data-id="${d}">${d / 60} min</button>`).join("")}</div>
+            <button type="button" class="btn" data-sk="dps-start">${timer.phase === "run" || timer.phase === "count" ? "Abbrechen" : "Test starten"}</button>
+          </div>
+          <p class="sk-hint">3 Sekunden Vorlauf mit Ton, dann läuft die Zeit; am Ende ein Doppelton. In der Desktop-App kannst du das Fenster dafür über das Spiel legen.</p>
+          <form class="dps-form" id="sk-dps-form" autocomplete="off">
+            <label class="field dps-name"><span>Variante</span><input type="text" id="sk-dps-name" maxlength="40" value="${esc(variant)}"></label>
+            <label class="field"><span>DPS laut Kampfanalyse</span><input type="number" id="sk-dps-val" inputmode="numeric" min="1" step="1" required></label>
+            <button type="submit" class="btn btn--ghost">Eintragen</button>
+          </form>
+        </div>
+      </div>
+      ${rows ? `<ul class="dps-list">${rows}</ul><p class="sk-hint">Unterschiede unter etwa 3 % sind meist Zufall (Krits). Gespeichert nur in diesem Browser. <button type="button" class="link-btn" data-sk="dps-clear">Alle löschen</button></p>` : `<p class="sk-hint">Noch keine Ergebnisse für ${mode === "pvp" ? "PvP" : "PvE"}.</p>`}
+    </section>`;
+  }
+
   /* ---------- Ansicht ---------- */
   function render() {
     const host = document.getElementById("sk-app");
@@ -543,9 +634,10 @@
       <button type="button" role="tab" class="sk-mode-btn${pvp ? "" : " is-on"}" aria-selected="${!pvp}" data-sk="mode" data-id="pve">PvE<small>Dungeons, Bosse, Farmen</small></button>
       <button type="button" role="tab" class="sk-mode-btn${pvp ? " is-on" : ""}" aria-selected="${pvp}" data-sk="mode" data-id="pvp">PvP<small>Abyss, Arena, Duell</small></button>
     </div>
-    <nav class="sk-jump" aria-label="Abschnitte"><a href="#sk-leiste" data-sk="jump">Leiste &amp; Makro</a><a href="#sk-punkte" data-sk="jump">Skillpunkte</a><a href="#sk-stigmen" data-sk="jump">Stigmen</a><a href="#sk-ablauf" data-sk="jump">${pvp ? "Kombos" : "Ablauf"}</a>${pvp ? `<a href="#sk-regeln" data-sk="jump">PvP-Regeln</a>` : ""}<a href="#sk-setup" data-sk="jump">Einrichten</a></nav>`;
+    <nav class="sk-jump" aria-label="Abschnitte"><a href="#sk-leiste" data-sk="jump">Leiste &amp; Makro</a><a href="#sk-test" data-sk="jump">Schadenstest</a><a href="#sk-punkte" data-sk="jump">Skillpunkte</a><a href="#sk-stigmen" data-sk="jump">Stigmen</a><a href="#sk-ablauf" data-sk="jump">${pvp ? "Kombos" : "Ablauf"}</a>${pvp ? `<a href="#sk-regeln" data-sk="jump">PvP-Regeln</a>` : ""}<a href="#sk-setup" data-sk="jump">Einrichten</a></nav>`;
 
     h += barHtml(cls, M, mode);
+    h += testHtml(cls, mode);
     if (pvp) h += pvpPointsHtml(cls, K, M) + `<div class="sk-two">${pvpStigmaHtml(cls, K, M)}${combosHtml(cls, M)}</div>` + rulesHtml(cls);
     else h += pointsHtml(cls, K) + `<div class="sk-two">${stigmaHtml(cls, K)}${flowHtml(cls, P)}</div>`;
     h += setupHtml();
@@ -573,6 +665,16 @@
       savePng(view.cls, view.mode).then((r) => {
         if (out) out.textContent = r.missing ? `Bild gespeichert (${r.missing} Symbole fehlten – ohne Verbindung zum Server).` : "Bild gespeichert.";
       }, () => { if (out) out.textContent = "Speichern nicht möglich."; }).then(() => { b.disabled = false; });
+    } else if (act === "dps-dauer") {
+      if (timer.phase === "run" || timer.phase === "count") return;
+      timer.dauer = +b.getAttribute("data-id"); timer.phase = "idle"; render();
+    } else if (act === "dps-start") {
+      startTimer();
+    } else if (act === "dps-del" || act === "dps-clear") {
+      const all = dpsAll(), key = view.cls + ":" + view.mode;
+      if (act === "dps-clear") { if (!window.confirm("Alle Ergebnisse dieser Klasse löschen?")) return; delete all[key]; }
+      else (all[key] || []).splice(+b.getAttribute("data-i"), 1);
+      dpsSave(all); render();
     } else if (act === "copy") {
       const out = document.querySelector("#sk-app .sk-copied");
       const text = copyText(view.cls, view.mode);
@@ -597,10 +699,26 @@
     savePng,
   };
 
+  function onSubmit(e) {
+    if (!e.target || e.target.id !== "sk-dps-form") return;
+    e.preventDefault();
+    const val = +document.getElementById("sk-dps-val").value;
+    if (!(val > 0)) return;
+    const name = document.getElementById("sk-dps-name").value.trim() || "Test";
+    const all = dpsAll(), key = view.cls + ":" + view.mode;
+    all[key] = [{ name, dps: Math.round(val), dauer: timer.dauer, datum: new Date().toLocaleDateString("de-DE") }].concat(all[key] || []).slice(0, 30);
+    dpsSave(all);
+    if (timer.phase === "end") timer.phase = "idle";
+    render();
+    const t = document.getElementById("sk-test");
+    if (t) t.scrollIntoView({ block: "nearest" });
+  }
+
   function init() {
     readUrl();
     render();
     document.addEventListener("click", onClick);
+    document.addEventListener("submit", onSubmit);
     window.addEventListener("hashchange", () => { if (location.hash === "#skills") updateUrl(); });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

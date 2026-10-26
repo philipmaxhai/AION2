@@ -617,7 +617,7 @@
   }
 
   /* ================= Navigation ================= */
-  const VIEWS = ["uebersicht", "charakter", "gearscore", "skills", "daevanion", "karte", "zeiten", "checkliste", "klassen", "quellen"];
+  const VIEWS = ["uebersicht", "charakter", "gearscore", "skills", "daevanion", "begleiter", "karte", "zeiten", "checkliste", "klassen", "desktop", "quellen"];
   function show(view) {
     if (!VIEWS.includes(view)) view = "uebersicht";
     VIEWS.forEach((v) => {
@@ -714,6 +714,7 @@
       case "open-class": viewCls = id; refresh(["class-tabs", "class-detail"]); go("klassen"); break;
       case "open-dv": if (window.DK_DV) window.DK_DV.show(id, 0); break;
       case "open-sk": if (window.DK_SK) window.DK_SK.show(id, a.getAttribute("data-mode") || "pve"); break;
+      case "open-bg": if (window.DK_BG) window.DK_BG.show(id); break;
       case "set-class":
         S.cls = id; viewCls = id; save();
         $("#f-class").value = id;

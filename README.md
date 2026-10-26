@@ -13,6 +13,9 @@ Die Seite geht davon aus, dass die Main-Story durch ist, du Level 45 bist und mi
 - **Checkliste**: Täglich und wöchentlich, setzt sich zum Reset selbst zurück.
 - **Klassen**: Spiritmaster ausführlich (Geister, Stigmen, Skill-Ränge, Daevanion, Gear-Werte, Ablauf), dazu Gladiator, Templar, Assassin, Ranger, Sorcerer, Cleric und Chanter – mit den offiziellen Klassenwappen.
 - **Skills & Makros**: Für jede Klasse und getrennt für PvE und PvP die komplette Tastenbelegung als Bild (Maus und Tastatur, gestapelte Linien mit Vorrang), als PNG speicherbar, dazu das genaue Makro, der Opener, die Skillpunkte (PvE: Durchschnittsstufen von rund 150 Top-Spielern je Klasse; PvP: Build und Ziel-Stufen), die Stigmen, Ablauf bzw. PvP-Kombos, PvP-Grundregeln und eine Anleitung zum Einrichten des Makros. Als Text kopierbar.
+- **Begleiter**: Alle 207 Begleiter (Pets und Reittiere) mit Bild, Typ und den Monstern, die ihre Seelen droppen. Du hakst ab, welche du hast und auf welcher Stufe; die Seite rechnet die Besitz-Effekte zusammen und plant eine Farm-Route nach Gebieten deiner Fraktion – je nach Ziel für Bewegungstempo (Fera und Sammel-Titel), Kampfwerte (Cognia, Natura) oder die Sammlung. Dazu alle Quellen für Bewegungstempo. Der Charakter-Check übernimmt Fraktion, aktiven Begleiter und getragene Titel.
+- **Schadenstest**: In „Skills & Makros“ eine Anleitung für die Kampfanalyse des Spiels (Strg+X), ein Timer mit Countdown und Ton und eine Liste, in der du die DPS verschiedener Makro-Varianten vergleichst.
+- **Desktop-App** (Windows): die Seite als portable exe in einem eigenen Fenster, das über dem Spiel liegen kann – immer im Vordergrund, durchsichtig, durchklickbar, per Tastenkürzel ein- und ausblendbar. Download auf der Seite unter „Desktop-App“. Die App liest nichts aus dem Spiel.
 - **Daevanion**: Für jede Klasse alle fünf Bretter als Bild, mit der empfohlenen Route: welche Knoten zuerst, nummeriert, mit Punkten und Summe. Als PNG speichern oder als Link teilen. Grundlage sind die Bretter bekannter Spieler je Klasse; die Reihenfolge berechnet die Seite als günstigsten Weg vom Start.
 
 Modernes, app-artiges Design in Dunkel und Hell (Seitenleiste auf dem Desktop, Reiter auf dem Handy, Schrift Archivo), mit der offiziellen Key-Art und Item-, Skill- und Klassenbildern vom NCSOFT-CDN.
@@ -59,6 +62,14 @@ python3 tools/armory.py <Name> --merken         # Server merken, danach reicht d
 
 Zeigt Klasse, Level, Kampfkraft, Gearscore, Werte, Ausrüstung mit Verstärkung und Manasteinen, Skills und Daevanion. Nutzt die öffentliche NCSOFT-Armory (dieselben Endpunkte wie Shugo.gg). Diese Endpunkte sind nicht dokumentiert und können sich ändern.
 
+## Desktop-App bauen
+
+```
+tools/build-desktop.sh            # testet, baut public/download/DaevaKompass.exe und DaevaKompass.json
+```
+
+Quelltext in `desktop/` (Go ab 1.22, kein cgo, läuft also auch unter Linux und macOS). Die App öffnet die Live-Seite in einem WebView2-Fenster und stellt der Seite `window.dkDesktop(befehl, wert)` bereit (Vordergrund, Deckkraft, Durchklicken, kompakt, Links im Browser öffnen). Einstellungen liegen in `DaevaKompass-Daten/einstellungen.json` neben der exe. Die exe liegt unter `public/download/` und wird mit der Seite ausgeliefert; nach jedem Neubau die neue Datei mit committen.
+
 ## Öffnen
 
 Kein Build nötig. `public/index.html` lässt sich direkt im Browser öffnen; der Charakter-Check leitet dann auf die Live-Seite weiter.
@@ -66,6 +77,8 @@ Kein Build nötig. `public/index.html` lässt sich direkt im Browser öffnen; de
 ## Daten anpassen
 
 Die Skill-Daten (`public/assets/js/data-skills.js`: deutsche Namen, Symbole, Stufen und Stigmen der Top-Spieler) erzeugt `python3 -I tools/skills_daten.py` neu. Leiste, Makro, Opener und Tipps je Klasse stehen kuratiert in `skillPlan` in `data.js`.
+
+Die Begleiter (`public/assets/js/data-pets.js`: Namen, Typ, Bilder, Seelen-Monster und Gebiete) erzeugt `python3 -I tools/pets_daten.py` neu (MetaBot, rund 210 Seitenabrufe; mit `--cache DIR` zwischengespeichert). Werte je Typ, Titel und Tipps stehen kuratiert in `begleiter` in `data.js`, die Kampfanalyse in `kampfanalyse`.
 
 Die Daevanion-Bretter (`public/assets/js/data-daevanion.js`) erzeugt `python3 -I tools/daevanion_daten.py` neu (lädt die Planer-Seiten aller Klassen, prüft sie gegen gespeicherte Armory-Daten des Beschwörers, falls vorhanden). Die Prioritäten je Klasse stehen in `daevanionPlan` in `data.js`.
 

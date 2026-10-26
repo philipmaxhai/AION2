@@ -580,7 +580,11 @@ window.DK_DATA = {
     { name: "Skill-Stufen und Stigmen der Top-Spieler je Klasse (Metabot)", url: "https://metabot.gg/en/aion-2/classes/spiritmaster/build" },
     { name: "Skillpunkte: 203 + 122 + 59 (AllThings.how)", url: "https://allthings.how/aion-2-how-to-get-more-skill-points/" },
     { name: "Skillpunkte, Spezialisierungen, Stufen über 10 (Aion2Guide)", url: "https://aion2guide.org/systems/aion-2-skill-points-guide/" },
-    { name: "Skill-Namen und Symbole je Klasse, deutsch (GameWith)", url: "https://gamewith.ai/aion2/de/classes" }
+    { name: "Skill-Namen und Symbole je Klasse, deutsch (GameWith)", url: "https://gamewith.ai/aion2/de/classes" },
+    { name: "Begleiter: alle Reittiere, Typ-Boni und Seelen-Fundorte (MetaBot)", url: "https://metabot.gg/de/aion-2/mounts" },
+    { name: "Begleiter: Werte je Typ und Stufe, Farm-Gebiete (Raid Relay)", url: "https://raidrelay.com/aion-2-pets-genus-guide" },
+    { name: "Begleiter und Gattungs-Einsicht (Daeva Guides)", url: "https://daevaguides.com/en/guides/pets-genus-insight/" },
+    { name: "Patch 1. April 2026: eigener Schadensmesser (AION2 Hub)", url: "https://aion2hub.com/updates/aion-2-update-2026-04-01" }
   ],
 
   /* ---------- Charakter-Check: Upgrade-Stufen und Klassenregeln ----------
@@ -1121,6 +1125,82 @@ window.DK_DATA = {
         }
       }
     }
+  },
+
+  /* ---------- Begleiter (Pets, zugleich Reittiere) ----------
+   * Jeder Begleiter gibt einen Besitz-Effekt nach Typ und eigener Stufe (1–3 auf Global); die Effekte aller Begleiter
+   * addieren sich, auch wenn sie nicht ausgerüstet sind. werte: [Wert, Stufe 1, Stufe 2, Stufe 3, Einheit, Vorzeichen (Standard +)].
+   * Die Liste aller Begleiter mit Fundorten steht in data-pets.js (erzeugt). Neue Erkenntnisse hier eintragen.
+   * Quellen: MetaBot (Client-Daten), Raid Relay, Daeva Guides, Odealo, aion2-guides.info (Aragon, Fubgun). */
+  begleiter: {
+    typen: {
+      fera: { name: "Fera", kurz: "Reittempo", werte: [["Boden-Tempo (Reittier)", 1, 2, 3], ["Zusatzpräzision", 0, 1, 2], ["Agilität", 0, 0, 1]] },
+      cognia: { name: "Cognia", kurz: "Kampfwerte", werte: [["LP", 10, 20, 30], ["Kritischer Treffer", 0, 1, 2], ["Macht", 0, 0, 1]] },
+      natura: { name: "Natura", kurz: "Ausdauer", werte: [["Ausdauer (SP)", 3, 6, 9], ["Krit.-Widerstand", 0, 1, 2], ["Präzision", 0, 0, 1]] },
+      varia: { name: "Varia", kurz: "Sprint beim Reiten", werte: [["Sprint-Ausdauerkosten (Reittier)", 0.1, 0.2, 0.3, "%", "−"], ["Zusatzausweichen", 0, 1, 2], ["Vitalität", 0, 0, 1]] },
+      specia: { name: "Specia", kurz: "nur Aussehen", werte: [] }
+    },
+    /* Seelen für Freischalten, Stufe 2 und Stufe 3 */
+    seelen: [5, 25, 75],
+    /* Reihenfolge der Typen je Ziel */
+    ziele: {
+      tempo: { name: "Bewegungstempo", typen: ["fera"], text: "Fera-Begleiter zuerst: Jeder gibt Boden-Tempo beim Reiten. Jeder neue Begleiter zählt außerdem für die Sammel-Titel mit dauerhaftem Bewegungstempo." },
+      kampf: { name: "Kampfwerte", typen: ["cognia", "natura", "fera", "varia"], text: "Cognia zuerst (Macht und Kritischer Treffer auf Stufe 3), dann Natura (Präzision). Fera und Varia bringen im Kampf wenig." },
+      sammlung: { name: "Sammlung", typen: ["fera", "cognia", "natura", "varia"], text: "Für Titel, Meilensteine und Seelenkristalle zählt jeder Begleiter gleich – am schnellsten sind die Gebiete mit den meisten fehlenden." }
+    },
+    /* Sammel-Titel: Besitz-Effekt Bewegungstempo in %, gilt dauerhaft, auch wenn ein anderer Titel ausgerüstet ist */
+    titel: [[10, "Gezähmt", 0.3], [30, "Alles bezwingen", 0.5], [100, "Im Einklang mit allem", 0.7], [200, "Über alles herrschen", 1]],
+    /* Allzweck-Titel mit Bewegungstempo beim Tragen (Wert in %); en wie in der Armory */
+    tempoTitel: [
+      { de: "Zikels Urquelle begegnen", en: "Encountering Zikel's Core", fraktion: "asmo", wert: 3, extra: "LP +900, LP-Regeneration (Tränke) +400", herkunft: "Verräter und Überlebender" },
+      { de: "Kaisinels Urquelle begegnen", en: "Encountering Kaisinel's Core", fraktion: "elyos", wert: 3, extra: "LP +900, LP-Regeneration (Tränke) +400", herkunft: "Poeta, Insel des Todes" },
+      { de: "Vollstrecker von Legat Lagta", en: "Executioner of High Commander Lagta", fraktion: null, wert: 2.5, extra: "Kampftempo +2,5 %", herkunft: "Legat Lagta besiegen" },
+      { de: "Scharfsinn", en: "Keen Eye", fraktion: null, wert: 2.5, extra: "Flugtempo +2,5 %", herkunft: "Boss-Beute" }
+    ],
+    /* Meilensteine der Sammlung: bei 5, dann alle 10 Begleiter 100 Seelenkristalle, jeder 50. gibt 10 Bindungsbonbons */
+    meilensteine: { erster: 5, schritt: 10, kristalle: 100, bonbonAlle: 50, bonbons: 10 },
+    grundtempo: { lauf: 900, sprint: 1200, gleiten: 800 },
+    tipps: [
+      ["Erst freischalten, dann leveln", "5 Seelen geben schon den Besitz-Effekt der Stufe 1 und zählen für Titel und Meilensteine. Stufe 2 kostet 25, Stufe 3 weitere 75 Seelen – Freischalten bringt pro Seele fünfmal so viel."],
+      ["Gebiete statt Einzelmonster", "Seelen droppen laut Client-Daten zu 100 % pro Kill, also rund 5 Kills je Begleiter. In guten Gebieten stehen Monster für viele Begleiter nebeneinander."],
+      ["Gilt für den ganzen Server", "Sammlung und Gattungs-Einsicht teilen sich alle Charaktere eines Servers – auch Twinks farmen für dich."],
+      ["Andere Fraktion über den Riss", "Manche Begleiter gibt es nur auf der Karte der anderen Fraktion. Dorthin kommst du über den Raumzeit-Riss und hast etwa eine Stunde; Wachen meiden."],
+      ["Doppelte Pet-Items", "Ein Pet-Item für einen Begleiter, den du schon hast, wird zur Seele – nichts wegwerfen."],
+      ["Kein schnelleres Reittier", "Alle Reittiere laufen gleich schnell (Laufen 900, Sprint 1.200). Schneller machen dich nur Fera-Besitz-Effekte und Titel."],
+      ["Nicht AFK farmen", "Immer gleiche Abläufe ohne echte Eingabe lösen die Bot-Prüfung aus."]
+    ],
+    quellen: [
+      { name: "Alle Begleiter, Typ-Boni und Seelen-Fundorte (MetaBot, Client-Daten)", url: "https://metabot.gg/de/aion-2/mounts" },
+      { name: "Seelen farmen, Typ-Werte und Sammel-Titel (MetaBot)", url: "https://metabot.gg/en/aion-2/guides/mount-soul-farming-guide" },
+      { name: "Titel mit Bewegungstempo (MetaBot)", url: "https://metabot.gg/de/aion-2/titles" },
+      { name: "Werte je Typ und Stufe, beste Farm-Gebiete (Raid Relay)", url: "https://raidrelay.com/aion-2-pets-genus-guide" },
+      { name: "Seelen je Stufe und Gattungs-Einsicht (Daeva Guides)", url: "https://daevaguides.com/en/guides/pets-genus-insight/" },
+      { name: "Reihenfolge Cognia vor Natura (aion2-guides.info, Aragon/Fubgun)", url: "https://aion2-guides.info/en/pets/" }
+    ]
+  },
+
+  /* ---------- Kampfanalyse (Schadensmesser im Spiel) ----------
+   * Seit dem Update vom 1. April 2026 hat AION 2 einen eigenen Schadensmesser. Fremd-Messer, die den Netzverkehr
+   * oder Speicher des Spiels lesen, baut die Seite bewusst nicht ein (Betriebsregeln: nicht autorisierte Programme). */
+  kampfanalyse: {
+    taste: "Strg+X",
+    zeigt: ["Kampfzeit", "DPS", "Gesamtschaden", "Anteil jedes Skills (Detail-Modus)"],
+    bedienung: "Strg+X öffnet und schließt die Kampfanalyse (Einstellungen › Tastenbelegung › Kampfanalyse, falls belegt). Umschalten zwischen einfach und detailliert, Deckkraft einstellbar, Fenster frei verschiebbar.",
+    grenzen: "Nur dein eigener Charakter, keine Gruppenwerte. Einzelziele sauber zu messen ist umständlich – am besten an der Trainingspuppe allein testen.",
+    fremd: "Fremd-Messer lesen den Netzwerkverkehr oder Speicher des Spiels mit. NCSOFTs Betriebsregeln sanktionieren nicht autorisierte Programme bis zur Kontosperre; ob passive Messer darunter fallen, hat NCSOFT nicht gesagt. Die Seite und die Desktop-App lesen deshalb nichts aus dem Spiel.",
+    test: [
+      "Zur Trainingspuppe in deiner Hauptstadt-Region gehen (Karte: Trainingspuppen).",
+      "Buffs ablaufen lassen, Abklingzeiten zurücksetzen lassen und die Kampfanalyse öffnen (Strg+X).",
+      "Timer starten und genau so lange nur dein Makro halten, Burst wie im Ablauf.",
+      "DPS aus der Kampfanalyse eintragen. Dann eine Sache ändern (Linie, Stigma, Makro-Schritt) und wiederholen.",
+      "Erst ab etwa 3 % Unterschied ist eine Variante sicher besser – Krits streuen."
+    ],
+    dauer: [60, 120, 180],
+    quellen: [
+      { name: "Patch 1. April 2026: eigener Schadensmesser (AION2 Hub, Übersetzung der koreanischen Notes)", url: "https://aion2hub.com/updates/aion-2-update-2026-04-01" },
+      { name: "Kampfanalyse: Strg+X, Modi, Grenzen (games.gg)", url: "https://games.gg/aion-2/guides/aion-2-combat-analysis-guide/" },
+      { name: "Schadensmesser und Fremd-Tools, Betriebsregeln (aion2guide.org)", url: "https://aion2guide.org/guides/aion-2-damage-meter/" }
+    ]
   },
 
   audit: {

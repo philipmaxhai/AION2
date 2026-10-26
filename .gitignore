@@ -2,3 +2,4 @@ armory-cache/
 __pycache__/
 node_modules/
 .wrangler/
+desktop/rsrc_windows_*.syso

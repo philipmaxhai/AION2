@@ -180,7 +180,7 @@ function imageUrl(u) {
   return /^https:\/\/([a-z0-9-]+\.)*(playnccdn\.com|plaync\.com)\//i.test(abs) ? abs : null;
 }
 
-const petwing = (x, de) => (x && x.name ? { name: x.name, de: (de && de.name) || null, grade: x.grade || null, icon: imageUrl(x.icon) } : null);
+const petwing = (x, de) => (x && x.name ? { id: Number(x.id) || null, level: Number(x.level) || null, name: x.name, de: (de && de.name) || null, grade: x.grade || null, icon: imageUrl(x.icon) } : null);
 
 /* Das Standard-Manastein-Bild fehlt auf dem CDN (404); vorhandene Varianten nehmen */
 function stoneIcon(st) {
