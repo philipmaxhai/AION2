@@ -897,6 +897,7 @@ fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .dv-tab-sub { font-size: var(--fs-xs); color: var(--faint); white-space: nowrap; }
 .dv-tab:hover { color: var(--fg); }
 .dv-tab.is-on { color: var(--fg); border-bottom-color: var(--accent); }
+.dv-new { font-family: var(--font); font-stretch: normal; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; vertical-align: 0.3em; padding: 1px 5px; border-radius: 4px; color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
 .dv-layout { display: grid; grid-template-columns: 1fr; gap: 22px 36px; align-items: start; margin-top: 18px; }
 @container main (min-width: 920px) { .dv-layout { grid-template-columns: minmax(0, 560px) minmax(0, 1fr); } }
 .dv-board { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
@@ -932,7 +933,8 @@ fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .dv-no { font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
 .dv-step--kern .dv-no { color: var(--accent); }
 .dv-step--ausbau .dv-no { color: var(--teal); }
-.dv-what { min-width: 0; display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
+.dv-what { min-width: 0; display: flex; align-items: baseline; gap: 7px; }
+.dv-tx { min-width: 0; }
 .dv-what small { color: var(--faint); }
 .dv-mark { width: 10px; height: 10px; flex: none; border: 2px solid; display: inline-block; transform: translateY(1px); }
 .dv-mark--sq { border-radius: 2px; }
@@ -1238,6 +1240,58 @@ kbd { font-family: var(--font); font-size: 0.72rem; font-weight: 700; padding: 1
   .bg-row .bg-ico { width: 34px; height: 34px; }
   .bg-lvsel { grid-column: 2; justify-self: start; }
   .bg-eff { grid-template-columns: 1fr; gap: 6px; }
+}
+
+/* Pantheon: Plätze, nächste Teile, Götter-Werte, Abhaken */
+#pt-app { display: flex; flex-direction: column; gap: 18px; }
+#pt-app [id^="pt-"] { scroll-margin-top: calc(var(--sticky-top) + 8px); }
+.pt-unlock { flex: 1 1 360px; max-width: 72ch; margin: 0; }
+.pt-tag { display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 1px 6px; border-radius: 5px; vertical-align: 1px; color: var(--muted); background: color-mix(in srgb, currentColor 13%, transparent); }
+.pt-tag--koloss { color: var(--accent); }
+.pt-tag--statue { color: var(--teal); }
+.pt-fac { font-size: 0.72rem; font-weight: 600; color: var(--muted); }
+.pt-grade { font-size: var(--fs-xs); color: var(--muted); }
+.pt-rank { font-size: 0.72rem; color: var(--faint); }
+.pt-sts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; margin: 2px 0 0; }
+.pt-st { font-size: 0.76rem; font-weight: 600; font-variant-numeric: tabular-nums; padding: 1px 7px; border-radius: 99px; border: 1px solid var(--line-2); color: var(--fg-2); white-space: nowrap; }
+.pt-st.is-dmg { border-color: color-mix(in srgb, var(--accent) 55%, var(--line-2)); color: var(--fg); }
+.pt-or { font-size: 0.76rem; color: var(--muted); }
+.pt-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: 1fr; }
+@container main (min-width: 900px) { .pt-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pt-step { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; padding: 12px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--bg-2); min-width: 0; }
+.pt-step-b { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.pt-step-b p { margin: 0; }
+.pt-src { font-size: var(--fs-sm); color: var(--fg-2); }
+.pt-why { font-size: var(--fs-xs); color: var(--muted); }
+.pt-cols { display: grid; gap: 18px 28px; grid-template-columns: 1fr; }
+@container main (min-width: 980px) { .pt-cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr); } }
+.pt-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pt-col h4 { font-size: 1.08rem; }
+.pt-slots { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.pt-slot { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: var(--fs-sm); }
+.pt-slot:last-child { border-bottom: 0; }
+.pt-slot > span:last-child { display: flex; flex-direction: column; min-width: 0; }
+.pt-slot-n { font-size: var(--fs-xs); font-weight: 700; color: var(--faint); text-align: right; font-variant-numeric: tabular-nums; }
+.pt-slot.is-own .pt-slot-n { color: var(--accent); }
+.pt-tbl { font-size: var(--fs-sm); }
+.pt-tbl th[scope="row"] { font-weight: 600; color: var(--fg); white-space: normal; }
+.pt-tbl .num { text-align: right; white-space: nowrap; }
+.pt-eff { display: block; font-weight: 400; font-size: var(--fs-xs); color: var(--fg-2); margin-top: 2px; }
+.pt-tbl th small { display: block; font-weight: 400; font-size: 0.74rem; color: var(--muted); }
+.pt-tbl td { color: var(--fg-2); }
+.pt-tbl tr.is-dmg .pt-wname { color: var(--accent); }
+.pt-group { display: flex; flex-direction: column; gap: 6px; }
+.pt-group + .pt-group { padding-top: 12px; border-top: 1px solid var(--line); }
+.pt-group h4 { font-size: 1.08rem; }
+.pt-row { grid-template-columns: 30px minmax(0, 1fr) auto; }
+.pt-check { width: 24px; height: 24px; border-radius: 6px; border: 2px solid var(--line-2); background: var(--surface); cursor: pointer; padding: 0; display: grid; place-items: center; }
+.pt-check:hover { border-color: var(--accent); }
+.pt-check[aria-checked="true"] { background: var(--accent); border-color: var(--accent); }
+.pt-check[aria-checked="true"]::after { content: ""; width: 10px; height: 6px; border: solid var(--on-accent); border-width: 0 0 2.5px 2.5px; transform: translateY(-1px) rotate(-45deg); }
+.pt-row:not(.is-own) .bg-row-nm b { color: var(--fg-2); }
+@container main (max-width: 560px) {
+  .pt-row { grid-template-columns: 30px minmax(0, 1fr); }
+  .pt-row .bg-lvsel { grid-column: 2; justify-self: start; }
 }
 
 /* Desktop-App: Werkzeuge im Kopf (nur in der App) und Download-Seite */

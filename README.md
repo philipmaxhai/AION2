@@ -6,8 +6,8 @@ Die Seite geht davon aus, dass die Main-Story durch ist, du Level 45 bist und mi
 
 ## Funktionen
 
-- **Übersicht**: Gearscore eingeben, Klasse und Fraktion wählen. Eine Leiste zeigt die Tore bei 1000, 1400, 1600, 1900, 2100, 2200 und 2500 GS und was sie freischalten. Dazu die nächsten Termine, deine nächsten fünf Schritte und der Tagesstand.
-- **Gearscore-Fahrplan**: Schritte nach Aufwand und Ertrag sortiert (Gürtel/Amulett, Daevanion, Konfliktrunen, Vakron, Urugugu, Albtraum, Transzendenz, Fire Temple, Raids). Abhaken, Odyle-Rechner, Gear-Weg für deine Klasse, Liste der typischen Fehler.
+- **Übersicht**: Gearscore eingeben, Klasse und Fraktion wählen. Eine Leiste zeigt die Tore bei 1000, 1400, 1600, 1900, 2100, 2200, 2500, 2600 (Hard-Modus), 2800 und 3000 GS (Ludra Normal und Hard) und was sie freischalten. Dazu die nächsten Termine, deine nächsten fünf Schritte und der Tagesstand.
+- **Gearscore-Fahrplan**: Schritte nach Aufwand und Ertrag sortiert (Gürtel/Amulett, Daevanion, Konfliktrunen, Pantheon, Vakron, Urugugu, Albtraum, Aufstiegsprüfung, Transzendenz, Fire Temple, Hard-Modus, Ariel-Brett, Ludra). Abhaken, Odyle-Rechner, Gear-Weg für deine Klasse, Liste der typischen Fehler.
 - **Karte von Atreia**: Schematische Karte mit Elysea, Abyss (Reshanta) und Asmodae. Monolithe, Feldbosse, Artefakte, Raumzeit-Risse und Trainingspuppen. Zoom per Mausrad, Pinch oder Buttons. Feldboss-Timer starten („Gerade getötet“), eigene Pins setzen. Laufende Events leuchten auf der Karte.
 - **Spielzeiten**: Tages-/Wochen-Reset, Raumzeit-Riss, Shugo-Fest, Dimensionsinvasion, Artefakt-Belagerung und Bosse, immer in deutscher Zeit (MEZ/MESZ, Umstellung automatisch). Tagesleiste, Wochentabelle, Versatz pro Termin zum Korrigieren und Erinnerung 5 Minuten vorher.
 - **Checkliste**: Täglich und wöchentlich, setzt sich zum Reset selbst zurück.
@@ -16,7 +16,8 @@ Die Seite geht davon aus, dass die Main-Story durch ist, du Level 45 bist und mi
 - **Begleiter**: Alle 207 Begleiter (Pets und Reittiere) mit Bild, Typ und den Monstern, die ihre Seelen droppen. Du hakst ab, welche du hast und auf welcher Stufe; die Seite rechnet die Besitz-Effekte zusammen und plant eine Farm-Route nach Gebieten deiner Fraktion – je nach Ziel für Bewegungstempo (Fera und Sammel-Titel), Kampfwerte (Cognia, Natura) oder die Sammlung. Dazu alle Quellen für Bewegungstempo. Der Charakter-Check übernimmt Fraktion, aktiven Begleiter und getragene Titel.
 - **Schadenstest**: In „Skills & Makros“ eine Anleitung für die Kampfanalyse des Spiels (Strg+X), ein Timer mit Countdown und Ton und eine Liste, in der du die DPS verschiedener Makro-Varianten vergleichst.
 - **Desktop-App** (Windows): die Seite als portable exe in einem eigenen Fenster, das über dem Spiel liegen kann – immer im Vordergrund, durchsichtig, durchklickbar, per Tastenkürzel ein- und ausblendbar. Download auf der Seite unter „Desktop-App“. Die App liest nichts aus dem Spiel.
-- **Daevanion**: Für jede Klasse alle fünf Bretter als Bild, mit der empfohlenen Route: welche Knoten zuerst, nummeriert, mit Punkten und Summe. Als PNG speichern oder als Link teilen. Grundlage sind die Bretter bekannter Spieler je Klasse; die Reihenfolge berechnet die Seite als günstigsten Weg vom Start.
+- **Pantheon**: Alle bekannten Teile für Koloss, Statuen und Kunstwerke mit Götter-Werten und Quelle. Du hakst ab, was du hast; die Seite belegt die 17 Plätze, summiert die zehn Götter-Werte (Weisheit, Zerstörung und Zeit zuerst für Schaden) und sagt, welches Teil als Nächstes kommt – schnell erreichbare zuerst. Der Charakter-Check übernimmt Fraktion und die aktuellen Götter-Werte.
+- **Daevanion**: Für jede Klasse alle sechs Bretter als Bild (dazu das neue Ariel-Brett mit eigenen Ariel-Punkten aus dem Hard-Modus), mit der empfohlenen Route: welche Knoten zuerst, nummeriert, mit Punkten und Summe. Als PNG speichern oder als Link teilen. Grundlage sind die Bretter bekannter Spieler je Klasse; die Reihenfolge berechnet die Seite als günstigsten Weg vom Start.
 
 Modernes, app-artiges Design in Dunkel und Hell (Seitenleiste auf dem Desktop, Reiter auf dem Handy, Schrift Archivo), mit der offiziellen Key-Art und Item-, Skill- und Klassenbildern vom NCSOFT-CDN.
 
@@ -27,7 +28,7 @@ Alles, was du einstellst, speichert nur dein Browser (localStorage).
 Name eingeben, fertig: Die Seite lädt Ausrüstung, Manasteine, Stigmen und Daevanion aus der NCSOFT-Armory und erstellt einen Upgrade-Plan. Für alle 8 Klassen und alle Global-Server.
 
 - **Sofort-Urteil** mit Bild: das Upgrade mit dem größten Gewinn pro Aufwand.
-- **Fahrplan zum Abhaken**: Heute (Quick-Wins unter 10 Minuten, Tagesziel, Zeiten in deutscher Zeit), diese Woche, nächste 2–3 Wochen, ab 2100 Gearscore.
+- **Fahrplan zum Abhaken**: Heute (Quick-Wins unter 10 Minuten, Tagesziel, Zeiten in deutscher Zeit), diese Woche, nächste 2–3 Wochen, ab 2100 Gearscore. Ab 2600 kommen Hard-Modus, Ariel-Fragmente und Ludra dazu.
 - **Charakterfenster**: alle 20 Slots mit Item-Bild, Seltenheitsrahmen und Status. Ein Klick zeigt den Plan für das Teil: Ziel-Item mit Werte-Vergleich und Material-Liste, was +10 bringt und kostet, Manasteine mit Bewertung, Zusatzwerte, was später kommt.
 - **Dein Daevanion-Brett**: offene Knoten markiert, die nächsten empfohlenen Knoten nummeriert, von deinem Stand aus berechnet.
 - **Skillpunkte-Check**: geschätzte Verteilung deiner 384 Punkte, Vergleich jeder Skill-Stufe mit den Top-Spielern deiner Klasse und ein konkreter Vorschlag zum Umverteilen.
@@ -80,7 +81,7 @@ Die Skill-Daten (`public/assets/js/data-skills.js`: deutsche Namen, Symbole, Stu
 
 Die Begleiter (`public/assets/js/data-pets.js`: Namen, Typ, Bilder, Seelen-Monster und Gebiete) erzeugt `python3 -I tools/pets_daten.py` neu (MetaBot, rund 210 Seitenabrufe; mit `--cache DIR` zwischengespeichert). Werte je Typ, Titel und Tipps stehen kuratiert in `begleiter` in `data.js`, die Kampfanalyse in `kampfanalyse`.
 
-Die Daevanion-Bretter (`public/assets/js/data-daevanion.js`) erzeugt `python3 -I tools/daevanion_daten.py` neu (lädt die Planer-Seiten aller Klassen, prüft sie gegen gespeicherte Armory-Daten des Beschwörers, falls vorhanden). Die Prioritäten je Klasse stehen in `daevanionPlan` in `data.js`.
+Die Daevanion-Bretter (`public/assets/js/data-daevanion.js`) erzeugt `python3 -I tools/daevanion_daten.py` neu (lädt die Planer-Seiten aller Klassen, prüft sie gegen gespeicherte Armory-Daten des Beschwörers, falls vorhanden; das Ariel-Brett kommt aus dem Rechner von AION2 Vault, der vorher auf allen fünf alten Brettern mit GameWith abgeglichen wird). Die Prioritäten je Klasse stehen in `daevanionPlan` in `data.js`.
 
 Alle Spieldaten stehen in [`public/assets/js/data.js`](public/assets/js/data.js):
 
@@ -93,7 +94,7 @@ Jeder Eintrag hat eine `confidence`: `ok` (mehrere Quellen einig), `community` (
 
 ## Datenlage
 
-Stand 11.10.2026, sechs Tage nach dem Global-Launch am 05.10.2026. NCSOFT hat für Europa noch keinen offiziellen Zeitplan veröffentlicht. Die Werte stammen aus Community-Guides (Liste unter „Quellen“ auf der Seite) und widersprechen sich teilweise. Unsichere Werte sind markiert und Zeiten lassen sich auf der Seite per Versatz korrigieren.
+Stand 26.10.2026, mit dem Patch vom 21.10. (Hard-Modus für Krao-Höhle und Draupnir, Ariel-Brett) und der Ludra-Rückkehr am 04.11.2026. NCSOFT hat für Europa noch keinen offiziellen Zeitplan veröffentlicht. Die Werte stammen aus Community-Guides (Liste unter „Quellen“ auf der Seite) und widersprechen sich teilweise. Unsichere Werte sind markiert und Zeiten lassen sich auf der Seite per Versatz korrigieren.
 
 ## Aufbau
 
@@ -112,6 +113,8 @@ public/assets/js/daevanion.js   Daevanion: Route, Brett als Bild, PNG-Export
 public/assets/js/data-daevanion.js  Daevanion-Bretter aller Klassen, erzeugt
 public/assets/js/skills.js      Skills & Makros je Klasse
 public/assets/js/data-skills.js Skills aller Klassen mit Top-Spieler-Stufen, erzeugt
+public/assets/js/begleiter.js   Begleiter: Abhaken, Besitz-Effekte, Farm-Route
+public/assets/js/pantheon.js    Pantheon: Teile abhaken, Plätze, Götter-Werte
 public/assets/js/config.js      Proxy- und Live-Adresse
 wrangler.jsonc                  Cloudflare Worker: public/ ausliefern, /api/* an den Proxy
 proxy/worker.mjs                Worker-Einstieg

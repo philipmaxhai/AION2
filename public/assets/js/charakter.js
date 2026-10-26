@@ -162,6 +162,7 @@
         current = { character: data.character, sel: null };
         remember(data.character);
         if (window.DK_BG) window.DK_BG.fromCharacter(data.character);
+        if (window.DK_PT) window.DK_PT.fromCharacter(data.character);
         updateUrl(data.character);
         render();
       } else if (data.status === "mehrere") {
@@ -596,7 +597,7 @@
       ${keyRows ? `<p class="lbl-line">Kern-Skills (Ziel-Stufe ${ks.target}+)</p><ul class="keyskills">${keyRows}</ul>` : ""}
       ${build.map((b) => `<p class="lbl-line">${esc(b.title)}</p><ol class="prio">${b.list.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>`).join("")}
       ${passive.length ? `<details class="more-skills"><summary>Passive Skills (${passive.length})</summary><ul class="skills skills--small">${passive.map(cell).join("")}</ul></details>` : ""}
-      ${window.DK_SK && a.cls ? `<p class="ch-sk-link"><button type="button" class="btn btn--ghost" data-action="open-sk" data-id="${esc(a.cls)}">Leiste &amp; Makro (PvE)</button> <button type="button" class="btn btn--ghost" data-action="open-sk" data-mode="pvp" data-id="${esc(a.cls)}">PvP-Leiste</button>${window.DK_BG ? ` <button type="button" class="btn btn--ghost" data-action="open-bg" data-id="tempo">Begleiter-Plan</button>` : ""}</p>` : ""}
+      ${window.DK_SK && a.cls ? `<p class="ch-sk-link"><button type="button" class="btn btn--ghost" data-action="open-sk" data-id="${esc(a.cls)}">Leiste &amp; Makro (PvE)</button> <button type="button" class="btn btn--ghost" data-action="open-sk" data-mode="pvp" data-id="${esc(a.cls)}">PvP-Leiste</button>${window.DK_BG ? ` <button type="button" class="btn btn--ghost" data-action="open-bg" data-id="tempo">Begleiter-Plan</button>` : ""}${window.DK_PT ? ` <button type="button" class="btn btn--ghost" data-action="open-pt">Pantheon-Plan</button>` : ""}</p>` : ""}
       <p class="fine">Die Armory zeigt keine Gesamtwerte für Genauigkeit, Krit und Geschwindigkeit. Breakpoints prüfst du im Werte-Fenster im Spiel.</p>
     </section>`;
   }
@@ -657,7 +658,7 @@
         <p class="fine">Die Knoten-Positionen kamen nicht an. „Neu laden“ versucht es erneut.</p></section>`;
     }
     if (current.dvSel == null || !list.some((x) => x.bi === current.dvSel)) {
-      const todo = list.find((x) => !x.r.pvp && x.r.cost.kern > 0);
+      const todo = list.find((x) => x.r.art === "skill" && x.r.cost.kern > 0);
       current.dvSel = (todo || list[0]).bi;
     }
     const sel = list.find((x) => x.bi === current.dvSel);
@@ -665,9 +666,11 @@
     const LIMIT = 12;
     const next = sel.r.steps.slice(0, LIMIT).filter((s) => s.tier !== "rest");
     const tabs = list.map((x) => `<button type="button" role="tab" class="dv-tab${x.bi === sel.bi ? " is-on" : ""}" aria-selected="${x.bi === sel.bi}" data-ch="dvboard" data-i="${x.bi}">
-      <span class="dv-tab-name">${esc(nm(x.b))}</span><span class="dv-tab-sub">${x.b.open}/${x.b.total} offen · ${x.r.pvp ? "PvP" : x.r.cost.kern ? `Kern fehlt ${x.r.cost.kern} P.` : "Kern fertig"}</span></button>`).join("");
-    const status = sel.r.pvp
+      <span class="dv-tab-name">${esc(nm(x.b))}</span><span class="dv-tab-sub">${x.b.open}/${x.b.total} offen · ${x.r.art === "pvp" ? "PvP" : x.r.cost.kern ? `Kern fehlt ${x.r.cost.kern} P.` : "Kern fertig"}</span></button>`).join("");
+    const status = sel.r.art === "pvp"
       ? "Azphel ist das PvP-Brett mit eigenen Punkten. Für PvE bringt es nichts."
+      : sel.r.art === "pve"
+        ? `Ariel hat eigene Ariel-Punkte aus Ariel-Fragmenten (Krao-Höhle und Draupnir im Hard-Modus). Bis die Kern-Route fertig ist, fehlen ${sel.r.cost.kern} Ariel-Punkte.`
       : sel.r.cost.kern
         ? `Bis die Kern-Route fertig ist, fehlen dir ${sel.r.cost.kern} Punkte. Die nächsten Schritte sind nummeriert.`
         : `Die Kern-Route auf ${nm(sel.b)} ist fertig. Als Nächstes der Ausbau (noch ${sel.r.cost.ausbau} Punkte).`;
@@ -707,7 +710,7 @@
     return `<section class="panel" id="ch-werte" aria-labelledby="ch-werte-h">
       <h3 id="ch-werte-h">Werte</h3>
       ${prim.length ? `<ul class="statgrid">${prim.map(cell).join("")}</ul>` : ""}
-      ${lords.length ? `<p class="lbl-line">Götter-Werte</p><ul class="statgrid statgrid--lords">${lords.map(cell).join("")}</ul>` : ""}
+      ${lords.length ? `<p class="lbl-line">Götter-Werte${window.DK_PT ? ` · <button type="button" class="link-btn" data-action="open-pt">Pantheon-Plan</button>` : ""}</p><ul class="statgrid statgrid--lords">${lords.map(cell).join("")}</ul>` : ""}
       ${titles ? `<p class="lbl-line">Titel</p><ul class="titles">${titles}</ul>` : ""}
     </section>`;
   }

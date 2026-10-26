@@ -109,7 +109,7 @@
   const parts = {};
 
   parts.track = function () {
-    const min = 1000, max = 2600;
+    const min = 1000, max = 3100;
     const pos = (v) => Math.max(0, Math.min(100, ((v - min) / (max - min)) * 100));
     const ng = nextGate();
     let html = '<div class="track-scroll"><div class="track" style="--p:' + pos(S.gs).toFixed(2) + '%">';
@@ -124,7 +124,7 @@
     if (ng) {
       html += '<p class="track-note"><strong>Nächstes Tor: ' + ng.gs + " · " + esc(ng.title) + "</strong> – noch " + (ng.gs - S.gs) + " GS. " + esc(ng.text) + "</p>";
     } else {
-      html += '<p class="track-note"><strong>Alle bekannten Tore offen.</strong> Ab hier zählen Raids, Transzendenz 4 und Arkana-Sets.</p>';
+      html += '<p class="track-note"><strong>Alle bekannten Tore offen.</strong> Ab hier zählen Ludra Hard, die höchsten Albtraum-Stufen, das Ariel-Brett und Arkana-Sets.</p>';
     }
     return html;
   };
@@ -617,7 +617,7 @@
   }
 
   /* ================= Navigation ================= */
-  const VIEWS = ["uebersicht", "charakter", "gearscore", "skills", "daevanion", "begleiter", "karte", "zeiten", "checkliste", "klassen", "desktop", "quellen"];
+  const VIEWS = ["uebersicht", "charakter", "gearscore", "skills", "daevanion", "begleiter", "pantheon", "karte", "zeiten", "checkliste", "klassen", "desktop", "quellen"];
   function show(view) {
     if (!VIEWS.includes(view)) view = "uebersicht";
     VIEWS.forEach((v) => {
@@ -715,6 +715,7 @@
       case "open-dv": if (window.DK_DV) window.DK_DV.show(id, 0); break;
       case "open-sk": if (window.DK_SK) window.DK_SK.show(id, a.getAttribute("data-mode") || "pve"); break;
       case "open-bg": if (window.DK_BG) window.DK_BG.show(id); break;
+      case "open-pt": if (window.DK_PT) window.DK_PT.show(); break;
       case "set-class":
         S.cls = id; viewCls = id; save();
         $("#f-class").value = id;

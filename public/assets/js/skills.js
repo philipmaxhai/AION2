@@ -658,7 +658,7 @@
       const t = document.getElementById(b.getAttribute("href").slice(1));
       if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
     } else if (act === "azphel") {
-      if (window.DK_DV) window.DK_DV.show(view.cls, 4);
+      if (window.DK_DV) window.DK_DV.show(view.cls, window.DK_DV.boardIndex("azphel"));
     } else if (act === "png") {
       const out = document.querySelector("#sk-app .sk-copied");
       b.disabled = true;

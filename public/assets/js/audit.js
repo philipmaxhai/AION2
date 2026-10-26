@@ -553,9 +553,10 @@
           }
         }
       }
-      return { name: b.name, de: b.de, open: b.open, total: b.total, pvp, offensive, skills, loaded: nodes.length > 0 };
+      return { name: b.name, de: b.de, open: b.open, total: b.total, pvp, ariel: /ariel/i.test(b.name || ""), offensive, skills, loaded: nodes.length > 0 };
     });
-    const pveOpen = boards.filter((b) => !b.pvp).reduce((a, b) => a + Object.values(b.offensive).reduce((x, y) => x + y, 0) + Object.values(b.skills).reduce((x, y) => x + y, 0), 0);
+    /* Ariel hat eigene Punkte aus Hard-Dungeons, Azphel ist PvP: beide zählen hier nicht mit */
+    const pveOpen = boards.filter((b) => !b.pvp && !b.ariel).reduce((a, b) => a + Object.values(b.offensive).reduce((x, y) => x + y, 0) + Object.values(b.skills).reduce((x, y) => x + y, 0), 0);
     if (pveOpen) {
       add({
         id: "daevanion", score: 25, cat: "quick",
@@ -582,10 +583,14 @@
       quick.push({ id: "runes", slot: runeRows[0].slot, title: "Konfliktrunen nicht weiter verstärken", icon: runeRows[0].item.icon, why: runeRows.map((r) => `${r.label}: +${r.item.enchant}`).join(", ") + ". Ab +2 kann die Rune zerbrechen, jede Stufe bringt nur +0,5 % Schadensverstärkung (PvE).", conf: "community" });
     }
 
+    const EG = A.endgame;
+    const trial = EG.aufstieg.find((x) => gs >= x[0]);
+    const ludraSoon = now < Date.parse(EG.ludraAb);
     let dungeon;
     if (gs < 1400) dungeon = { name: "Gearscore auf 1400 bringen", why: "Eroberung öffnet erst ab 1400. Bis dahin Abyss (ab IL 1000), Aufstiegsprüfung und die Basis-Schritte." };
     else if ((w && itemLevel(w) < 70) || weakAcc.length >= 3) dungeon = { name: "Urugugu Canyon – Eroberung", why: `Deine Waffe${weakAcc.length ? " und " + weakAcc.length + " Schmuckteile" : ""} liegen unter IL 70. Jeder Würfel zählt auf den Auswahl-Gutschein (${A.pity.tier70} Würfel).` };
     else if (weakArmor.length) dungeon = { name: "Vakron Sky Island – Eroberung", why: `${weakArmor.length} Rüstungsteile liegen unter IL 70.` };
+    else if (gs >= EG.hard) dungeon = { name: "Krao-Höhle oder Draupnir – Hard", why: "Ariel-Fragmente für das Ariel-Brett (100 Fragmente = 1 Punkt, höchstens 30) und 160.000 Kinah je Boss. Raserei nach 4 Minuten, höchstens 3 Wiederbelebungen. Fehlt dir noch IL-86-Gear, teil die Würfel mit Fire Temple und Ferocious Horn Den." };
     else if (gs >= 2100) dungeon = { name: "Fire Temple oder Ferocious Horn Den – Eroberung", why: "IL-86-Waffen, Schmuck und Nuakum-Rüstung (Auswahl-Gutschein nach 28 Würfeln)." };
     else if (gs >= 1600) dungeon = { name: "Transzendenz", why: "Arkana-Karten für die Slots, dann Richtung 2100." };
     else dungeon = { name: "Vakron oder Urugugu – Eroberung", why: "Dein IL-70-Gear ist komplett; Würfel für Verstärkungsmaterial und Pity nutzen." };
@@ -626,7 +631,9 @@
       const plus = en.gain && en.gain.length ? `Bringt ${en.gain.map((g) => `+${fmt(g[1])} ${g[0]}`).join(", ")}. ` : "";
       woche.push({ id: "ench-" + row.slot, slot: row.slot, icon: row.item.icon, title: `${row.label}: ${nm(row.item)} von +${en.from} auf +10`, detail: `${plus}${price}${en.note || ""}` });
     }
-    woche.push({ id: "aufstieg", title: "Aufstiegsprüfung 3×", detail: "Verstärkungssteine und Amplify-Stone-Fragmente." });
+    woche.push({ id: "aufstieg", title: "Aufstiegsprüfung 3×", detail: `Verstärkungssteine und Amplify-Stone-Fragmente.${trial ? ` Höchste sichere Stufe nehmen: ${trial[1]} (ab IL ${fmt(trial[0])}).` : ""}` });
+    if (gs >= EG.hard) woche.push({ id: "ariel", title: "Ariel-Fragmente umwandeln und verteilen", detail: "Substanzwandlung › Spezial › Daevanion: 100 Fragmente = 1 Ariel-Punkt, höchstens 30 je Charakter. Zuerst die Ecken mit PvE- und Boss-Schadensverstärkung – die Reihenfolge zeigt das Ariel-Brett auf der Daevanion-Seite." });
+    if (gs >= EG.ludra) woche.push({ id: "ludra", title: `Ludra: 1 Endboss-Kill pro Woche${ludraSoon ? " (ab 4. November)" : ""}`, detail: `Normal ab IL ${fmt(EG.ludra)}, Hard ab ${fmt(EG.ludraHard)}${gs >= EG.ludraHard ? " – das schaffst du schon" : ""}. Der Raid prüft auch Präzision (etwa ${EG.ludraPraezision}). Wipes verbrauchen den Kill nicht.` });
     if (shardsNeeded) woche.push({ id: "abyss-ap", title: "Abyss-Zeit nutzen (7 h pro Woche)", detail: "Abyss-Punkte für Stigma-Splitter im Abyss-Shop (10.000–25.000 AP pro Splitter)." });
     P("woche", "Diese Woche", woche);
 
@@ -659,7 +666,8 @@
     };
     group(laterRows.filter((r) => A.armor[r.slot]), "spaet-ruestung", "Nuakums Rüstung", "Mit dem Auswahl-Gutschein das Teil nehmen, das dir am meisten fehlt.");
     group(laterRows.filter((r) => A.accessories[r.slot]), "spaet-schmuck", "Schmuck der Wütenden Kromede", "Kette, Ohrringe und Ringe droppen in derselben Eroberung.");
-    P("spaeter", "Ab 2100 Gearscore", spaeter);
+    if (gs < EG.hard) spaeter.push({ id: "spaet-hard", title: `Ab ${fmt(EG.hard)}: Hard-Modus und Ariel-Brett`, detail: `Krao-Höhle und Draupnir als Eroberung [Hard] geben Ariel-Fragmente für das sechste Daevanion-Brett (nur PvE- und Boss-Werte). Ab ${fmt(EG.ludra)} wartet der Raid Ludra (${ludraSoon ? "ab" : "seit"} 4. November).` });
+    P("spaeter", gs >= 2100 ? "Weiter nach oben" : "Ab 2100 Gearscore", spaeter);
 
     /* ---------- Build ---------- */
     const build = [];

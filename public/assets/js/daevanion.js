@@ -8,6 +8,8 @@
  *   2. Ausbau: danach jeweils der Weg mit dem besten Nutzen pro Punkt (Angriff und Krit für Schaden, LP und Verteidigung für Tanks).
  *   3. Zuletzt: was übrig bleibt (für Schadensklassen vor allem Verteidigung, LP, Krit.-Widerstand und MP).
  * Mit offenen Knoten (Charakter-Check) startet die Route von dort aus.
+ * Ariel (art "pve", eigene Ariel-Punkte, keine Skills): Kern sind die vier PvE-Schadensecken (Tanks: PvE-Resistenz),
+ * dann die Boss-Schadensknoten. Azphel (art "pvp"): PvP-Schadensecken und Statuseffekt-Chance.
  */
 (function () {
   const D = window.DK_DATA;
@@ -60,7 +62,18 @@
     hybrid: { "Attack": 0.9, "Critical Hit": 0.75, "Max HP": 0.4, "Defense": 0.3, "Critical Hit Resist": 0.2, "Max MP": 0.15 },
   };
   const PVP_W = { "PvP Attack": 1, "PvP Critical Hit": 0.8, "PvP Accuracy": 0.7, "PvP Defense": 0.55, "PvP Evasion": 0.35, "PvP Critical Hit Resist": 0.45 };
-  function value(n, plan, role, pvp) {
+  const PVE_W = { "PvE Attack": 1, "Boss Attack": 0.9, "PvE Accuracy": 0.55, "Max HP": 0.25, "PvE Defense": 0.2, "Boss Defense": 0.2, "PvE Evasion": 0.15, "Max MP": 0.05 };
+  const PVE_L = { "Boss Damage Boost": 3, "Critical Hit": 2.4, "Boss Damage Tolerance": 1.6, "Critical Hit Resist": 1.2 };
+  /* Haupt-Ecken und Boss-Knoten von Ariel je Rolle */
+  const arielMain = (role) => (role === "tank" ? ["PvE Damage Tolerance", "Boss Damage Tolerance"] : ["PvE Damage Boost", "Boss Damage Boost"]);
+  function value(n, plan, role, pvp, art) {
+    if (art === "pve") {
+      if (n.t === "S") return 0;
+      const main = arielMain(role);
+      if (n.g === "u") return n.en === main[0] ? 7 : 4;
+      if (n.g === "l") return n.en === main[1] ? 3 : PVE_L[n.en] || 1.5;
+      return n.en.split(", ").reduce((a, s) => a + (PVE_W[s] || 0.2), 0);
+    }
     if (n.t === "S") return 0;
     if (n.t === "K") {
       const ci = plan.core.indexOf(n.en);
@@ -111,7 +124,8 @@
     const plan = PLAN[cls] || { core: [], passive: [], corners: [] };
     const role = ROLES[cls] || "dps";
     const pvp = !!m.board.pvp;
-    const val = m.nodes.map((n) => value(n, plan, role, pvp));
+    const art = m.board.art || (pvp ? "pvp" : "skill");
+    const val = m.nodes.map((n) => value(n, plan, role, pvp, art));
     const owned = new Set([m.start.i].concat(open || []));
     const opened = new Set(owned);
     const steps = [];
@@ -120,7 +134,13 @@
     const pathTo = (res, t) => { const p = []; for (let x = t; x >= 0 && !owned.has(x); x = res.prev[x]) p.push(x); return p.reverse(); };
 
     let tiers;
-    if (pvp) {
+    if (art === "pve") {
+      const main = arielMain(role);
+      tiers = [
+        m.nodes.filter((n) => n.g === "u" && n.en === main[0]),
+        m.nodes.filter((n) => n.g === "l" && n.en === main[1]),
+      ];
+    } else if (pvp) {
       const main = role === "tank" ? "PvP Damage Tolerance" : "PvP Damage Boost";
       tiers = [
         m.nodes.filter((n) => n.g === "u" && n.en === main),
@@ -155,7 +175,7 @@
       take(pathTo(res, best), score >= 0.45 ? "ausbau" : "rest");
     }
     const sum = (tier) => steps.filter((s) => s.tier === tier).reduce((a, s) => a + m.nodes[s.i].cost, 0);
-    return { m, plan, role, pvp, steps, opened, cost: { kern: sum("kern"), ausbau: sum("ausbau"), rest: sum("rest") } };
+    return { m, plan, role, pvp, art, steps, opened, cost: { kern: sum("kern"), ausbau: sum("ausbau"), rest: sum("rest") } };
   }
 
   /* ---------- Bild ---------- */
@@ -282,7 +302,7 @@
       <li><span class="dv-key dv-key--ausbau">9</span>Ausbau danach</li>
       <li><span class="dv-key dv-key--rest"></span>zuletzt</li>
       <li><span class="dv-shape dv-shape--sq"></span>Wert</li>
-      <li><span class="dv-shape dv-shape--ci"></span>Skill-Stufe</li>
+      ${r.m.nodes.some((n) => n.t === "K") ? '<li><span class="dv-shape dv-shape--ci"></span>Skill-Stufe</li>' : ""}
       <li><span class="dv-cost">1 · 2 · 3 · 4 Punkte</span>grau · grün · blau · orange</li>
     </ul>
     <p class="dv-abbr">${[...used].map(([k, v]) => `<span><b>${esc(k)}</b> ${esc(v)}</span>`).join("")}</p>`;
@@ -293,7 +313,7 @@
       const n = r.m.nodes[s.i];
       return `<li class="dv-step dv-step--${s.tier}" data-dvn="${n.i}">
         <span class="dv-no">${r.steps.indexOf(s) + 1}</span>
-        <span class="dv-what"><span class="dv-mark dv-mark--${n.t === "K" ? "ci" : "sq"} dv-g-${n.g}"></span>${esc(n.t === "K" ? n.name : n.eff)}${n.t === "K" ? `<small>${n.active ? "aktiv" : "passiv"}</small>` : ""}</span>
+        <span class="dv-what"><span class="dv-mark dv-mark--${n.t === "K" ? "ci" : "sq"} dv-g-${n.g}"></span><span class="dv-tx">${esc(n.t === "K" ? n.name : n.eff)}${n.t === "K" ? ` <small>${n.active ? "aktiv" : "passiv"}</small>` : ""}</span></span>
         <span class="dv-pts">${n.cost}</span>
         <span class="dv-sum">${s.cum}</span>
       </li>`;
@@ -339,8 +359,12 @@
     const kern = r.steps.filter((s) => s.tier === "kern");
     const aus = r.steps.filter((s) => s.tier === "ausbau");
     const rest = r.steps.filter((s) => s.tier === "rest");
-    const pve = all.filter((x) => !x.pvp);
-    const kernSum = pve.reduce((a, x) => a + x.cost.kern, 0);
+    const skillBoards = all.filter((x) => x.art === "skill");
+    const kernSum = skillBoards.reduce((a, x) => a + x.cost.kern, 0);
+    const TAG = { pvp: " · PvP", pve: " · Ariel-Punkte" };
+    /* Ariel: wie viele Kern-Schritte die 30 Ariel-Punkte heute abdecken */
+    const AR = D.ariel || {};
+    const arielReach = r.art === "pve" && AR.punkteMax ? r.steps.filter((s) => s.cum <= AR.punkteMax).length : 0;
     const coreNames = (plan.core || []).map((en) => (DV.klassen[cls].skills.find((s) => s[0] === en) || [en, en])[1]);
     const passNames = (plan.passive || []).map((en) => (DV.klassen[cls].skills.find((s) => s[0] === en) || [en, en])[1]);
     const cornerNames = (plan.corners || []).map((en) => (DV.stats.find((s) => s.en === en) || { de: en }).de);
@@ -351,7 +375,7 @@
 
     h += `<div class="dv-boards" role="tablist" aria-label="Brett">` + DV.boards.map((x, i) =>
       `<button type="button" role="tab" class="dv-tab${i === view.bi ? " is-on" : ""}" aria-selected="${i === view.bi}" data-dv="board" data-i="${i}">
-        <span class="dv-tab-name">${esc(x.name)}</span><span class="dv-tab-sub">ab Level ${x.level}${x.pvp ? " · PvP" : ""} · Kern ${all[i].cost.kern} P.</span></button>`).join("") + `</div>`;
+        <span class="dv-tab-name">${esc(x.name)}${x.art === "pve" ? ' <span class="dv-new">neu</span>' : ""}</span><span class="dv-tab-sub">ab Level ${x.level}${TAG[all[i].art] || ""} · Kern ${all[i].cost.kern} P.</span></button>`).join("") + `</div>`;
 
     h += `<div class="dv-layout">
       <div class="dv-board">
@@ -367,10 +391,13 @@
       <div class="dv-plan">
         <h2>${esc(c.de)} · ${esc(b.name)}</h2>
         <p class="dv-meta">${b.punkte} Punkte für das ganze Brett · Kern-Route <b>${r.cost.kern}</b> · Ausbau <b>${r.cost.ausbau}</b> · zuletzt ${r.cost.rest}</p>
-        ${r.pvp
+        ${r.art === "pvp"
           ? `<p>Azphel ist das PvP-Brett und hat eigene Punkte (Azphel-Kristalle aus Abyss, Arena und Monolithen). Es nimmt den anderen Brettern nichts weg. Für PvE bringt es nichts.</p>`
-          : `<p>Kern-Skills: ${esc(coreNames.join(", "))}. Passive: ${esc(passNames.join(", "))}. Ecken: ${esc(cornerNames.join(", "))}.</p>`}
-        ${plan.hinweis && !r.pvp ? `<p class="dv-note">${esc(plan.hinweis)}</p>` : ""}
+          : r.art === "pve"
+            ? `<p>${esc(AR.text || "Ariel ist das PvE-Brett mit eigenen Ariel-Punkten.")}</p>
+               ${AR.punkteMax ? `<p class="dv-note">Mit den derzeit höchstens <b>${AR.punkteMax}</b> Ariel-Punkten reichen die Punkte für die ersten <b>${arielReach}</b> Schritte unten (Summe bis ${AR.punkteMax}). ${esc(AR.hinweis || "")}</p>` : ""}`
+            : `<p>Kern-Skills: ${esc(coreNames.join(", "))}. Passive: ${esc(passNames.join(", "))}. Ecken: ${esc(cornerNames.join(", "))}.</p>`}
+        ${plan.hinweis && r.art === "skill" ? `<p class="dv-note">${esc(plan.hinweis)}</p>` : ""}
         <h3>Kern-Route · ${r.cost.kern} Punkte</h3>
         <ol class="dv-steps" aria-label="Kern-Route">
           <li class="dv-step dv-step--head"><span class="dv-no">Nr.</span><span class="dv-what">Knoten</span><span class="dv-pts">Punkte</span><span class="dv-sum">Summe</span></li>
@@ -387,12 +414,12 @@
     h += `<section class="dv-total" aria-label="Alle Bretter">
       <h3>Punkte für die Kern-Routen</h3>
       <table class="tbl"><thead><tr><th scope="col">Brett</th><th scope="col">ab Level</th><th scope="col">Kern</th><th scope="col">mit Ausbau</th><th scope="col">ganzes Brett</th></tr></thead><tbody>
-      ${all.map((x, i) => `<tr${i === view.bi ? ' class="is-on"' : ""}><th scope="row">${esc(DV.boards[i].name)}${x.pvp ? " (PvP)" : ""}</th><td class="num">${DV.boards[i].level}</td><td class="num">${x.cost.kern}</td><td class="num">${x.cost.kern + x.cost.ausbau}</td><td class="num">${DV.boards[i].punkte}</td></tr>`).join("")}
+      ${all.map((x, i) => `<tr${i === view.bi ? ' class="is-on"' : ""}><th scope="row">${esc(DV.boards[i].name)}${x.art === "pvp" ? " (PvP)" : x.art === "pve" ? " (Ariel-Punkte)" : ""}</th><td class="num">${DV.boards[i].level}</td><td class="num">${x.cost.kern}</td><td class="num">${x.cost.kern + x.cost.ausbau}</td><td class="num">${DV.boards[i].punkte}</td></tr>`).join("")}
       </tbody></table>
-      <p class="small muted">Die Kern-Routen der vier PvE-Bretter kosten zusammen <b>${kernSum}</b> Punkte. Alle vier Bretter voll kosten 570, der Vorrat ist bei 840 gedeckelt. Punkte gibt es pro Level, für versiegelte Dungeons (2) und regionale Quests (1).</p>
+      <p class="small muted">Die Kern-Routen der vier Skill-Bretter kosten zusammen <b>${kernSum}</b> Daevanion-Punkte. Alle vier voll kosten 570, der Vorrat ist bei 840 gedeckelt. Punkte gibt es pro Level, für versiegelte Dungeons (2) und regionale Quests (1). Ariel und Azphel haben eigene Punkte und nehmen den Skill-Brettern nichts weg.</p>
     </section>`;
 
-    h += `<p class="fine">Prioritäten: ${esc(plan.quelle || "Guides")}, zusammengefasst bei aion2vault.com, und die Klassen-Analyse von Metabot. Die Reihenfolge berechnet die Seite selbst: immer der günstigste Weg vom Start (Knoten kosten 1, 2, 3 oder 4 Punkte) zum nächsten Kern-Knoten. Brett-Daten aus dem GameWith-Daevanion-Planer, für den Beschwörer gegen die offizielle Armory geprüft. Eine Empfehlung, keine Formel von NCSOFT.</p>`;
+    h += `<p class="fine">Prioritäten: ${esc(plan.quelle || "Guides")}, zusammengefasst bei aion2vault.com, und die Klassen-Analyse von Metabot. Die Reihenfolge berechnet die Seite selbst: immer der günstigste Weg vom Start (Knoten kosten 1, 2, 3 oder 4 Punkte) zum nächsten Kern-Knoten. Brett-Daten aus dem GameWith-Daevanion-Planer, für den Beschwörer gegen die offizielle Armory geprüft; Ariel aus den Client-Daten (questlog.gg über AION2 Vault, gegen die übrigen Bretter abgeglichen). Eine Empfehlung, keine Formel von NCSOFT.</p>`;
     host.innerHTML = h;
   }
 

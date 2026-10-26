@@ -1,21 +1,24 @@
 /*
  * Daeva-Kompass – alle Spieldaten an einer Stelle.
- * Stand: 09.10.2026 (Global-Launch 05.10.2026). Quellen siehe DK_DATA.sources.
+ * Stand: 26.10.2026 (Global-Launch 05.10.2026, Patch 21.10.: Hard-Modus und Ariel-Brett). Quellen siehe DK_DATA.sources.
  * confidence: "ok" = mehrere Quellen einig, "community" = Community-Konsens,
  *             "offen" = Quellen widersprechen sich / nicht offiziell bestätigt.
  */
 window.DK_DATA = {
-  stand: "11.10.2026",
+  stand: "26.10.2026",
 
   /* ---------- Gearscore-Schwellen (Item-Level) ---------- */
   gates: [
-    { gs: 1000, title: "Abyss · Prüfung", text: "Untere Reshanta (Lv 45) und Aufstiegsprüfung Leicht öffnen." },
+    { gs: 1000, title: "Abyss · Prüfung", text: "Untere Reshanta (Lv 45) und Aufstiegsprüfung Leicht öffnen (Normal ab 1500, Schwer ab 2000, Herausforderung ab 2500)." },
     { gs: 1400, title: "Vakron & Urugugu", text: "Eroberung (Conquest) Stufe 2: Vakron Sky Island und Urugugu Canyon." },
     { gs: 1600, title: "Transzendenz 1", text: "Shattered Arkanis und Deus Research Base – Arkana-Karten." },
     { gs: 1900, title: "Transzendenz 2", text: "Zweite Transzendenz-Stufe, mehr Effekte, bessere Karten." },
     { gs: 2100, title: "Eroberung 3", text: "Eroberung Stufe 3: Enraged-Kromede-Waffen, Nuakum-Rüstung." },
     { gs: 2200, title: "Transzendenz 3", text: "Boss-Level steigt, Karten-Qualität steigt." },
-    { gs: 2500, title: "Transzendenz 4", text: "Höchste Transzendenz-Stufe (Boss-Level 68)." }
+    { gs: 2500, title: "Transzendenz 4", text: "Höchste Transzendenz-Stufe (Boss-Level 68)." },
+    { gs: 2600, title: "Hard-Modus", text: "Krao-Höhle und Draupnir als Eroberung [Hard]: Ariel-Fragmente für das Ariel-Brett, mehr Kinah." },
+    { gs: 2800, title: "Ludra", text: "Heiligtum-Raid Ludra (Normal), ab dem 4. November. Präzision um 1.450–1.500 mitbringen." },
+    { gs: 3000, title: "Ludra Hard", text: "Ludra im Hard-Modus, ebenfalls ab dem 4. November." }
   ],
 
   /* ---------- Gearscore-Fahrplan ---------- */
@@ -23,7 +26,8 @@ window.DK_DATA = {
     { id: "basis", title: "Fundament", sub: "Billige Punkte, die viele mit 1400 noch liegen lassen", minGS: 0 },
     { id: "s1400", title: "Ab 1400", sub: "Vakron & Urugugu farmen, Wochenlimits voll nutzen", minGS: 1400 },
     { id: "s1600", title: "Ab 1600", sub: "Transzendenz öffnen, Arkana-Slots füllen", minGS: 1600 },
-    { id: "s2100", title: "Ab 2100", sub: "Nächste Eroberungsstufe und Raids", minGS: 2100 }
+    { id: "s2100", title: "Ab 2100", sub: "Fire Temple und Horn Den, Albtraum-Shop", minGS: 2100 },
+    { id: "s2600", title: "Ab 2600", sub: "Hard-Modus, Ariel-Brett und Ludra", minGS: 2600 }
   ],
 
   steps: [
@@ -78,7 +82,17 @@ window.DK_DATA = {
       confidence: "community"
     },
     {
-      id: "odyle", stage: "s1400", minGS: 1400, prio: 6,
+      id: "pantheon", stage: "basis", minGS: 0, prio: 6,
+      title: "Pantheon füllen: 12 Kunstwerke mit Weisheit und Illusion",
+      gain: "Je Kunstwerk etwa +0,6 bis +0,8 % Schaden (Schätzung), alle zwölf zusammen mehr als der Koloss",
+      cadence: "Einmal füllen, dann Teil für Teil verbessern",
+      where: "Markt (Kunstwerke Krao, Vakron Sky Island, Draupnir, Ferocious Horn Den), Elite-Bosse, Albtraum-Shop",
+      marker: null,
+      detail: "Die Story füllt Koloss und Statuen bis Stufe 45 schon mit einfachen Teilen. Statuen immer mit Tod. Kein Gearscore, aber dauerhafte Götter-Werte – Plan und Abhaken in der Ansicht Pantheon.",
+      confidence: "community"
+    },
+    {
+      id: "odyle", stage: "s1400", minGS: 1400, prio: 7,
       title: "Odyle-Energie nie überlaufen lassen, nur in Eroberung ausgeben",
       gain: "Jeder Würfel = Chance auf IL-70-Teile",
       cadence: "Alle 3 h +15 (120 pro Tag)",
@@ -88,7 +102,7 @@ window.DK_DATA = {
       confidence: "community"
     },
     {
-      id: "vakron", icon: "https://assets.playnccdn.com/static-aion2-gamedata/resources/Icon_Equip_AR_L_0028_T05_Torso.png", stage: "s1400", minGS: 1400, prio: 7,
+      id: "vakron", icon: "https://assets.playnccdn.com/static-aion2-gamedata/resources/Icon_Equip_AR_L_0028_T05_Torso.png", stage: "s1400", minGS: 1400, prio: 8,
       title: "Vakron Sky Island – Eroberung farmen",
       gain: "Rüstung IL 70",
       cadence: "Solange Odyle da ist",
@@ -98,7 +112,7 @@ window.DK_DATA = {
       confidence: "community"
     },
     {
-      id: "urugugu", icon: "https://assets.playnccdn.com/static-aion2-gamedata/resources/Icon_ACC_Ring_0072.png", iconKey: "aulamus", stage: "s1400", minGS: 1400, prio: 8,
+      id: "urugugu", icon: "https://assets.playnccdn.com/static-aion2-gamedata/resources/Icon_ACC_Ring_0072.png", iconKey: "aulamus", stage: "s1400", minGS: 1400, prio: 9,
       title: "Urugugu Canyon – Eroberung für Waffe & Schmuck",
       gain: "Aulamus-Waffen und -Accessoires IL 70",
       cadence: "Solange Odyle da ist",
@@ -108,34 +122,24 @@ window.DK_DATA = {
       confidence: "offen"
     },
     {
-      id: "albtraum", stage: "s1400", minGS: 1000, prio: 9,
+      id: "albtraum", stage: "s1400", minGS: 1000, prio: 10,
       title: "Albtraum (Nightmare) jeden Tag",
       gain: "Phantasmal Fragments für den Albtraum-Shop",
       cadence: "2 Versuche pro Tag, bis 14 speicherbar",
       where: "Dungeon-Menü (Solo)",
       marker: null,
-      detail: "Ein Versuch wird nur bei Erfolg verbraucht, ein Wipe kostet nichts. Jeder Boss hat Stufen 1 bis 10.",
+      detail: "Ein Versuch wird nur bei Erfolg verbraucht, ein Wipe kostet nichts. Jeder Boss hat Stufen 1 bis 10. Im Shop: Statue Fortress Guardian Notun (8.000 Fragmente, nach Stufe 10 von Notun, empfohlen IL 2.300) und Koloss Zikel's Apparition (14.000, nach dem Finale, Stufen IL 2.400 bis 3.000).",
       confidence: "ok"
     },
     {
-      id: "aufstieg", stage: "s1400", minGS: 1000, prio: 10,
+      id: "aufstieg", stage: "s1400", minGS: 1000, prio: 11,
       title: "Aufstiegsprüfung (Ascension Trial) 3× pro Woche",
       gain: "Verstärkungssteine, Amplify-Stone-Fragmente",
       cadence: "3 Tickets pro Woche",
-      where: "Dungeon-Menü (Solo, 6 Dungeons, ein Zähler)",
+      where: "Dungeon-Menü (Solo)",
       marker: null,
-      detail: "Leicht ab IL 1000, Hölle ab IL 3500. Nimm die höchste Stufe, die du sicher schaffst.",
-      confidence: "community"
-    },
-    {
-      id: "unterwerfung", stage: "s1400", minGS: 1000, prio: 11,
-      title: "Unterwerfung (Subjugation) 3× pro Woche",
-      gain: "Wochenbelohnungen",
-      cadence: "3 Tickets pro Woche",
-      where: "Dungeon-Menü (4 Spieler)",
-      marker: null,
-      detail: "Balaur-Basen: Beritra Brigade Fortress, Orcus's Grave, Fafnite Forge.",
-      confidence: "community"
+      detail: "Vier Stufen: Leicht ab IL 1.000, Normal ab 1.500, Schwer ab 2.000, Herausforderung ab 2.500 (höchstens 5, 3, 2 und 2 Tode). Nimm die höchste Stufe, die du sicher schaffst. Belohnung: Verstärkungssteine, Begleiter-Truhen, Amplify-Stone-Fragmente und Manastein- oder Seelenstein-Truhen, keine Ausrüstung.",
+      confidence: "ok"
     },
     {
       id: "abyss", stage: "s1400", minGS: 1000, prio: 12,
@@ -154,7 +158,7 @@ window.DK_DATA = {
       cadence: "14 Einträge pro Woche, 5 Missionen pro Tag",
       where: "Dungeon-Menü / Missionsfenster",
       marker: null,
-      detail: "Läuft schnell nebenher. Pflichtmissionen zuerst, damit sie zum Reset nicht verfallen.",
+      detail: "Täglicher Dungeon ist die Daeva Bio-Research Base, sie zahlt Verstärkungssteine. Läuft schnell nebenher. Pflichtmissionen zuerst, damit sie zum Reset nicht verfallen.",
       confidence: "community"
     },
     {
@@ -208,14 +212,34 @@ window.DK_DATA = {
       confidence: "offen"
     },
     {
-      id: "raids", stage: "s2100", minGS: 2100, prio: 19,
-      title: "Heiligtum-Raids (Abyssal Forge)",
-      gain: "Endgame-Waffen, z. B. Ludra's Abyssal Jade (Orb, IL 102)",
-      cadence: "4 Versuche pro Raid und Woche",
-      where: "Dungeon-Menü (10 Spieler)",
+      id: "hardmodus", stage: "s2600", minGS: 2600, prio: 19,
+      title: "Krao-Höhle und Draupnir im Hard-Modus",
+      gain: "Ariel-Fragmente (60–90 vom Endboss) und 160.000 Kinah je Boss",
+      cadence: "Mit Odyle (40 je Belohnung), Auswahl-Belohnung nach 28 Belohnungen",
+      where: "Dungeon-Menü › Eroberung [Hard] (bis 5 Spieler)",
       marker: null,
-      detail: "Ludra, Chalice of Muspel, Corroded Decontamination Facility. Ein Eintritts-IL ist bisher nicht veröffentlicht.",
-      confidence: "offen"
+      detail: "Seit dem Patch vom 21. Oktober: Bosse auf Stufe 68, Raserei schon nach 4 Minuten, höchstens 3 Wiederbelebungen. Dazu 1 % Philosopher's Stone: Revelation und 0,3 % auf das Kunstwerk Wrathful Krao bzw. Wrathful Draupnir (Pantheon). Die Auswahl-Belohnung bietet die Dungeon-Ausrüstung, den Ausrüstungs-Tauschgutschein oder den Revelation-Stein. Erfolge für 5, 10 und 15 Clears geben Skins, Titel und Wiederbelebungs-Steine.",
+      confidence: "ok"
+    },
+    {
+      id: "ariel", icon: "https://assets.playnccdn.com/static-aion2/characters/img/daevanion/board_icon_unique_open.png", stage: "s2600", minGS: 2600, prio: 20,
+      title: "Ariel-Brett: PvE- und Boss-Schaden zuerst",
+      gain: "Bis zu 30 Ariel-Punkte, nur PvE- und Boss-Werte",
+      cadence: "Je 100 Ariel-Fragmente ein Punkt",
+      where: "Substanzwandlung › Spezial › Daevanion, dann Menü › Daevanion › Ariel",
+      marker: null,
+      detail: "100 Fragmente werden zu einem Daevanion-Kristall: Ariel (höchstens 30 je Charakter). Das ganze Brett kostet 232 Punkte, also zuerst die Ecken mit PvE- und Boss-Schadensverstärkung. Die Route je Klasse zeigt die Daevanion-Seite. Übrige Fragmente: je 1 Fragment = 5 Verstärkungssteine.",
+      confidence: "ok"
+    },
+    {
+      id: "raids", stage: "s2600", minGS: 2800, prio: 21,
+      title: "Ludra (Heiligtum-Raid) ab 4. November",
+      gain: "Endgame-Waffen, z. B. Ludra's Abyssal Jade (Orb)",
+      cadence: "1 Endboss-Kill pro Woche (wie im Early Access)",
+      where: "Dungeon-Menü (10 Spieler in zwei Gruppen zu 5)",
+      marker: null,
+      detail: "Kommt am 4. November mit neuen Mechaniken zurück: Normal ab IL 2.800, Hard ab 3.000, beide ab dem ersten Tag. Der Raid prüft auch Präzision (etwa 1.450–1.500). Wipes und Zwischenbosse verbrauchen den Wochen-Kill nicht; die Belohnung kostet 40 Odyle, jede 4. gibt eine Auswahl. Der Erfolg für 3 Clears gibt das Kunstwerk Abyssal Ludra (Pantheon). Auf Global ist Ludra bisher der einzige Raid.",
+      confidence: "ok"
     }
   ],
 
@@ -229,7 +253,7 @@ window.DK_DATA = {
       lane: "Reset", where: "Überall", what: "Pflichtmissionen, Albtraum-Versuche, Tageslimits", confidence: "community",
       note: "Global-Reset 07:00 UTC. Im Spiel zeigt der Tooltip eines Zählers die exakte Restzeit." },
     { id: "wreset", name: "Wochen-Reset (Mittwoch)", short: "Woche", kind: "fixed", tz: "UTC", times: ["07:00"], days: [3], dur: 0,
-      lane: "Reset", where: "Überall", what: "Abyss-Zeit, Aufstiegsprüfung, Unterwerfung, Täglicher Dungeon, Raids", confidence: "community",
+      lane: "Reset", where: "Überall", what: "Abyss-Zeit, Aufstiegsprüfung, Täglicher Dungeon, Ludra-Kill", confidence: "community",
       note: "Mittwoch zur selben Uhrzeit wie der Tages-Reset." },
     { id: "riss", name: "Raumzeit-Riss (Spacetime Rift)", short: "Riss", kind: "interval", tz: "UTC", start: "00:00", every: 180, days: null, dur: 10,
       lane: "Riss", where: "Eigene Heimatregion › führt ins Feindgebiet", what: "Quests und Beute im Feindgebiet (ab Lv 45)", confidence: "community", marker: "riss",
@@ -256,7 +280,7 @@ window.DK_DATA = {
     daily: [
       { id: "pflicht", label: "Pflichtmissionen", max: 5, hint: "5 pro Tag" },
       { id: "albtraum", label: "Albtraum (Nightmare)", max: 2, hint: "Nur Siege verbrauchen Versuche" },
-      { id: "odyle", label: "Odyle unter Cap ausgegeben", max: 1, hint: "Vakron / Urugugu Eroberung" },
+      { id: "odyle", label: "Odyle unter Cap ausgegeben", max: 1, hint: "Eroberung, ab IL 2.600 Hard-Modus" },
       { id: "schluessel", label: "Shugo-/Invasions-Schlüssel genutzt", max: 1, hint: "3 Aufladungen pro Tag" },
       { id: "trans", label: "Transzendenz-Belohnungen", max: 4, hint: "Ab IL 1600, 2 je Dungeon" },
       { id: "riss", label: "Raumzeit-Riss gemacht", max: 1, hint: "Optional, alle 3 h" },
@@ -265,12 +289,12 @@ window.DK_DATA = {
     weekly: [
       { id: "tagesdungeon", label: "Täglicher Dungeon", max: 14, hint: "14 pro Woche" },
       { id: "aufstieg", label: "Aufstiegsprüfung", max: 3, hint: "3 Tickets" },
-      { id: "unterwerfung", label: "Unterwerfung", max: 3, hint: "3 Tickets, 4er-Gruppe" },
       { id: "abyss-u", label: "Abyss: Untere Reshanta (Stunden)", max: 7, hint: "7 h Budget" },
       { id: "belagerung", label: "Artefakt-Belagerung", max: 3, hint: "Mo / Do / Sa" },
       { id: "morph", label: "Substanzwandlung", max: 4, hint: "4 pro Charakter" },
       { id: "festung", label: "Festungen für Gürtel-Material", max: 1, hint: "Bis Gürtel Unique" },
-      { id: "raid", label: "Heiligtum-Raid-Versuche", max: 4, hint: "Ab später, 4 pro Raid" }
+      { id: "raid", label: "Ludra-Endboss", max: 1, hint: "Ab 4.11., IL 2.800" },
+      { id: "ariel", label: "Ariel-Fragmente umgewandelt", max: 1, hint: "Je 100 ein Punkt, höchstens 30" }
     ]
   },
 
@@ -383,10 +407,11 @@ window.DK_DATA = {
     { name: "Vakron Sky Island", req: "Lv 45 · IL 1400", info: "Eroberung, 2–5 Spieler, 60 Min", step: "vakron" },
     { name: "Urugugu Canyon", req: "Lv 45 · IL 1400", info: "Eroberung, 2–5 Spieler", step: "urugugu" },
     { name: "Albtraum (Nightmare)", req: "Lv 45", info: "Solo, 2 pro Tag", step: "albtraum" },
-    { name: "Aufstiegsprüfung", req: "IL 1000", info: "Solo, 3 pro Woche", step: "aufstieg" },
-    { name: "Unterwerfung", req: "Lv 45", info: "4 Spieler, 3 pro Woche", step: "unterwerfung" },
+    { name: "Aufstiegsprüfung", req: "IL 1000", info: "Solo, 3 pro Woche, 4 Stufen bis IL 2500", step: "aufstieg" },
     { name: "Transzendenz", req: "IL 1600", info: "Arkana-Karten", step: "transzendenz1" },
-    { name: "Fire Temple / Horn Den", req: "IL 2100", info: "Eroberung Stufe 3", step: "feuertempel" }
+    { name: "Fire Temple / Horn Den", req: "IL 2100", info: "Eroberung Stufe 3", step: "feuertempel" },
+    { name: "Krao-Höhle / Draupnir [Hard]", req: "IL 2600", info: "Ariel-Fragmente, neu seit 21.10.", step: "hardmodus" },
+    { name: "Ludra", req: "IL 2800 · Hard 3000", info: "Raid, 10 Spieler, ab 4.11.", step: "raids" }
   ],
 
   /* ---------- Klassen ---------- */
@@ -584,7 +609,14 @@ window.DK_DATA = {
     { name: "Begleiter: alle Reittiere, Typ-Boni und Seelen-Fundorte (MetaBot)", url: "https://metabot.gg/de/aion-2/mounts" },
     { name: "Begleiter: Werte je Typ und Stufe, Farm-Gebiete (Raid Relay)", url: "https://raidrelay.com/aion-2-pets-genus-guide" },
     { name: "Begleiter und Gattungs-Einsicht (Daeva Guides)", url: "https://daevaguides.com/en/guides/pets-genus-insight/" },
-    { name: "Patch 1. April 2026: eigener Schadensmesser (AION2 Hub)", url: "https://aion2hub.com/updates/aion-2-update-2026-04-01" }
+    { name: "Patch 1. April 2026: eigener Schadensmesser (AION2 Hub)", url: "https://aion2hub.com/updates/aion-2-update-2026-04-01" },
+    { name: "Patch Notes 20./21.10.2026: Hard-Modus, Ariel-Brett (NCSOFT über PatchBot)", url: "https://patchbot.io/games/aion-2/articles/1865-notice-patch-notes-oct-20-pdt-oct-21-cest" },
+    { name: "Dungeons, Raids, Eintritts-IL und Aufstiegsprüfung (AION 2 Maps, Client-Daten)", url: "https://aion2maps.com/guides/dungeons-and-raids/" },
+    { name: "Krao-Höhle und Draupnir im Hard-Modus: Beute, Pity, Erfolge (AION 2 Maps)", url: "https://aion2maps.com/guides/krao-cave/" },
+    { name: "Ludra ab 4. November: Eintritt, Wochenlimit, Präzision (AION 2 Maps)", url: "https://aion2maps.com/guides/ludra/" },
+    { name: "Albtraum Saison 1: Bosse, Stufen und Shop (AION 2 Maps)", url: "https://aion2maps.com/guides/nightmare/" },
+    { name: "Ariel-Brett: Knoten, Werte, Kosten (AION2 Vault)", url: "https://aion2vault.com/builds/ariel-daevanion/" },
+    { name: "Pantheon: Teile, Quellen und Götter-Werte (AION 2 Maps)", url: "https://aion2maps.com/guides/pantheon-stats/" }
   ],
 
   /* ---------- Charakter-Check: Upgrade-Stufen und Klassenregeln ----------
@@ -595,6 +627,109 @@ window.DK_DATA = {
    * core: aktive Skills, deren Knoten auf jedem PvE-Brett zuerst kommen. passive: Passive in Reihenfolge (die erste kommt mit den Kern-Skills).
    * corners: 4-Punkte-Ecken in Reihenfolge. Quelle: öffentliche Bretter bekannter Spieler, zusammengefasst bei aion2vault.com,
    * und die Klassen-Analyse von Metabot. Die Route selbst (Reihenfolge der Knoten) berechnet daevanion.js: günstigster Weg vom Start. */
+  /* ---------- Ariel (sechstes Daevanion-Brett, seit 21.10.2026) ----------
+   * Eigene Ariel-Punkte aus Ariel-Fragmenten (Krao-Höhle und Draupnir im Hard-Modus). Raster in data-daevanion.js. */
+  ariel: {
+    punkteMax: 30,
+    text: "Ariel ist das sechste Brett (seit dem Patch vom 21. Oktober): nur PvE- und Boss-Werte, keine Skills, eigene Ariel-Punkte. Die Punkte kommen aus Ariel-Fragmenten, die nur Krao-Höhle und Draupnir im Hard-Modus droppen (ab Gegenstandsstufe 2.600, 60–90 Fragmente vom Endboss). 100 Fragmente ergeben per Substanzwandlung (Spezial › Daevanion) einen Kristall, also einen Punkt.",
+    hinweis: "Laut Patch Notes höchstens 30 Umwandlungen je Charakter, mit eigener Grenze je Dungeon – ob das 30 insgesamt oder je Dungeon sind, sagen die Quellen unterschiedlich. Übrige Fragmente lohnen als Verstärkungssteine (1 Fragment = 5 Steine, ohne Grenze).",
+    quellen: [
+      { name: "Patch Notes 20./21.10.2026: Hard-Modus, Ariel-Brett (NCSOFT über PatchBot)", url: "https://patchbot.io/games/aion-2/articles/1865-notice-patch-notes-oct-20-pdt-oct-21-cest" },
+      { name: "Ariel-Brett: Knoten, Werte, Kosten (AION2 Vault, Client-Daten von questlog.gg)", url: "https://aion2vault.com/builds/ariel-daevanion/" }
+    ]
+  },
+
+  /* ---------- Pantheon ----------
+   * Sammlung aus 1 Koloss, 4 Statuen und 12 Kunstwerken; jedes Teil gibt feste Punkte auf zwei bis vier Götter-Werte.
+   * Ein Punkt Götter-Wert = 0,1 % auf beide Wirkungen. Teile mit englischem Namen wie im englischen Client.
+   * werte: key -> [Name im deutschen Client, englischer Name, Wirkung 1, Wirkung 2]; Namen und Wirkungen aus der Armory (de-DE).
+   * teile: { typ, name, grad, werte {key: Punkte}, oder (Werte, von denen das Teil einen trägt), fraktion, quelle, stufe (1 = beste),
+   *   leicht (schnell zu haben: Quest, Erfolg, Albtraum-Shop oder billig im Markt) }.
+   * Quellen: AION 2 Maps (Client-Daten, abgerufen am 26.10.2026), Game8, kanonxo. Neue Erkenntnisse hier eintragen. */
+  pantheon: {
+    freischalten: "Das Pantheon öffnet sich mit der zweiten Aufstiegsquest (The One Who Hears the Voice, ab Stufe 22). Die Story-Quests bis Stufe 45 füllen Koloss und Statuen schon mit einfachen Teilen.",
+    plaetze: { koloss: 1, statue: 4, kunstwerk: 12 },
+    typen: { koloss: "Koloss", statue: "Statue", kunstwerk: "Kunstwerk" },
+    punkte: { koloss: "Heroisch 55 · Einzigartig 45 · Selten 35", statue: "Einzigartig 12 · Episch 10 · Selten 8 · Gewöhnlich 6", kunstwerk: "Heroisch 5 · Einzigartig 4 · Episch 3 · Selten 2" },
+    werte: {
+      wisdom: ["Weisheit [Lumiel]", "Wisdom [Lumiel]", "MP-Kosten −", "Wucht (doppelter Schaden: PvE 2×, PvP 1,5×)"],
+      destruction: ["Zerstörung [Zikel]", "Destruction [Zikel]", "Angriffskraft %", "Perfekter Widerstand"],
+      time: ["Zeit [Siel]", "Time [Siel]", "Kampftempo", "Wucht-Widerstand"],
+      death: ["Tod [Triniel]", "Death [Triniel]", "Krit.-Treffer %", "Regenerations-Penetration"],
+      illusion: ["Illusion [Kaisinel]", "Illusion [Kaisinel]", "Abklingzeit −", "Eisenwall-Penetration"],
+      justice: ["Gerechtigkeit [Nezekan]", "Justice [Nezekan]", "Verteidigung %", "Perfektion (Treffer am oberen Schadensrand)"],
+      freedom: ["Freiheit [Vaizel]", "Freedom [Vaizel]", "Präzision %", "Ausweichen %"],
+      space: ["Raum [Israphel]", "Space [Israphel]", "Bewegungstempo", "Block %"],
+      destiny: ["Schicksal [Marchutan]", "Destiny [Marchutan]", "MP %", "Eisenwall (Chance auf halben Schaden)"],
+      life: ["Leben [Yustiel]", "Life [Yustiel]", "LP %", "Regeneration (holt 20 % des Schadens zurück)"]
+    },
+    /* Für Schaden zuerst: Wucht, Angriffskraft-Multiplikator, Kampftempo (kanonxo) */
+    schaden: ["wisdom", "destruction", "time"],
+    teile: [
+      { typ: "koloss", name: "Guardian Lord Nahma", grad: "Heroisch", werte: { destruction: 55, justice: 55, time: 55 }, fraktion: null, quelle: "Wächterfürst Nahma (Untere Reshanta), 25 % je Kill, handelbar", stufe: 1 },
+      { typ: "koloss", name: "Zikel's Apparition", grad: "Einzigartig", werte: { destruction: 45, justice: 45, time: 45 }, fraktion: null, quelle: "Albtraum-Shop: 14.000 Phantasmal Fragments, nachdem du Zikel's Apparition geschafft hast (empfohlen Gegenstandsstufe 2.400)", stufe: 2, leicht: true },
+      { typ: "koloss", name: "Incarnated Warding Feather", grad: "Selten", werte: { justice: 35, time: 35 }, fraktion: "elyos", quelle: "Story-Quest Zumion's Ward (Verteron, Stufe 35)", stufe: 3, leicht: true },
+      { typ: "koloss", name: "Warden Santras", grad: "Selten", werte: { justice: 35, time: 35 }, fraktion: "asmo", quelle: "Story-Quest Last of the Destruction Archons (Altgard, Stufe 32)", stufe: 3, leicht: true },
+
+      { typ: "statue", name: "Transcendent Bakarma", grad: "Einzigartig", werte: { death: 12, freedom: 12, space: 12 }, fraktion: null, quelle: "Erfolg: 10× Draupnir in der Eroberung", stufe: 1, leicht: true },
+      { typ: "statue", name: "Asahr's Mirror", grad: "Episch", werte: { death: 10 }, oder: ["space", "freedom"], fraktion: null, quelle: "4. Aufstiegsquest The One Who Witnesses the Nightmare (Stufe 45)", stufe: 2, leicht: true },
+      { typ: "statue", name: "Artifact of Eternity", grad: "Episch", werte: { death: 10 }, oder: ["space", "freedom"], fraktion: null, quelle: "3. Aufstiegsquest The One Who Dreams (Stufe 32)", stufe: 2, leicht: true },
+      { typ: "statue", name: "Fortress Guardian Notun", grad: "Episch", werte: { death: 10 }, oder: ["space", "freedom"], fraktion: null, quelle: "Albtraum-Shop: 8.000 Phantasmal Fragments nach Stufe 10 von Fortress Guardian Notun (empfohlen Gegenstandsstufe 2.300)", stufe: 2, leicht: true },
+      { typ: "statue", name: "Dream Fragment", grad: "Selten", werte: { death: 8 }, oder: ["space", "freedom"], fraktion: null, quelle: "2. Aufstiegsquest The One Who Hears the Voice (Stufe 22)", stufe: 3, leicht: true },
+      { typ: "statue", name: "Teina", grad: "Selten", werte: { death: 8 }, oder: ["space", "freedom"], fraktion: "elyos", quelle: "Story-Quest Time Takes Its Toll (Verteron, Stufe 43)", stufe: 3, leicht: true },
+      { typ: "statue", name: "Grisilla", grad: "Selten", werte: { death: 8 }, oder: ["space", "freedom"], fraktion: "asmo", quelle: "Story-Quest Contaminated Sacred Tree (Altgard, Stufe 30)", stufe: 3, leicht: true },
+      { typ: "statue", name: "Kibelisk", grad: "Episch", werte: { freedom: 10, space: 10 }, fraktion: null, quelle: "Erfolg: alle 61 Teleportpunkte deiner Karte gebunden (ohne Tod)", stufe: 3 },
+      { typ: "statue", name: "Mirror of Desire", grad: "Selten", werte: { freedom: 8, space: 8 }, fraktion: null, quelle: "Erfolg: 10× Fire Temple in der Eroberung (ohne Tod)", stufe: 3 },
+
+      { typ: "kunstwerk", name: "Eternal Gartua", grad: "Heroisch", werte: { wisdom: 5, illusion: 5, destiny: 5, life: 5 }, fraktion: "elyos", quelle: "Feldboss Ewiger Gartua (Verteron): 25 % je Kill oder 20.000 Kunstwerk-Splitter, handelbar", stufe: 1 },
+      { typ: "kunstwerk", name: "Immortal Gartua", grad: "Heroisch", werte: { wisdom: 5, illusion: 5, destiny: 5, life: 5 }, fraktion: "asmo", quelle: "Feldboss Unsterblicher Gartua (Altgard): 25 % je Kill oder 20.000 Kunstwerk-Splitter, handelbar", stufe: 1 },
+      { typ: "kunstwerk", name: "Wrathful Krao", grad: "Heroisch", werte: { wisdom: 5, illusion: 5 }, oder: ["destiny", "life"], fraktion: null, quelle: "Neu: Krao-Höhle im Hard-Modus, Endboss 0,3 % je Belohnung, handelbar", stufe: 1, neu: true },
+      { typ: "kunstwerk", name: "Wrathful Draupnir", grad: "Heroisch", werte: { wisdom: 5, illusion: 5 }, oder: ["destiny", "life"], fraktion: null, quelle: "Neu: Draupnir im Hard-Modus, Endboss 0,3 % je Belohnung, handelbar", stufe: 1, neu: true },
+      { typ: "kunstwerk", name: "Krao", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: null, quelle: "Krao-Höhle (Eroberung, auch Hard): 0,75 % je Endboss-Belohnung; im Markt am günstigsten", stufe: 2, leicht: true },
+      { typ: "kunstwerk", name: "Draupnir", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: null, quelle: "Draupnir (Eroberung, auch Hard): 0,75 % je Endboss-Belohnung; im Markt günstig", stufe: 2, leicht: true },
+      { typ: "kunstwerk", name: "Vakron Sky Island", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: null, quelle: "Vakron Sky Island (Eroberung): 0,75 % je Endboss-, 0,25 % je Zwischenboss-Belohnung; im Markt günstig", stufe: 2, leicht: true },
+      { typ: "kunstwerk", name: "Ferocious Horn Den", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: null, quelle: "Ferocious Horn Den (Eroberung): 0,75 % je Endboss-Belohnung; im Markt günstig", stufe: 2, leicht: true },
+      { typ: "kunstwerk", name: "Watcher Kaira", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: null, quelle: "Wächter Kaira oder Executor Kaira (Untere Reshanta): 25 % je Kill, handelbar", stufe: 2 },
+      { typ: "kunstwerk", name: "Sentinel K'nash", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: "elyos", quelle: "Elite gleichen Namens (Verteron): 25 % je Kill oder 5.000 Kunstwerk-Splitter", stufe: 2 },
+      { typ: "kunstwerk", name: "Black Tentacle Lawa", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: "elyos", quelle: "Elite gleichen Namens (Verteron): 25 % je Kill oder 5.000 Splitter", stufe: 2 },
+      { typ: "kunstwerk", name: "Centurion Demiros", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: "elyos", quelle: "Elite gleichen Namens (Verteron): 25 % je Kill oder 5.000 Splitter", stufe: 2 },
+      { typ: "kunstwerk", name: "Divine Ansas", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: "elyos", quelle: "Elite gleichen Namens (Verteron): 25 % je Kill oder 5.000 Splitter", stufe: 2 },
+      { typ: "kunstwerk", name: "Phantasm Kasia", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: "elyos", quelle: "Elite gleichen Namens (Verteron): 25 % je Kill oder 5.000 Splitter", stufe: 2 },
+      { typ: "kunstwerk", name: "Forest Warrior Aullamu", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: "elyos", quelle: "Elite gleichen Namens (Verteron): 25 % je Kill oder 5.000 Splitter", stufe: 2 },
+      { typ: "kunstwerk", name: "Drakan Battalion Weapon Guruta", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: "asmo", quelle: "Elite gleichen Namens (Altgard): 25 % je Kill oder 5.000 Splitter", stufe: 2 },
+      { typ: "kunstwerk", name: "Sharp Shylak", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: "asmo", quelle: "Elite gleichen Namens (Altgard): 25 % je Kill oder 5.000 Splitter", stufe: 2 },
+      { typ: "kunstwerk", name: "Desecrator Newbold", grad: "Einzigartig", werte: { wisdom: 4, illusion: 4 }, oder: ["destiny", "life"], fraktion: "asmo", quelle: "Elite gleichen Namens (Altgard): 25 % je Kill oder 5.000 Splitter", stufe: 2 },
+      { typ: "kunstwerk", name: "Abyssal Ludra", grad: "Heroisch", werte: { wisdom: 5, illusion: 5, destiny: 5 }, fraktion: null, quelle: "Erfolg: 3× Ludra geschafft (Raid ab 4. November zurück)", stufe: 1 },
+      { typ: "kunstwerk", name: "Chaser Taulo", grad: "Episch", werte: { wisdom: 3, illusion: 3 }, fraktion: "elyos", quelle: "Elite (Verteron): 25 % je Kill oder 1.000 Splitter", stufe: 3 },
+      { typ: "kunstwerk", name: "Harvest Manager Moshav", grad: "Episch", werte: { wisdom: 3, illusion: 3 }, fraktion: "elyos", quelle: "Elite (Verteron): 25 % je Kill oder 1.000 Splitter", stufe: 3 },
+      { typ: "kunstwerk", name: "Scholar Aulla", grad: "Episch", werte: { wisdom: 3, illusion: 3 }, fraktion: "elyos", quelle: "Elite (Verteron): 25 % je Kill oder 1.000 Splitter", stufe: 3 },
+      { typ: "kunstwerk", name: "Cantas Valley", grad: "Episch", werte: { wisdom: 3, illusion: 3 }, fraktion: "elyos", quelle: "Shugo-Fest-Shop: 2.000 Centuryroot Tokens", stufe: 3 },
+      { typ: "kunstwerk", name: "Ellun River Midstream", grad: "Episch", werte: { wisdom: 3, illusion: 3 }, fraktion: "elyos", quelle: "Shugo-Fest-Shop: 2.000 Centuryroot Tokens", stufe: 3 },
+      { typ: "kunstwerk", name: "Veteran Shujakan", grad: "Episch", werte: { wisdom: 3, illusion: 3 }, fraktion: "asmo", quelle: "Elite (Altgard): 25 % je Kill oder 1.000 Splitter", stufe: 3 },
+      { typ: "kunstwerk", name: "Dredgion Crash Site", grad: "Episch", werte: { wisdom: 3, illusion: 3 }, fraktion: "asmo", quelle: "Shugo-Fest-Shop: 2.000 Centuryroot Tokens", stufe: 3 },
+      { typ: "kunstwerk", name: "Quai Campsite", grad: "Episch", werte: { wisdom: 3, illusion: 3 }, fraktion: "asmo", quelle: "Shugo-Fest-Shop: 2.000 Centuryroot Tokens", stufe: 3 },
+      { typ: "kunstwerk", name: "Silent Dartan", grad: "Einzigartig", werte: { wisdom: 4, destiny: 4, life: 4 }, fraktion: null, quelle: "Feldboss (Verteron und Altgard): 25 % je Kill oder 5.000 Splitter – Übergang, ohne Illusion", stufe: 4 },
+      { typ: "kunstwerk", name: "Soul Ruler Kashapa", grad: "Einzigartig", werte: { wisdom: 4, destiny: 4, life: 4 }, fraktion: null, quelle: "Feldboss (Verteron und Altgard): 25 % je Kill oder 5.000 Splitter – Übergang", stufe: 4 },
+      { typ: "kunstwerk", name: "High Commander Lagta", grad: "Einzigartig", werte: { wisdom: 4, destiny: 4, life: 4 }, fraktion: null, quelle: "Feldboss Legat Lagta (Verteron und Altgard): 25 % je Kill oder 5.000 Splitter – Übergang", stufe: 4 },
+      { typ: "kunstwerk", name: "Urugugu", grad: "Einzigartig", werte: { wisdom: 4, destiny: 4, life: 4 }, fraktion: null, quelle: "Urugugu Canyon (Eroberung) – Übergang", stufe: 4 },
+      { typ: "kunstwerk", name: "Fire Temple", grad: "Einzigartig", werte: { wisdom: 4, destiny: 4, life: 4 }, fraktion: null, quelle: "Fire Temple (Eroberung) – Übergang", stufe: 4 }
+    ],
+    stufen: { 1: "Beste", 2: "Sehr gut", 3: "Gut", 4: "Übergang" },
+    tipps: [
+      ["Erst alle Plätze füllen", "Zwölf Kunstwerke mit Weisheit und Illusion bringen zusammen mehr als ein Koloss – jedes Teil zählt, auch ein episches."],
+      ["Statuen immer mit Tod", "Tod gibt Krit.-Treffer. Die zweite Statuen-Werte (Raum oder Freiheit) sind Geschmackssache: Raum gibt Bewegungstempo und Block, Freiheit Präzision und Ausweichen."],
+      ["Günstigste Einzigartige", "Die Kunstwerke Krao, Vakron Sky Island, Draupnir und Ferocious Horn Den gibt es im Markt dutzendweise und billig."],
+      ["Splitter sammeln", "Jede benannte Elite und jeder Feldboss in Verteron und Altgard lässt Kunstwerk-Splitter fallen; die Substanzwandlung macht daraus Kunstwerke deiner Fraktion."],
+      ["PvP", "Für Eisenwall-Builds tauschen Spieler die Weisheit-Kunstwerke gegen solche mit Illusion, Leben und Schicksal; Wächterfürst Nahma ist auch der PvP-Koloss."],
+      ["Gleicher Pool", "Götter-Werte kommen auch von Arkana-Karten, dem Abyss-Armband und den Monolithen. Wer einen Wert gezielt stapelt, sollte alle drei Quellen prüfen."]
+    ],
+    quellen: [
+      { name: "Pantheon: Teile, Punkte, Quellen und die zehn Götter-Werte (AION 2 Maps, Client-Daten)", url: "https://aion2maps.com/guides/pantheon-stats/" },
+      { name: "Alle Statuen im Pantheon (Game8)", url: "https://game8.co/games/Aion-2/archives/614581" },
+      { name: "Pantheon als Build-Schicht (AION 2 Field Guide)", url: "https://aion2.blog/pantheon/" }
+    ]
+  },
+
   daevanionPlan: {
     gladiator: {
       core: ["Overhead Slam", "Ruinous Blow", "Rending Blow", "Keen Strike"],
@@ -1204,6 +1339,11 @@ window.DK_DATA = {
   },
 
   audit: {
+    /* Endgame-Schwellen (Patch 21.10. und Ludra-Rückkehr laut NCSOFT-Ankündigung vom 23.10.2026) */
+    endgame: {
+      hard: 2600, ludra: 2800, ludraHard: 3000, ludraAb: "2026-11-04", ludraPraezision: "1.450–1.500",
+      aufstieg: [[2500, "Herausforderung"], [2000, "Schwer"], [1500, "Normal"], [1000, "Leicht"]]
+    },
     roles: {
       gladiator: "dps", templar: "tank", assassin: "dps", ranger: "dps",
       sorcerer: "dps", spiritmaster: "dps", cleric: "heal", chanter: "hybrid"
