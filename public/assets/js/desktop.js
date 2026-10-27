@@ -1,6 +1,7 @@
 /*
  * Desktop-App: Download-Seite (#desktop) und – wenn die Seite in der App läuft (window.dkDesktop aus desktop/,
- * Go + WebView2) – das Overlay-Menü im Kopf: im Vordergrund, Deckkraft, kompakt, Durchklicken.
+ * Go + WebView2) – das Overlay-Menü im Kopf: Kachel-Overlay (#overlay, overlay.js), im Vordergrund, Deckkraft,
+ * kompakt, Durchklicken.
  * In der App öffnen Links zu anderen Seiten im Standard-Browser.
  * Daten zur Datei: download/DaevaKompass.json (vom Build-Skript tools/build-desktop.sh geschrieben).
  */
@@ -44,6 +45,7 @@
       <section class="sk-sec" aria-labelledby="dk-f-h">
         <header class="sk-sec-head"><h3 id="dk-f-h">Was die App kann</h3><p>Die App zeigt die Live-Seite in einem eigenen Fenster – Daten, Zeiten und Pläne sind also immer aktuell, deine Häkchen bleiben im App-Ordner.</p></header>
         <ul class="dk-feats">
+          <li class="dk-feat"><b>Kachel-Overlay</b><span>Ein Klick im Overlay-Menü macht das Fenster schmal, legt es über das Spiel und zeigt nur noch Kacheln: Termine, Rotation, Schadenstest, Begleiter und Checkliste – jede einzeln an- und ausschaltbar. <a href="#overlay">Im Browser ansehen</a></span></li>
           <li class="dk-feat"><b>Über dem Spiel</b><span>„Immer im Vordergrund“ im Overlay-Menü: Timer, Checkliste, Leiste oder Begleiter-Route neben dem Spiel.</span></li>
           <li class="dk-feat"><b>Durchsichtig</b><span>Deckkraft von 30 bis 100 %, damit das Spiel durchscheint.</span></li>
           <li class="dk-feat"><b>Durchklicken</b><span>Mausklicks gehen durch das Fenster ans Spiel. Ein und aus mit ${kbd(keys.tasteDurchklicken)}.</span></li>
@@ -78,7 +80,11 @@
   function panelHtml() {
     const i = info || {};
     const pct = Math.round((i.deckkraft || 1) * 100);
+    const ov = window.DK_OV;
+    const onOv = location.hash === "#overlay";
     return `<h2 id="dk-panel-h">Overlay</h2>
+        ${ov ? `<button type="button" class="btn" data-dkc="kacheln">${onOv ? "Kacheln schließen" : "Kacheln über dem Spiel"}</button>
+        <label class="dk-row switch"><input type="checkbox" data-dkc="start"${ov.start() ? " checked" : ""}><span>Beim Start mit den Kacheln öffnen</span></label>` : ""}
         <label class="dk-row switch"><input type="checkbox" data-dkc="oben"${i.oben ? " checked" : ""}${i.durchklicken ? " disabled" : ""}><span>Immer im Vordergrund</span></label>
         <label class="dk-row"><span>Deckkraft</span><input type="range" min="30" max="100" step="5" value="${pct}" data-dkc="deckkraft" aria-label="Deckkraft in Prozent"><b data-dk-pct>${pct} %</b></label>
         <label class="dk-row switch"><input type="checkbox" data-dkc="kompakt"${i.kompakt ? " checked" : ""}><span>Kompakt (schmal)</span></label>
@@ -147,11 +153,25 @@
     if (t.matches('[data-dkc="oben"]')) call("oben", t.checked);
     else if (t.matches('[data-dkc="kompakt"]')) call("kompakt", t.checked);
     else if (t.matches('[data-dkc="deckkraft"]')) call("deckkraft", +t.value / 100);
+    else if (t.matches('[data-dkc="start"]') && window.DK_OV) window.DK_OV.setStart(t.checked);
+  }
+  /* Kachel-Overlay: Ansicht #overlay, schmales Fenster, im Vordergrund – und zurück */
+  function kacheln() {
+    if (!window.DK_OV) return;
+    if (location.hash === "#overlay") {
+      if (window.DK_APP) window.DK_APP.go("uebersicht");
+      call("kompakt", false);
+    } else {
+      window.DK_OV.show();
+      call("kompakt", true).then(() => call("oben", true));
+    }
+    togglePanel(false);
   }
   function onClick(e) {
     if (e.target.closest(".dk-toggle")) { togglePanel(document.getElementById("dk-panel").hidden); return; }
     const b = e.target.closest('[data-dkc="durchklicken"]');
     if (b) { call("durchklicken", !(info && info.durchklicken)); return; }
+    if (e.target.closest('[data-dkc="kacheln"]')) { kacheln(); return; }
     if (!e.target.closest("#dk-panel")) togglePanel(false);
     const a = e.target.closest("a[href]");
     if (!a || e.defaultPrevented) return;
@@ -175,6 +195,8 @@
     document.addEventListener("input", onInput);
     document.addEventListener("change", onChange);
     window.addEventListener("dkdesktop", (e) => apply(e.detail));
+    window.addEventListener("hashchange", () => mountTools());
+    if (window.DK_OV && window.DK_OV.start() && (!location.hash || location.hash === "#uebersicht")) window.DK_OV.show();
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") togglePanel(false); });
     bridge("info").then(apply, () => mountTools());
   }

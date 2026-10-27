@@ -392,6 +392,24 @@
       save();
       render();
     },
+    /* Für das Kachel-Overlay: Ziele und das nächste Farm-Gebiet mit den fehlenden Begleitern */
+    ziele: () => Object.keys(B.ziele).map((k) => [k, B.ziele[k].name]),
+    nextZone(ziel) {
+      const fac = faction();
+      const Z = B.ziele[ziel] || B.ziele[view.ziel];
+      const r = route(fac, Z.typen);
+      const z = r.picked[0];
+      return {
+        fac: FAC[fac], ziel: Z.name, targets: r.targets, weitere: Math.max(0, r.picked.length - 1),
+        zone: z ? { name: z.zone, map: mapName(z.map), min: z.min, max: z.max,
+          pets: z.main.map(([p, d]) => ({ id: p.id, de: p.de, typ: B.typen[p.g].name, g: p.g, monster: d[0], stufe: d[1], icon: icon(p, "sm") })) } : null,
+      };
+    },
+    setLevel(id, lv) {
+      if (!byId.has(id)) return;
+      setLevel([id], Math.max(0, Math.min(3, lv)));
+      render();
+    },
     /* Für den Charakter-Check: fehlende Fera und bester Tempo-Titel als Kurzinfo */
     summary(fac) {
       const f = FAC[fac] ? fac : faction();

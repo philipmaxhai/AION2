@@ -374,6 +374,34 @@
         "</div></li>";
     }).join("") + "</ul>";
   }
+  /* ---------- Kachel-Overlay: kompakte Termine und Checkliste (ohne ids, die es in den Ansichten schon gibt) ---------- */
+  parts["ov-next"] = function () {
+    const t = now();
+    const bosses = Object.keys(S.kills).map((id) => ({ m: D.markers.find((x) => x.id === id), st: bossState(id, t) })).filter((x) => x.m && x.st)
+      .sort((a, b) => a.st.at - b.st.at).map((x) => '<li class="nx' + (x.st.up ? " is-live" : "") + '"><span class="nx-time">' + Z.time(x.st.at) + '</span><span class="nx-name">' + esc(x.m.name) + '</span><span class="nx-cd">' + (x.st.up ? "sollte da sein" : cd(x.st.at)) + "</span></li>");
+    const evs = upcomingPerEvent(t).slice(0, 6).map((x) => nextRow(x, t));
+    return '<ul class="nx-list ov-list">' + evs.join("") + "</ul>" +
+      (bosses.length ? '<p class="ov-sub">Deine Feldboss-Timer</p><ul class="nx-list ov-list">' + bosses.join("") + "</ul>" : "");
+  };
+  function ovChecks(kind) {
+    const store = S.check[kind];
+    return D.checklist[kind].map((c) => {
+      const v = Math.min(+store[c.id] || 0, c.max);
+      const done = v >= c.max;
+      return '<li class="ov-ck' + (done ? " is-done" : "") + '"><span class="ov-ck-label" title="' + esc(c.hint) + '">' + esc(c.label) + "</span>" +
+        (c.max === 1
+          ? '<label class="switch"><input type="checkbox" data-check="' + kind + '" data-id="' + c.id + '"' + (done ? " checked" : "") + '><span class="sr">' + esc(c.label) + " erledigt</span></label>"
+          : '<span class="ov-ctr"><button type="button" class="ctr" data-ctr="' + kind + '" data-id="' + c.id + '" data-d="-1" aria-label="' + esc(c.label) + ' minus eins">−</button>' +
+            '<span class="ctr-val">' + v + "/" + c.max + '</span><button type="button" class="ctr" data-ctr="' + kind + '" data-id="' + c.id + '" data-d="1" aria-label="' + esc(c.label) + ' plus eins">+</button></span>') +
+        "</li>";
+    }).join("");
+  }
+  parts["ov-check"] = function () {
+    const count = (kind) => D.checklist[kind].filter((c) => Math.min(+S.check[kind][c.id] || 0, c.max) >= c.max).length + "/" + D.checklist[kind].length;
+    const r = nextOf(evById("reset")), w = nextOf(evById("wreset"));
+    return '<p class="ov-sub">Heute · ' + count("daily") + (r ? ' · Reset ' + cd(r.ts) : "") + '</p><ul class="ov-checks">' + ovChecks("daily") + "</ul>" +
+      '<details class="ov-week"><summary>Woche · ' + count("weekly") + (w ? " · Reset " + Z.day(w.ts) + " " + Z.time(w.ts) : "") + '</summary><ul class="ov-checks">' + ovChecks("weekly") + "</ul></details>";
+  };
   parts["check-daily"] = () => checkList("daily");
   parts["check-weekly"] = () => checkList("weekly");
   parts["reset-daily"] = function () {
@@ -541,7 +569,7 @@
     tick(true);
   }
 
-  const TIME_PARTS = ["next-short", "next-full", "today-mini", "timeline", "week", "boss-timers", "odyle", "dst", "zone-info", "reset-daily", "reset-weekly"];
+  const TIME_PARTS = ["next-short", "next-full", "today-mini", "timeline", "week", "boss-timers", "odyle", "dst", "zone-info", "reset-daily", "reset-weekly", "ov-next"];
 
   function tick(onlyCd) {
     const t = now();
@@ -555,7 +583,7 @@
     if (onlyCd) return;
 
     const sec = Math.floor(t / 1000);
-    if (checkResets()) refresh(["check-daily", "check-weekly", "today-mini"]);
+    if (checkResets()) refresh(["check-daily", "check-weekly", "today-mini", "ov-check"]);
     if (sec % 30 === 0) refresh(TIME_PARTS);
     else {
       // Läuft ein Countdown ab, sofort neu zeichnen
@@ -617,9 +645,10 @@
   }
 
   /* ================= Navigation ================= */
-  const VIEWS = ["uebersicht", "charakter", "gearscore", "skills", "daevanion", "begleiter", "pantheon", "karte", "zeiten", "checkliste", "klassen", "desktop", "quellen"];
+  const VIEWS = ["uebersicht", "charakter", "gearscore", "skills", "daevanion", "begleiter", "pantheon", "karte", "zeiten", "checkliste", "klassen", "overlay", "desktop", "quellen"];
   function show(view) {
     if (!VIEWS.includes(view)) view = "uebersicht";
+    document.body.setAttribute("data-view", view);
     VIEWS.forEach((v) => {
       const sec = $("#v-" + v);
       if (sec) sec.hidden = v !== view;
@@ -647,7 +676,7 @@
       const kind = ctr.getAttribute("data-ctr"), cid = ctr.getAttribute("data-id");
       const item = D.checklist[kind].find((c) => c.id === cid);
       const v = Math.max(0, Math.min(item.max, (+S.check[kind][cid] || 0) + +ctr.getAttribute("data-d")));
-      S.check[kind][cid] = v; save(); refresh(["check-" + kind, "today-mini"]);
+      S.check[kind][cid] = v; save(); refresh(["check-" + kind, "today-mini", "ov-check"]);
       return;
     }
     const a = e.target.closest("[data-action]");
@@ -705,11 +734,11 @@
       case "boss-kill": {
         const inp = document.getElementById("respawn-" + id);
         if (inp && +inp.value > 0) S.respawn[id] = +inp.value;
-        S.kills[id] = t; save(); refresh(["map-panel", "boss-timers"]); liveMap(t);
+        S.kills[id] = t; save(); refresh(["map-panel", "boss-timers", "ov-next"]); liveMap(t);
         toast("Timer gestartet: " + (D.markers.find((m) => m.id === id) || {}).name);
         break;
       }
-      case "boss-clear": delete S.kills[id]; save(); refresh(["boss-timers", "map-panel"]); liveMap(t); break;
+      case "boss-clear": delete S.kills[id]; save(); refresh(["boss-timers", "map-panel", "ov-next"]); liveMap(t); break;
       case "view-class": viewCls = id; refresh(["class-tabs", "class-detail"]); break;
       case "open-class": viewCls = id; refresh(["class-tabs", "class-detail"]); go("klassen"); break;
       case "open-dv": if (window.DK_DV) window.DK_DV.show(id, 0); break;
@@ -729,8 +758,8 @@
         } catch (err) { refresh(["settings"]); }
         break;
       case "theme": cycleTheme(); break;
-      case "check-reset-day": S.check.daily = {}; save(); refresh(["check-daily", "today-mini"]); break;
-      case "check-reset-week": S.check.weekly = {}; save(); refresh(["check-weekly"]); break;
+      case "check-reset-day": S.check.daily = {}; save(); refresh(["check-daily", "today-mini", "ov-check"]); break;
+      case "check-reset-week": S.check.weekly = {}; save(); refresh(["check-weekly", "ov-check"]); break;
       case "odyle-now": {
         const inp = $("#f-odyle");
         S.odyle.val = Math.max(0, Math.min(840, +inp.value || 0)); S.odyle.at = t; save(); refresh(["odyle", "today-mini"]);
@@ -746,13 +775,13 @@
       refresh(["steps-short", "plan", "gs-summary"]);
     } else if (n.matches("[data-check]")) {
       S.check[n.getAttribute("data-check")][n.getAttribute("data-id")] = n.checked ? 1 : 0; save();
-      refresh(["check-" + n.getAttribute("data-check"), "today-mini"]);
+      refresh(["check-" + n.getAttribute("data-check"), "today-mini", "ov-check"]);
     } else if (n.matches("[data-shift]")) {
-      S.shifts[n.getAttribute("data-shift")] = +n.value; save(); refresh(TIME_PARTS);
+      S.shifts[n.getAttribute("data-shift")] = +n.value; save(); refresh(TIME_PARTS.concat(["ov-check"]));
     } else if (n.matches("[data-remind]")) {
       S.remind[n.getAttribute("data-remind")] = n.checked; save();
     } else if (n.matches("[data-respawn]")) {
-      S.respawn[n.getAttribute("data-respawn")] = Math.max(1, +n.value || 60); save(); refresh(["boss-timers"]);
+      S.respawn[n.getAttribute("data-respawn")] = Math.max(1, +n.value || 60); save(); refresh(["boss-timers", "ov-next"]);
     } else if (n.id === "f-class") {
       S.cls = n.value; viewCls = n.value; save(); refresh(["class-mini", "class-gear", "class-tabs", "class-detail", "class-row", "plan", "steps-short"]);
     } else if (n.id === "f-member") {

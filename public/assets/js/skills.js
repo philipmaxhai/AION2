@@ -531,11 +531,14 @@
     const left = Math.max(0, Math.ceil((timer.end - Date.now()) / 1000));
     return timer.phase === "count" ? String(left) : `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
   }
+  /* Uhr und Start-Knopf gibt es hier und im Kachel-Overlay (data-sk-clock, data-sk-start) */
   function paintClock() {
-    const c = document.getElementById("sk-clock");
-    if (c) { c.textContent = clockText(); c.className = "dk-clock" + (timer.phase === "run" || timer.phase === "count" ? " is-run" : timer.phase === "end" ? " is-end" : ""); }
-    const b = document.querySelector('#sk-app [data-sk="dps-start"]');
-    if (b) b.textContent = timer.phase === "run" || timer.phase === "count" ? "Abbrechen" : "Test starten";
+    const running = timer.phase === "run" || timer.phase === "count";
+    document.querySelectorAll("[data-sk-clock]").forEach((c) => {
+      c.textContent = clockText();
+      c.className = "dk-clock" + (running ? " is-run" : timer.phase === "end" ? " is-end" : "");
+    });
+    document.querySelectorAll("[data-sk-start]").forEach((b) => { b.textContent = running ? "Abbrechen" : "Test starten"; });
   }
   function tickTimer() {
     if (timer.phase === "count" && Date.now() >= timer.end) {
@@ -545,7 +548,7 @@
       if (left !== tickTimer.last) { tickTimer.last = left; beep(440, 90); }
     } else if (timer.phase === "run" && Date.now() >= timer.end) {
       timer.phase = "end"; clearInterval(timer.iv); timer.iv = null; beep(660, 220); setTimeout(() => beep(990, 260), 260);
-      const inp = document.getElementById("sk-dps-val"); if (inp) inp.focus();
+      const inp = [...document.querySelectorAll("[data-sk-dps]")].find((n) => n.offsetParent); if (inp) inp.focus();
     }
     paintClock();
   }
@@ -580,14 +583,14 @@
         <div class="sk-col">
           <h4>Timer</h4>
           <div class="dk-timer">
-            <span id="sk-clock" class="dk-clock">${clockText()}</span>
+            <span id="sk-clock" class="dk-clock" data-sk-clock>${clockText()}</span>
             <div class="seg seg--sm" role="group" aria-label="Testdauer">${KA.dauer.map((d) => `<button type="button" class="seg-btn${timer.dauer === d ? " is-on" : ""}" aria-pressed="${timer.dauer === d}" data-sk="dps-dauer" data-id="${d}">${d / 60} min</button>`).join("")}</div>
-            <button type="button" class="btn" data-sk="dps-start">${timer.phase === "run" || timer.phase === "count" ? "Abbrechen" : "Test starten"}</button>
+            <button type="button" class="btn" data-sk="dps-start" data-sk-start>${timer.phase === "run" || timer.phase === "count" ? "Abbrechen" : "Test starten"}</button>
           </div>
           <p class="sk-hint">3 Sekunden Vorlauf mit Ton, dann läuft die Zeit; am Ende ein Doppelton. In der Desktop-App kannst du das Fenster dafür über das Spiel legen.</p>
           <form class="dps-form" id="sk-dps-form" autocomplete="off">
             <label class="field dps-name"><span>Variante</span><input type="text" id="sk-dps-name" maxlength="40" value="${esc(variant)}"></label>
-            <label class="field"><span>DPS laut Kampfanalyse</span><input type="number" id="sk-dps-val" inputmode="numeric" min="1" step="1" required></label>
+            <label class="field"><span>DPS laut Kampfanalyse</span><input type="number" id="sk-dps-val" inputmode="numeric" min="1" step="1" required data-sk-dps></label>
             <button type="submit" class="btn btn--ghost">Eintragen</button>
           </form>
         </div>
@@ -687,7 +690,32 @@
     }
   }
 
+  /* Kachel-Overlay: Linien als Symbol-Reihen (links Füller, rechts Vorrang) und die Makro-Kette */
+  function rotationHtml(cls, mode) {
+    const M = plan(cls, mode);
+    const lines = M.leiste.map((l, i) => {
+      const key = M.tasten.find((t) => t[1] === i);
+      return `<li class="ov-line"><span class="sk-line-no">${LETTER(i)}</span>${key ? `<kbd>${esc(keyLabel(key[0]))}</kbd>` : ""}
+        <span class="ov-line-ico">${l.skills.map((en, k) => { const sk = skill(cls, en); return `<span class="kb-ico${k === l.skills.length - 1 && l.skills.length > 1 ? " is-first" : ""}" title="${esc(sk.de)}">${ico(sk, "sm")}</span>`; }).join("")}</span>
+        <span class="ov-line-nm">${esc(l.name)}${l.hand ? " · von Hand" : ""}</span></li>`;
+    }).join("");
+    return `<ol class="ov-lines">${lines}</ol>
+      <p class="ov-sub">Makro · ${esc(macroKey(M))}</p>
+      <ol class="sk-chain ov-chain">${M.makro.map((st) => `<li>${stepHtml(cls, M, st)}</li>`).join("")}</ol>`;
+  }
+
   window.DK_SK = {
+    rotationHtml,
+    /* Schadenstest für das Kachel-Overlay: derselbe Timer und dieselbe Liste wie in der Ansicht */
+    test: {
+      start: startTimer,
+      running: () => timer.phase === "run" || timer.phase === "count",
+      clock: clockText,
+      dauer(d) { if (d && !(timer.phase === "run" || timer.phase === "count")) { timer.dauer = d; timer.phase = "idle"; render(); paintClock(); } return timer.dauer; },
+      dauern: () => (D.kampfanalyse ? D.kampfanalyse.dauer : [60]),
+      list: dpsList,
+      add: addDps,
+    },
     show(cls, mode) {
       if (cls && SK.klassen[cls]) view.cls = cls;
       if (mode === "pvp" || mode === "pve") view.mode = mode;
@@ -699,17 +727,20 @@
     savePng,
   };
 
+  function addDps(cls, mode, name, val) {
+    const all = dpsAll(), key = cls + ":" + mode;
+    all[key] = [{ name: name || "Test", dps: Math.round(val), dauer: timer.dauer, datum: new Date().toLocaleDateString("de-DE") }].concat(all[key] || []).slice(0, 30);
+    dpsSave(all);
+    if (timer.phase === "end") timer.phase = "idle";
+    render();
+  }
+
   function onSubmit(e) {
     if (!e.target || e.target.id !== "sk-dps-form") return;
     e.preventDefault();
     const val = +document.getElementById("sk-dps-val").value;
     if (!(val > 0)) return;
-    const name = document.getElementById("sk-dps-name").value.trim() || "Test";
-    const all = dpsAll(), key = view.cls + ":" + view.mode;
-    all[key] = [{ name, dps: Math.round(val), dauer: timer.dauer, datum: new Date().toLocaleDateString("de-DE") }].concat(all[key] || []).slice(0, 30);
-    dpsSave(all);
-    if (timer.phase === "end") timer.phase = "idle";
-    render();
+    addDps(view.cls, view.mode, document.getElementById("sk-dps-name").value.trim(), val);
     const t = document.getElementById("sk-test");
     if (t) t.scrollIntoView({ block: "nearest" });
   }
